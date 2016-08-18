@@ -4,7 +4,7 @@ import java.util.Set;
 
 public class GameRoom {
 	public static enum Status {
-		IDLE, GAMEING
+		IDLE, GAMEING, CLOSING
 	}
 
 	public static enum RoomType {
