@@ -1,35 +1,47 @@
 package com.netease.pangu.game.app;
 
+import io.netty.channel.Channel;
+
 public class PlayerSession {
+	private final static int WATI_MILLIS = 5*1000;
 	public static enum Status
 	{
 		NOT_CONNECTED, CONNECTING, CONNECTED, CLOSED
 	}
 	
-	private Object id;
-	private String name;
-	private GameRoom gameRoom;
-	public Object getId() {
-		return id;
+	private final Object playerId;
+	private Object roomId;
+	private Channel sender;
+	
+	public PlayerSession(Object playerId){
+		this.playerId = playerId;
 	}
 
-	public void setId(Object id) {
-		this.id = id;
+	public Object getPlayerId() {
+		return playerId;
+	}
+	
+	public Channel getSender() {
+		return sender;
 	}
 
-	public String getName() {
-		return name;
+	public void setSender(Channel sender) {
+		this.sender = sender;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public Object getRoomId() {
+		return roomId;
 	}
 
-	public GameRoom getGameRoom() {
-		return gameRoom;
+	public void setRoomId(Object roomId) {
+		this.roomId = roomId;
+	}
+	
+	public void close(){
+		if(sender != null){
+			sender.flush();
+			sender.close().awaitUninterruptibly(WATI_MILLIS);
+		}
 	}
 
-	public void setGameRoom(GameRoom gameRoom) {
-		this.gameRoom = gameRoom;
-	}
 }

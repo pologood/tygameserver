@@ -6,32 +6,73 @@ public class GameRoom {
 	public static enum Status {
 		IDLE, GAMEING
 	}
-	
-	private Set<PlayerSession> playerSessions;
-	private Game game;
-	
-	public Set<PlayerSession> getPlayerSessions() {
-		return playerSessions;
+
+	public static enum RoomType {
+		PRIVATE, PUBLIC
 	}
 
-	public void setPlayerSessions(Set<PlayerSession> playerSessions) {
-		this.playerSessions = playerSessions;
+	private long id;
+	private Set<Long> playerSessionIds;
+	private long gameId;
+	private Status status;
+	private long ownerId;
+	private int maxSize;
+	private RoomType type;
+
+	public long getId() {
+		return id;
 	}
 
-	public Game getGame() {
-		return game;
+	public void setId(long id) {
+		this.id = id;
 	}
 
-	public void setGame(Game game) {
-		this.game = game;
+	public Set<Long> getPlayerSessionIds() {
+		return playerSessionIds;
 	}
-	
-	public synchronized boolean join(PlayerSession player){
-		return playerSessions.add(player);
+
+	public void setPlayerSessionIds(Set<Long> playerSessionIds) {
+		this.playerSessionIds = playerSessionIds;
 	}
-	
-	public synchronized boolean leave(PlayerSession player){
-		return playerSessions.remove(player);
+
+	public long getGameId() {
+		return gameId;
 	}
-	
+
+	public void setGameId(long gameId) {
+		this.gameId = gameId;
+	}
+
+	public Status getStatus() {
+		return status;
+	}
+
+	public void setStatus(Status status) {
+		this.status = status;
+	}
+
+	public long getOwnerId() {
+		return ownerId;
+	}
+
+	public void setOwnerId(long ownerId) {
+		this.ownerId = ownerId;
+	}
+
+	public int getMaxSize() {
+		return maxSize;
+	}
+
+	public void setMaxSize(int maxSize) {
+		this.maxSize = maxSize;
+	}
+
+	public RoomType getType() {
+		return type;
+	}
+
+	public void setType(RoomType type) {
+		this.type = type;
+	}
+
 }
