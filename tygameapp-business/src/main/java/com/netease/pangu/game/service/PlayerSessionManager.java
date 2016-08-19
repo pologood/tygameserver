@@ -1,41 +1,73 @@
 package com.netease.pangu.game.service;
 
-import java.util.Map;
+import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+
+import javax.annotation.Resource;
 
 import org.springframework.stereotype.Component;
 
 import com.netease.pangu.game.app.PlayerSession;
 
+import io.netty.channel.Channel;
+
 @Component
 public class PlayerSessionManager {
-	private final Map<Object, PlayerSession> sessions;
+	@Resource
+	private UniqueIDGeneratorService uniqueIdGeneratorService;
 
-	public PlayerSessionManager(){
-		sessions = new ConcurrentHashMap<Object, PlayerSession>();
+	public interface SessionCallable<T> {
+		public T call(PlayerSession playerSession);
 	}
-	
-	public boolean put(Object key, PlayerSession room) {
-		if (key == null || room == null) {
-			return false;
-		}
-		if (sessions.put(room, room) == null) {
+
+	private final ConcurrentMap<Long, PlayerSession> sessions;
+
+	public PlayerSessionManager() {
+		sessions = new ConcurrentHashMap<Long, PlayerSession>();
+	}
+
+	public boolean put(long sessionId, PlayerSession session) {
+		if (sessions.put(sessionId, session) == null) {
 			return true;
 		}
 		return false;
 	}
 
-	public boolean remove(Object key) {
-		if (key == null) {
-			return false;
-		}
-		if (sessions.remove(key) != null) {
+	public boolean remove(long sessionId) {
+		if (sessions.remove(sessionId) != null) {
 			return true;
 		}
 		return false;
 	}
 
-	public PlayerSession get(Object key) {
-		return sessions.get(key);
+	private PlayerSession getSession(long sessionId) {
+		return sessions.get(sessionId);
+	}
+
+	public <T> T createPlayerSession(long playerId, Channel channel, SessionCallable<T> callable) {
+		PlayerSession playerSession = new PlayerSession();
+		playerSession.setPlayerId(playerId);
+		playerSession.setAttrs(new HashMap<String, Object>());
+		playerSession.setRoomId(0L);
+		playerSession.setPlayerId(uniqueIdGeneratorService.generate());
+		sessions.put(playerSession.getPlayerId(), playerSession);
+		return callable.call(playerSession);
+	}
+
+	public <T> T updatePlayerSession(long playerSessionId, SessionCallable<T> callable) {
+		PlayerSession playerSession = getSession(playerSessionId);
+		if (playerSession != null) {
+			synchronized (playerSession) {
+				try {
+					return callable.call(playerSession);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		} else {
+			return callable.call(null);
+		}
+		return null;
 	}
 }

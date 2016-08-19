@@ -1,11 +1,8 @@
 package com.netease.pangu.game.service;
 
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.springframework.stereotype.Service;
-
-import com.netease.pangu.game.config.TyGameAppConfig;
 
 @Service
 public class UniqueIDGeneratorService {
