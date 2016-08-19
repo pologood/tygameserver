@@ -1,4 +1,4 @@
-package com.netease.pangu.game.app;
+package com.netease.pangu.game.meta;
 
 public class Player {
 	private long id;

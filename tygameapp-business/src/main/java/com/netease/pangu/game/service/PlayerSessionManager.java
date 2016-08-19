@@ -8,7 +8,7 @@ import javax.annotation.Resource;
 
 import org.springframework.stereotype.Component;
 
-import com.netease.pangu.game.app.PlayerSession;
+import com.netease.pangu.game.meta.PlayerSession;
 
 import io.netty.channel.Channel;
 

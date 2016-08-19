@@ -5,7 +5,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.springframework.stereotype.Component;
 
-import com.netease.pangu.game.app.Player;
+import com.netease.pangu.game.meta.Player;
 
 @Component
 public class PlayerManager {
