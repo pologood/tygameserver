@@ -1,0 +1,16 @@
+package com.netease.pangu.game.util;
+
+import com.google.gson.Gson;
+
+public class JsonUtil {
+	private final static Gson gson = new Gson();
+	
+	public static String toJson(Object obj){
+		return gson.toJson(obj);
+	}
+	
+	public static <T> T fromJson(String jsonStr, Class<T> clazz){
+		return gson.fromJson(jsonStr, clazz);
+		
+	} 
+}
