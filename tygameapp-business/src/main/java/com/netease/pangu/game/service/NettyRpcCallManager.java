@@ -1,5 +1,6 @@
 package com.netease.pangu.game.service;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.HashMap;
@@ -30,6 +31,33 @@ public class NettyRpcCallManager {
 		public NettyRpcCallException(String message, Throwable cause) {
 			super(message, cause);
 		}
+	}
+	
+	private Method getMethod(String rpcMethodName){
+		return methodMap.get(rpcMethodName);
+	}
+	
+	private Object getController(String rpcMethodName){
+		return controllerMap.get(nettyRpcCallAnnoValueMap.get(rpcMethodName));
+		
+	}
+	
+	public Object invoke(String rpcMethodName, Object ... args){
+		Method method = getMethod(rpcMethodName);
+		Object controller = getController(rpcMethodName);
+		try {
+			return method.invoke(controller, args);
+		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalArgumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 	public void init() {
