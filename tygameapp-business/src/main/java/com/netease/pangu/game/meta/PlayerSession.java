@@ -10,7 +10,7 @@ public class PlayerSession {
 	public static enum Status {
 		NOT_CONNECTED, CONNECTING, CONNECTED, CLOSED
 	}
-
+	private long id;
 	private long playerId;
 	private long roomId;
 	private Channel channel;
@@ -20,7 +20,12 @@ public class PlayerSession {
 	public Map<String, Object> getAttrs() {
 		return attrs;
 	}
-
+	public void sendMessage(Object msg){
+		if (channel != null) {
+			channel.writeAndFlush(msg);
+		}
+	}
+	
 	public void setAttrs(Map<String, Object> attrs) {
 		this.attrs = attrs;
 	}
@@ -70,6 +75,12 @@ public class PlayerSession {
 
 	public void setLastestActiveTime(long lastestActiveTime) {
 		this.lastestActiveTime = lastestActiveTime;
+	}
+	public long getId() {
+		return id;
+	}
+	public void setId(long id) {
+		this.id = id;
 	}
 
 }

@@ -42,20 +42,17 @@ public class PlayerSessionManager {
 		return false;
 	}
 
-	private PlayerSession getSession(long sessionId) {
+	public PlayerSession getSession(long sessionId) {
 		return sessions.get(sessionId);
 	}
 
-	public <T> PlayerSession createPlayerSession(long playerId, SessionCallable<T> callable) {
+	public PlayerSession createPlayerSession(long playerId, Channel channel) {
 		PlayerSession playerSession = new PlayerSession();
 		playerSession.setPlayerId(playerId);
 		playerSession.setAttrs(new HashMap<String, Object>());
 		playerSession.setRoomId(0L);
 		playerSession.setPlayerId(uniqueIdGeneratorService.generate());
 		sessions.put(playerSession.getPlayerId(), playerSession);
-		if(callable != null){
-			callable.call(playerSession);
-		}
 		return playerSession;
 	}
 

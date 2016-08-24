@@ -1,7 +1,7 @@
 package com.netease.pangu.game.controller;
 
-import com.netease.pangu.game.common.NettyRpcCall;
-import com.netease.pangu.game.common.NettyRpcController;
+import com.netease.pangu.game.annotation.NettyRpcCall;
+import com.netease.pangu.game.annotation.NettyRpcController;
 
 @NettyRpcController
 public class Test2Controller {

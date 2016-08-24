@@ -1,4 +1,4 @@
-package com.netease.pangu.game.common;
+package com.netease.pangu.game.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
