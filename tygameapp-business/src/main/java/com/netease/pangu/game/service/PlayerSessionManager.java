@@ -7,6 +7,7 @@ import java.util.concurrent.ConcurrentMap;
 import javax.annotation.Resource;
 
 import org.springframework.stereotype.Component;
+import org.springframework.util.Assert;
 
 import com.netease.pangu.game.meta.PlayerSession;
 
@@ -45,18 +46,22 @@ public class PlayerSessionManager {
 		return sessions.get(sessionId);
 	}
 
-	public <T> T createPlayerSession(long playerId, Channel channel, SessionCallable<T> callable) {
+	public <T> PlayerSession createPlayerSession(long playerId, SessionCallable<T> callable) {
 		PlayerSession playerSession = new PlayerSession();
 		playerSession.setPlayerId(playerId);
 		playerSession.setAttrs(new HashMap<String, Object>());
 		playerSession.setRoomId(0L);
 		playerSession.setPlayerId(uniqueIdGeneratorService.generate());
 		sessions.put(playerSession.getPlayerId(), playerSession);
-		return callable.call(playerSession);
+		if(callable != null){
+			callable.call(playerSession);
+		}
+		return playerSession;
 	}
 
 	public <T> T updatePlayerSession(long playerSessionId, SessionCallable<T> callable) {
 		PlayerSession playerSession = getSession(playerSessionId);
+		Assert.notNull(callable);
 		if (playerSession != null) {
 			synchronized (playerSession) {
 				try {

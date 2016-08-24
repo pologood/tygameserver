@@ -1,5 +1,8 @@
 package com.netease.pangu.game.server;
 
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+
+import com.netease.pangu.game.config.TyGameAppConfig;
 import com.netease.pangu.game.handler.websocket.WebSocketServerInitializer;
 
 import io.netty.bootstrap.ServerBootstrap;
@@ -18,6 +21,7 @@ public final class WebSocketServer {
 	static final int PORT = Integer.parseInt(System.getProperty("port", SSL ? "8443" : "8080"));
 
 	public static void main(String[] args) throws Exception {
+		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(TyGameAppConfig.class);
 		// Configure SSL.
 		final SslContext sslCtx;
 		if (SSL) {
@@ -31,14 +35,12 @@ public final class WebSocketServer {
 		EventLoopGroup workerGroup = new NioEventLoopGroup();
 		try {
 			ServerBootstrap b = new ServerBootstrap();
+			WebSocketServerInitializer initializer = context.getBean(WebSocketServerInitializer.class);
+			initializer.setSslCtx(sslCtx);
 			b.group(bossGroup, workerGroup).channel(NioServerSocketChannel.class)
-					.handler(new LoggingHandler(LogLevel.INFO)).childHandler(new WebSocketServerInitializer(sslCtx));
+					.handler(new LoggingHandler(LogLevel.INFO)).childHandler(initializer);
 
 			Channel ch = b.bind(PORT).sync().channel();
-
-			System.out.println(
-					"Open your web browser and navigate to " + (SSL ? "https" : "http") + "://127.0.0.1:" + PORT + '/');
-
 			ch.closeFuture().sync();
 		} finally {
 			bossGroup.shutdownGracefully();

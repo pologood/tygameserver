@@ -3,39 +3,41 @@ package com.netease.pangu.game.service;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.annotation.Resource;
+
 import org.springframework.stereotype.Component;
 
 import com.netease.pangu.game.meta.Player;
 
 @Component
 public class PlayerManager {
-	private final Map<Object, Player> players;
+	private final Map<Long, Player> players;
+	@Resource
+	private UniqueIDGeneratorService uniqueIdGeneratorService;
 	
 	public PlayerManager(){
-		 players = new ConcurrentHashMap<Object, Player>();
+		 players = new ConcurrentHashMap<Long, Player>();
 	}
 	
-	public boolean put(Object key , Player player){
-		if(key == null || player == null){
-			return false;
+	public Player createPlayer(String name){
+		Player player  = new Player();
+		long playerId = uniqueIdGeneratorService.generate();
+		player.setId(playerId);
+		player.setName(name);
+		if(players.put(playerId, player) == null){
+			return player;
 		}
-		if(players.put(key, player) == null){
-			return true;
-		}
-		return false;
+		return null;
 	}
 	
-	public boolean remove(Object key){
-		if(key == null){
-			return false;
-		}
+	public boolean remove(long key){
 		if(players.remove(key) != null){
 			return true;
 		}
 		return false;
 	}
 	
-	public Player get(Object key){
+	public Player get(long key){
 		return players.get(key);
 	}
 }

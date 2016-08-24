@@ -1,5 +1,8 @@
 package com.netease.pangu.game.util;
 
+import java.util.Map;
+
+import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 
 public class JsonUtil {
@@ -7,6 +10,11 @@ public class JsonUtil {
 	
 	public static String toJson(Object obj){
 		return gson.toJson(obj);
+	}
+	
+	@SuppressWarnings("serial")
+	public static Map<String, Object> fromJson(String jsonStr){
+		return gson.fromJson(jsonStr, (new TypeToken<Map<String,Object>>(){}).getType());
 	}
 	
 	public static <T> T fromJson(String jsonStr, Class<T> clazz){

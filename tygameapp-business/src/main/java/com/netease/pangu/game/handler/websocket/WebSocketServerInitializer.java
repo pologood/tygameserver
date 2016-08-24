@@ -1,24 +1,31 @@
 package com.netease.pangu.game.handler.websocket;
 
+import javax.annotation.Resource;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
+import org.springframework.stereotype.Component;
+
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.SocketChannel;
+import io.netty.handler.codec.compression.ZlibCodecFactory;
+import io.netty.handler.codec.compression.ZlibWrapper;
 import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpServerCodec;
 import io.netty.handler.codec.http.websocketx.WebSocketServerProtocolHandler;
 import io.netty.handler.codec.http.websocketx.extensions.compression.WebSocketServerCompressionHandler;
 import io.netty.handler.ssl.SslContext;
 
+@Component
 public class WebSocketServerInitializer extends ChannelInitializer<SocketChannel> {
-
 	private static final String WEBSOCKET_PATH = "/websocket";
-
-    private final SslContext sslCtx;
-
-    public WebSocketServerInitializer(SslContext sslCtx) {
-        this.sslCtx = sslCtx;
-    }
-
+	
+    @Resource
+    private AutowireCapableBeanFactory beanFactory;
+	
+	private SslContext sslCtx;
+    
     @Override
     public void initChannel(SocketChannel ch) throws Exception {
         ChannelPipeline pipeline = ch.pipeline();
@@ -27,8 +34,18 @@ public class WebSocketServerInitializer extends ChannelInitializer<SocketChannel
         }
         pipeline.addLast(new HttpServerCodec());
         pipeline.addLast(new HttpObjectAggregator(65536));
+        //pipeline.addLast("gzipdeflater", ZlibCodecFactory.newZlibEncoder(ZlibWrapper.GZIP));
+        //pipeline.addLast("gzipinflater", ZlibCodecFactory.newZlibDecoder(ZlibWrapper.GZIP));
         pipeline.addLast(new WebSocketServerCompressionHandler());
         pipeline.addLast(new WebSocketServerProtocolHandler(WEBSOCKET_PATH, null, true));
-        pipeline.addLast(new WebSocketChannelHandler());
+        pipeline.addLast(beanFactory.getBean(WebSocketChannelHandler.class));
     }
+
+	public SslContext getSslCtx() {
+		return sslCtx;
+	}
+
+	public void setSslCtx(SslContext sslCtx) {
+		this.sslCtx = sslCtx;
+	}
 }

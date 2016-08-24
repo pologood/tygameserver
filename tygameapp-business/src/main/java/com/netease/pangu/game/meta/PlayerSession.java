@@ -15,7 +15,8 @@ public class PlayerSession {
 	private long roomId;
 	private Channel channel;
 	private Map<String, Object> attrs;
-	
+	private long createTime;
+	private long lastestActiveTime;
 	public Map<String, Object> getAttrs() {
 		return attrs;
 	}
@@ -53,6 +54,22 @@ public class PlayerSession {
 			channel.flush();
 			channel.close().awaitUninterruptibly(WATI_MILLIS);
 		}
+	}
+
+	public long getCreateTime() {
+		return createTime;
+	}
+
+	public void setCreateTime(long createTime) {
+		this.createTime = createTime;
+	}
+
+	public long getLastestActiveTime() {
+		return lastestActiveTime;
+	}
+
+	public void setLastestActiveTime(long lastestActiveTime) {
+		this.lastestActiveTime = lastestActiveTime;
 	}
 
 }

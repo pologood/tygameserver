@@ -3,24 +3,29 @@ package com.netease.pangu.game.service;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
+
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.stereotype.Component;
 
 import com.google.common.base.Strings;
 import com.netease.pangu.game.common.NettyRpcCall;
 import com.netease.pangu.game.common.NettyRpcController;
-import com.netease.pangu.game.config.TyGameAppConfig;
 
 @Component
-public class NettyRpcCallManager {
-	private AnnotationConfigApplicationContext annotationConfigApplicationContext;
+public class NettyRpcCallInvoker {
 	private Map<String, Object> controllerMap;
 	private Map<String, Method> methodMap;
 	private Map<String, String> nettyRpcCallAnnoValueMap;
+	@Resource
+	private ConfigurableListableBeanFactory beanFactory;
 	public static class NettyRpcCallException extends RuntimeException {
 		private static final long serialVersionUID = -169844953289757522L;
 
@@ -42,11 +47,17 @@ public class NettyRpcCallManager {
 		
 	}
 	
-	public Object invoke(String rpcMethodName, Object ... args){
+	public Object invoke(String rpcMethodName, Map<String, Object> params){
 		Method method = getMethod(rpcMethodName);
+		Class<?>[] paramTypes = method.getParameterTypes();
+		List<Object> args = new ArrayList<Object>();
+		for(Class<?> pClazz: paramTypes){
+			String paramName = pClazz.getName();
+			args.add(params.get(paramName));
+		}
 		Object controller = getController(rpcMethodName);
 		try {
-			return method.invoke(controller, args);
+			return method.invoke(controller, args.toArray(new Object[0]));
 		} catch (IllegalAccessException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -60,11 +71,11 @@ public class NettyRpcCallManager {
 		return null;
 	}
 
+	@PostConstruct
 	public void init() {
 		methodMap = new HashMap<String, Method>();
 		nettyRpcCallAnnoValueMap = new HashMap<String, String>();
-		annotationConfigApplicationContext = new AnnotationConfigApplicationContext(TyGameAppConfig.class);
-		controllerMap = annotationConfigApplicationContext.getBeansWithAnnotation(NettyRpcController.class);
+		controllerMap = beanFactory.getBeansWithAnnotation(NettyRpcController.class);
 		for (Entry<String, Object> entry : controllerMap.entrySet()) {
 			initAndCheckMethodsByNettyRpcCall(entry.getKey(), entry.getValue().getClass());
 		}
@@ -92,7 +103,7 @@ public class NettyRpcCallManager {
 	}
 
 	public static void main(String[] args) {
-		NettyRpcCallManager manager = new NettyRpcCallManager();
+		NettyRpcCallInvoker manager = new NettyRpcCallInvoker();
 		manager.init();
 	}
 }
