@@ -36,7 +36,7 @@ public class PlayerSessionManager {
 		return Collections.unmodifiableMap(sessions);
 	}
 	
-	public Map<Long, Player> getPlayersBySessionIds(Set<Long> sessionIds){
+	public Map<Long, Player> getPlayers(Set<Long> sessionIds){
 		Map<Long, Player> playerMap = new HashMap<Long, Player>();
 		for(Long sessionId: sessionIds){
 			PlayerSession session = sessions.get(sessionId);
@@ -45,6 +45,15 @@ public class PlayerSessionManager {
 		return Collections.unmodifiableMap(playerMap);
 	}
 
+	public Map<Long, PlayerSession> getPlayerSesssions(Set<Long> sessionIds){
+		Map<Long, PlayerSession> playerMap = new HashMap<Long, PlayerSession>();
+		for(Long sessionId: sessionIds){
+			PlayerSession session = sessions.get(sessionId);
+			playerMap.put(sessionId, session);
+		}
+		return Collections.unmodifiableMap(playerMap);
+	}
+	
 	public boolean put(long sessionId, PlayerSession session) {
 		if (sessions.put(sessionId, session) == null) {
 			return true;

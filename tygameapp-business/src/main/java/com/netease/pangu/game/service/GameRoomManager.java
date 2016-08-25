@@ -42,7 +42,7 @@ public class GameRoomManager {
 		return false;
 	}
 
-	private GameRoom getGameRoom(long roomId) {
+	public GameRoom getGameRoom(long roomId) {
 		return rooms.get(roomId);
 	}
 	
