@@ -1,8 +1,10 @@
 package com.netease.pangu.game.service;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -13,9 +15,9 @@ import javax.annotation.Resource;
 import org.springframework.stereotype.Component;
 
 import com.netease.pangu.game.meta.GameRoom;
-import com.netease.pangu.game.meta.PlayerSession;
 import com.netease.pangu.game.meta.GameRoom.RoomType;
 import com.netease.pangu.game.meta.GameRoom.Status;
+import com.netease.pangu.game.meta.PlayerSession;
 import com.netease.pangu.game.service.PlayerSessionManager.SessionCallable;
 
 @Component
@@ -43,6 +45,10 @@ public class GameRoomManager {
 	private GameRoom getGameRoom(long roomId) {
 		return rooms.get(roomId);
 	}
+	
+	public Map<Long, GameRoom> getRooms(){
+		return Collections.unmodifiableMap(rooms);
+	}
 
 	/**
 	 * 
@@ -64,7 +70,11 @@ public class GameRoomManager {
 					room.setPlayerSessionIds(new HashSet<Long>());
 					room.setStatus(Status.IDLE);
 					room.setMaxSize(maxSize);
-
+					
+					room.getPlayerSessionIds().add(playerSessionId);
+					
+					playerSession.setRoomId(roomId);
+					
 					rooms.put(roomId, room);
 					gameIdRefRoom.putIfAbsent(gameId, new HashSet<Long>());
 					gameIdRefRoom.get(gameId).add(roomId);

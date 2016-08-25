@@ -7,12 +7,11 @@ import javax.annotation.Resource;
 
 import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.context.annotation.Lazy;
-import org.springframework.scripting.bsh.BshScriptUtils;
 import org.springframework.stereotype.Component;
 
 import com.google.common.base.Strings;
-import com.netease.pangu.game.controller.BusinessCode;
-import com.netease.pangu.game.controller.BusinessCode.GameResult;
+import com.netease.pangu.game.controller.ReturnUtils;
+import com.netease.pangu.game.controller.ReturnUtils.GameResult;
 import com.netease.pangu.game.meta.GameContext;
 import com.netease.pangu.game.meta.PlayerSession;
 import com.netease.pangu.game.service.NettyRpcCallInvoker;
@@ -61,12 +60,10 @@ public class WebSocketChannelHandler extends SimpleChannelInboundHandler<TextWeb
 			if(playerSession != null){			
 				context = new GameContext(ctx, playerSession, frame);
 			}else{
-				GameResult result = new GameResult();
-				result.setCode(BusinessCode.FAILED);
+			
 				Map<String, Object> payload = new HashMap<String, Object>();
 				payload.put("msg", "user is not registered");
-				result.setPayload(payload);
-				result.setRpcMethodName(rpcMethodName);
+				GameResult result = ReturnUtils.succ(rpcMethodName, payload);
 				ctx.channel().writeAndFlush(new TextWebSocketFrame(JsonUtil.toJson(result)));
 				return;
 			}

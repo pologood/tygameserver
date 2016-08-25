@@ -8,7 +8,7 @@ import javax.annotation.Resource;
 
 import com.netease.pangu.game.annotation.NettyRpcCall;
 import com.netease.pangu.game.annotation.NettyRpcController;
-import com.netease.pangu.game.controller.BusinessCode.GameResult;
+import com.netease.pangu.game.controller.ReturnUtils.GameResult;
 import com.netease.pangu.game.meta.GameContext;
 import com.netease.pangu.game.meta.Player;
 import com.netease.pangu.game.meta.PlayerSession;
@@ -29,13 +29,10 @@ public class PlayerController {
 	public void register(String name, GameContext ctx){
 		Player player = playerManager.createPlayer(name);
 		PlayerSession playerSession = playerSessionManager.createPlayerSession(player, ctx.getChannel());
-		GameResult result = new GameResult();
-		result.setCode(BusinessCode.SUCC);
-		result.setRpcMethodName("player/reg");
 		Map<String, Object> payload = new HashMap<String, Object>();
 		payload.put("sessionId", playerSession.getId());
 		payload.put("roleName", name);
-		result.setPayload(payload);
+		GameResult result = ReturnUtils.succ("player/reg", payload);
 		playerSession.setChannel(ctx.getChannel());
 		playerSession.sendMessage(new TextWebSocketFrame(JsonUtil.toJson(result)));
 	}
@@ -44,22 +41,16 @@ public class PlayerController {
 	public void login(long playerSessionId, GameContext ctx){
 		PlayerSession playerSession = ctx.getPlayerSession();
 		if(playerSession.getChannel() != null && playerSession.getChannel().isActive()){
-			GameResult result = new GameResult();
-			result.setCode(BusinessCode.FAILED);
 			Map<String, Object> payload = new HashMap<String, Object>();
 			payload.put("msg", "user is logined");
-			result.setPayload(payload);
-			result.setRpcMethodName("player/login");
+			GameResult result = ReturnUtils.failed("player/login", payload);
 			ctx.getChannel().writeAndFlush(new TextWebSocketFrame(JsonUtil.toJson(result)));
 			return;
 		} else {
-			GameResult result = new GameResult();
-			result.setCode(BusinessCode.SUCC);
-			result.setRpcMethodName("player/login");
 			Map<String, Object> payload = new HashMap<String, Object>();
 			payload.put("sessionId", playerSession.getId());
 			payload.put("roleName", playerSession.getPlayer().getName());
-			result.setPayload(payload);
+			GameResult result = ReturnUtils.succ("player/login", payload);
 			playerSession.setChannel(ctx.getChannel());
 			playerSession.sendMessage(new TextWebSocketFrame(JsonUtil.toJson(result)));
 		}
@@ -71,35 +62,21 @@ public class PlayerController {
 		for(Long sesssionId : playerSessionManager.getPlayerSessions().keySet()){
 			map.put(sesssionId, playerSessionManager.getPlayerSessions().get(sesssionId).getPlayer());
 		}
-		GameResult result = new GameResult();
-		result.setCode(BusinessCode.SUCC);
-		result.setRpcMethodName("player/list");
-		result.setPayload(map);
+		GameResult result = ReturnUtils.succ("player/list", map);
 		ctx.getChannelHandlerContext().channel().writeAndFlush(new TextWebSocketFrame(JsonUtil.toJson(result)));		
 	}
 	
 	@NettyRpcCall("player/chat")
 	public void chat(long sessionId, String msg){
 		PlayerSession playerSession = playerSessionManager.getSession(sessionId);
-		GameResult result = new GameResult();
-		result.setCode(BusinessCode.SUCC);
 		Map<String, Object> payload = new HashMap<String, Object>();
 		payload.put("msg", msg);
-		result.setPayload(msg);
-		result.setRpcMethodName("chat");
-		Map<String, Object> target = new HashMap<String, Object>();
-		target.put("sessionId", playerSession.getId());
+		Map<String, Object> source = new HashMap<String, Object>();
+		source.put("sessionId", playerSession.getId());
 		Player player = playerSession.getPlayer();
-		target.put("playerName", player.getName());
-		result.setTarget(target);
+		source.put("playerName", player.getName());
+		GameResult result = ReturnUtils.succ("player/chat", payload, source);
 		playerSession.sendMessage(new TextWebSocketFrame(JsonUtil.toJson(result)));
-	}
-	
-	@NettyRpcCall("room/create")
-	public void createRoom(long gameId, int maxSize,GameContext ctx){
-		PlayerSession pSession = ctx.getPlayerSession();
-		long roomId = gameRoomManager.createRoom(gameId, pSession.getId(), maxSize);
-		
 	}
 	
 }
