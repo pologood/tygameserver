@@ -1,4 +1,4 @@
-package com.netease.pangu.game.controller;
+package com.netease.pangu.game.util;
 
 public class ReturnUtils {
 	public final static int SUCC = 1;

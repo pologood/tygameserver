@@ -10,14 +10,14 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import com.google.common.base.Strings;
-import com.netease.pangu.game.controller.ReturnUtils;
-import com.netease.pangu.game.controller.ReturnUtils.GameResult;
 import com.netease.pangu.game.meta.GameContext;
 import com.netease.pangu.game.meta.PlayerSession;
 import com.netease.pangu.game.service.NettyRpcCallInvoker;
 import com.netease.pangu.game.service.PlayerManager;
 import com.netease.pangu.game.service.PlayerSessionManager;
 import com.netease.pangu.game.util.JsonUtil;
+import com.netease.pangu.game.util.ReturnUtils;
+import com.netease.pangu.game.util.ReturnUtils.GameResult;
 
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandler.Sharable;

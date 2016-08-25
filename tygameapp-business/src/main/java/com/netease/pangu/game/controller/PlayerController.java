@@ -8,7 +8,6 @@ import javax.annotation.Resource;
 
 import com.netease.pangu.game.annotation.NettyRpcCall;
 import com.netease.pangu.game.annotation.NettyRpcController;
-import com.netease.pangu.game.controller.ReturnUtils.GameResult;
 import com.netease.pangu.game.meta.GameContext;
 import com.netease.pangu.game.meta.Player;
 import com.netease.pangu.game.meta.PlayerSession;
@@ -16,6 +15,8 @@ import com.netease.pangu.game.service.GameRoomManager;
 import com.netease.pangu.game.service.PlayerManager;
 import com.netease.pangu.game.service.PlayerSessionManager;
 import com.netease.pangu.game.util.JsonUtil;
+import com.netease.pangu.game.util.ReturnUtils;
+import com.netease.pangu.game.util.ReturnUtils.GameResult;
 
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 
