@@ -3,7 +3,6 @@ package com.netease.pangu.game.service;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -20,6 +19,7 @@ import org.springframework.stereotype.Component;
 import com.google.common.base.Strings;
 import com.netease.pangu.game.annotation.NettyRpcCall;
 import com.netease.pangu.game.annotation.NettyRpcController;
+import com.netease.pangu.game.meta.GameContext;
 
 @Component
 public class NettyRpcCallInvoker {
@@ -49,26 +49,28 @@ public class NettyRpcCallInvoker {
 		
 	}
 	
-	public Object invoke(String rpcMethodName, List<Object> args){
+	public Object invoke(String rpcMethodName, List<Object> args, GameContext context){
 		Method method = getMethod(rpcMethodName);
 		Object controller = getController(rpcMethodName);
 		Class<?>[] paramTypes = method.getParameterTypes();
 		List<Object> convertedArgs = new ArrayList<Object>();
 		for(int i = 0; i < paramTypes.length; i++){
 			if(Long.class.isAssignableFrom(paramTypes[i])|| long.class.isAssignableFrom(paramTypes[i])){
-				Double num =NumberUtils.toDouble(String.valueOf(args.get(i)));
+				Double num = NumberUtils.toDouble(String.valueOf(args.get(i)));
 				convertedArgs.add(num.longValue());
 			}else if(Integer.class.isAssignableFrom(paramTypes[i])|| int.class.isAssignableFrom(paramTypes[i])){
-				Double num =NumberUtils.toDouble(String.valueOf(args.get(i)));
+				Double num = NumberUtils.toDouble(String.valueOf(args.get(i)));
 				convertedArgs.add(num.intValue());
 			}else if(Double.class.isAssignableFrom(paramTypes[i])|| double.class.isAssignableFrom(paramTypes[i])){
-				Double num =NumberUtils.toDouble(String.valueOf(args.get(i)));
+				Double num = NumberUtils.toDouble(String.valueOf(args.get(i)));
 				convertedArgs.add(num);
 			}else if(Float.class.isAssignableFrom(paramTypes[i])|| float.class.isAssignableFrom(paramTypes[i])){
-				Double num =NumberUtils.toDouble(String.valueOf(args.get(i)));
+				Double num = NumberUtils.toDouble(String.valueOf(args.get(i)));
 				convertedArgs.add(num.floatValue());
 			}else if(String.class.isAssignableFrom(paramTypes[i])){
 				convertedArgs.add(String.valueOf(args.get(i)));
+			}else if(GameContext.class.isAssignableFrom(paramTypes[i])){
+				convertedArgs.add(context);
 			}
 		}
 		try {

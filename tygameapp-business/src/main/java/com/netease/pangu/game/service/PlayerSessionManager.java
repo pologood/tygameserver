@@ -1,6 +1,9 @@
 package com.netease.pangu.game.service;
 
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -9,6 +12,7 @@ import javax.annotation.Resource;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
+import com.netease.pangu.game.meta.Player;
 import com.netease.pangu.game.meta.PlayerSession;
 
 import io.netty.channel.Channel;
@@ -26,6 +30,19 @@ public class PlayerSessionManager {
 
 	public PlayerSessionManager() {
 		sessions = new ConcurrentHashMap<Long, PlayerSession>();
+	}
+	
+	public Map<Long, PlayerSession> getPlayerSessions(){
+		return Collections.unmodifiableMap(sessions);
+	}
+	
+	public Map<Long, Player> getPlayersBySessionIds(Set<Long> sessionIds){
+		Map<Long, Player> playerMap = new HashMap<Long, Player>();
+		for(Long sessionId: sessionIds){
+			PlayerSession session = sessions.get(sessionId);
+			playerMap.put(sessionId, session.getPlayer());
+		}
+		return Collections.unmodifiableMap(playerMap);
 	}
 
 	public boolean put(long sessionId, PlayerSession session) {
@@ -46,13 +63,14 @@ public class PlayerSessionManager {
 		return sessions.get(sessionId);
 	}
 
-	public PlayerSession createPlayerSession(long playerId, Channel channel) {
+	public PlayerSession createPlayerSession(Player player, Channel channel) {
 		PlayerSession playerSession = new PlayerSession();
-		playerSession.setPlayerId(playerId);
+		playerSession.setPlayer(player);
 		playerSession.setAttrs(new HashMap<String, Object>());
 		playerSession.setRoomId(0L);
-		playerSession.setPlayerId(uniqueIdGeneratorService.generate());
-		sessions.put(playerSession.getPlayerId(), playerSession);
+		playerSession.setId(uniqueIdGeneratorService.generateSessionId());
+		playerSession.setCreateTime(System.currentTimeMillis());
+		sessions.put(playerSession.getId(), playerSession);
 		return playerSession;
 	}
 

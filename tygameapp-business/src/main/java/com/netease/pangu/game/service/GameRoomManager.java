@@ -56,7 +56,7 @@ public class GameRoomManager {
 			@Override
 			public Long call(PlayerSession playerSession) {
 				if (playerSession.getRoomId() == 0) {
-					long roomId = uniqueIdGeneratorService.generate();
+					long roomId = uniqueIdGeneratorService.generateRoomId();
 					GameRoom room = new GameRoom();
 					room.setId(roomId);
 					room.setGameId(gameId);

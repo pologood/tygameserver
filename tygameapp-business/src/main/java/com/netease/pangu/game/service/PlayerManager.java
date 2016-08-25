@@ -21,7 +21,7 @@ public class PlayerManager {
 	
 	public Player createPlayer(String name){
 		Player player  = new Player();
-		long playerId = uniqueIdGeneratorService.generate();
+		long playerId = uniqueIdGeneratorService.generatePlayerId();
 		player.setId(playerId);
 		player.setName(name);
 		if(players.put(playerId, player) == null){

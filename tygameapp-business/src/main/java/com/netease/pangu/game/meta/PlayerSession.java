@@ -10,8 +10,9 @@ public class PlayerSession {
 	public static enum Status {
 		NOT_CONNECTED, CONNECTING, CONNECTED, CLOSED
 	}
+	
 	private long id;
-	private long playerId;
+	private Player player;
 	private long roomId;
 	private Channel channel;
 	private Map<String, Object> attrs;
@@ -36,14 +37,6 @@ public class PlayerSession {
 
 	public void setChannel(Channel channel) {
 		this.channel = channel;
-	}
-
-	public long getPlayerId() {
-		return playerId;
-	}
-
-	public void setPlayerId(long playerId) {
-		this.playerId = playerId;
 	}
 
 	public long getRoomId() {
@@ -81,6 +74,12 @@ public class PlayerSession {
 	}
 	public void setId(long id) {
 		this.id = id;
+	}
+	public Player getPlayer() {
+		return player;
+	}
+	public void setPlayer(Player player) {
+		this.player = player;
 	}
 
 }
