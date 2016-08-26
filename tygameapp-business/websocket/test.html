@@ -1,0 +1,155 @@
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<script type="text/javascript" src="jquery-1.10.2.min.js"></script>
+	<style>
+		span{margin:5px;}
+	</style>
+<head>
+<body>
+	<div id="headBar">
+		<label>用户名:</label>
+		<span id="name2">未知</span>
+		<label>sessionId:</label>
+		<span id="sId">未知</span>
+		<label>房号:</label>
+		<span id="roomId">未知</span>
+		<input id="name" type="text" />
+		<button id="registerBtn">注册</button>
+		<button id="loginBtn">登陆</button>
+		<button id="cBtn">创建房间</button>				
+		
+	</div>
+	
+	<div>
+		
+		<h3><span>房间列表</span>&nbsp;<button id="roomListBtn">房间列表</button></h3>
+		<select id="roomList"></select>
+	</div>
+	<div>
+	<h3>消息列表</h3>
+		<ul id="msgList">
+		</ul>	
+		<div>
+			<label>SessionId: </label>
+			<select id="playerList"></select>
+			<button id="refresh">刷新</button>
+			<input id="msg" type="text" />
+			<button id="sendMsg">发送消息</button>
+		</div>
+	</div>	
+
+	<script type="text/javascript">
+		$(function(){
+		// 创建一个Socket实例
+			socket = new WebSocket('ws://127.0.0.1:8080/websocket'); 
+
+			// 打开Socket 
+			socket.onopen = function(event) { 
+				console.log('Client open a message',event.data); 
+			};
+			  // 监听消息
+			socket.onmessage = function(event) { 
+				console.log('Client received a message', event.data);
+				data = JSON.parse(event.data);
+				
+				if(data.rpcMethodName.toLowerCase() == "player/reg") {
+					$("#name2").text(data.payload.roleName);
+					$("#sId").text(data.payload.sessionId);
+				}
+
+				if(data.rpcMethodName.toLowerCase() == "player/login") {
+					$("#name2").text(data.payload.roleName);
+					$("#sId").text(data.payload.sessionId);
+				}
+
+
+				if(data.rpcMethodName.toLowerCase() == "player/chat") {
+					$("#msgList").append($("<li><label>"+ data.target.playerName + "</label>:&nbsp;<span>"+ data.payload +"</span></li>"));
+				}
+
+				if(data.rpcMethodName.toLowerCase() == "player/list") {
+					console.log(data.payload);
+					var html = "";
+					for(var id in data.payload){
+						html += "<option value="+ id +">"+ data.payload[id].name + " - "+ id +"</option>";
+					}
+					$("#playerList").html(html);
+				}
+
+				if(data.rpcMethodName.toLowerCase() == "room/create"){
+					console.log(data.payload);
+					$("#roomId").text(data.payload);
+					alert("创建房间" + data.payload);
+				}
+
+				if(data.rpcMethodName.toLowerCase() == "room/list"){
+					console.log(data.payload);
+					var html = "";
+					for(var id in data.payload){
+						html += "<option value="+ id +">房间ID " + id + " 游戏ID "+ data.payload[id].gameId + " 房主 "+ data.payload[id].ownerId +"</option>";
+					}
+					$("#roomList").html(html);
+				}
+
+			}; 			
+			 // 监听Socket的关闭
+			socket.onerror = function(event) { 
+				console.log('Client notified socket has error',event.data); 
+			}; 
+			// 监听Socket的关闭
+			socket.onclose = function(event) { 
+				console.log('Client notified socket has closed',event.data); 
+			}; 
+			$("#registerBtn").click(function(){
+				var msg = {rpcMethod:"player/reg", 
+					params:[$("#name").val().trim(),]
+				};
+				socket.send(JSON.stringify(msg));
+			});
+
+			$("#loginBtn").click(function(){
+				var msg = {rpcMethod:"player/login", 
+					params:[$("#name").val().trim(),],
+					sessionId:$("#name").val().trim()
+				};
+				socket.send(JSON.stringify(msg));		
+			});
+
+			$("#refresh").click(function(){
+				var msg = {rpcMethod:"player/list", 
+					sessionId:$("#sId").text()
+				};
+				socket.send(JSON.stringify(msg));
+			});
+
+			$("#sendMsg").click(function(){
+				var msg = {
+					rpcMethod:"player/chat", 
+					params:[parseInt($("#playerList").val()), $("#msg").val()],
+					sessionId:$("#sId").text()
+				};
+				socket.send(JSON.stringify(msg));
+	   		});
+
+	   		$("#cBtn").click(function(){
+	   			var msg = {
+					rpcMethod:"room/create", 
+					params:[1, 10],
+					sessionId:$("#sId").text()
+				};
+				socket.send(JSON.stringify(msg));
+	   		});
+	   		$("#roomListBtn").click(function(){
+	   			var msg = {
+					rpcMethod:"room/list", 
+					sessionId:$("#sId").text()
+				};
+				socket.send(JSON.stringify(msg));
+	   		});
+
+		});
+	</script>
+	
+</body>
+</html
