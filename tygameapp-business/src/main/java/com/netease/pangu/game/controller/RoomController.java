@@ -9,6 +9,7 @@ import com.netease.pangu.game.annotation.NettyRpcCall;
 import com.netease.pangu.game.annotation.NettyRpcController;
 import com.netease.pangu.game.meta.GameContext;
 import com.netease.pangu.game.meta.GameRoom;
+import com.netease.pangu.game.meta.GameRoom.Status;
 import com.netease.pangu.game.meta.Player;
 import com.netease.pangu.game.meta.PlayerSession;
 import com.netease.pangu.game.service.GameRoomManager;
@@ -36,7 +37,12 @@ public class RoomController {
 	public void createRoom(long gameId, int maxSize,GameContext ctx){
 		PlayerSession pSession = ctx.getPlayerSession();
 		long roomId = gameRoomManager.createRoom(gameId, pSession.getId(), maxSize);
-		GameResult result = ReturnUtils.succ("room/create", roomId);
+		GameResult result;
+		if(roomId > 0){
+			result = ReturnUtils.succ("room/create", roomId);
+		}else{
+			result = ReturnUtils.failed("room/create", "create room failed");
+		}
 		ctx.getChannel().writeAndFlush(new TextWebSocketFrame(JsonUtil.toJson(result)));
 	}
 	
@@ -46,14 +52,25 @@ public class RoomController {
 		boolean isOk = gameRoomManager.joinRoom(pSession.getId(), roomId);
 		GameResult result;
 		if(isOk){
-			GameRoom room = gameRoomManager.getGameRoom(roomId);
-			Map<String, Object> payload = new HashMap<String, Object>();
-			Map<Long, Player>  players = playerSessionManager.getPlayers(room.getPlayerSessionIds());
-			payload.put("members", players);
-			result = ReturnUtils.succ("room/join", payload);
+			result = ReturnUtils.succ("room/join", roomId);
 		}else{
-			result = ReturnUtils.failed("room/join", roomId);
+			result = ReturnUtils.failed("room/join", String.format("failed to join %d", roomId));
 		}
+		ctx.getChannel().writeAndFlush(new TextWebSocketFrame(JsonUtil.toJson(result)));
+	}
+	
+	@NettyRpcCall("room/info")
+	public void getRoom(long roomId, GameContext ctx){
+		GameRoom room = gameRoomManager.getGameRoom(roomId);
+		Map<String, Object> payload = new HashMap<String, Object>();
+		Map<Long, Player>  players = playerSessionManager.getPlayers(room.getPlayerSessionIds());
+		payload.put("members", players);
+		payload.put("id", room.getId());
+		payload.put("state", room.getStatus().ordinal());
+		payload.put("maxSize", room.getMaxSize());
+		payload.put("count", room.getPlayerSessionIds().size());
+		payload.put("owner", playerSessionManager.getSession(room.getOwnerId()).getPlayer().getName());
+		GameResult result = ReturnUtils.succ("room/info", payload);
 		ctx.getChannel().writeAndFlush(new TextWebSocketFrame(JsonUtil.toJson(result)));
 	}
 	

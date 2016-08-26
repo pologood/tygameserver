@@ -21,10 +21,19 @@
 		
 	</div>
 	
-	<div>
-		
+	<div>		
 		<h3><span>房间列表</span>&nbsp;<button id="roomListBtn">房间列表</button></h3>
-		<select id="roomList"></select>
+		<div><select id="roomList"></select><button id="addRoomBtn">加入</button></div>
+		<div id="info">
+			<h4>成员列表</h4>
+			<ul id="members"></ul>
+			<h4>群聊</h4>
+			<ul id="groupmsgs"></ul>
+			<div>
+				<input id="groupMsg" type="text" />
+				<button id="gBtn">发送消息</button>
+			</div>	
+		</div>
 	</div>
 	<div>
 	<h3>消息列表</h3>
@@ -52,44 +61,70 @@
 			socket.onmessage = function(event) { 
 				console.log('Client received a message', event.data);
 				data = JSON.parse(event.data);
-				
-				if(data.rpcMethodName.toLowerCase() == "player/reg") {
-					$("#name2").text(data.payload.roleName);
-					$("#sId").text(data.payload.sessionId);
-				}
-
-				if(data.rpcMethodName.toLowerCase() == "player/login") {
-					$("#name2").text(data.payload.roleName);
-					$("#sId").text(data.payload.sessionId);
-				}
-
-
-				if(data.rpcMethodName.toLowerCase() == "player/chat") {
-					$("#msgList").append($("<li><label>"+ data.target.playerName + "</label>:&nbsp;<span>"+ data.payload +"</span></li>"));
-				}
-
-				if(data.rpcMethodName.toLowerCase() == "player/list") {
-					console.log(data.payload);
-					var html = "";
-					for(var id in data.payload){
-						html += "<option value="+ id +">"+ data.payload[id].name + " - "+ id +"</option>";
+				if(data.code == 1){
+					if(data.rpcMethodName.toLowerCase() == "player/reg") {
+						$("#name2").text(data.payload.roleName);
+						$("#sId").text(data.payload.sessionId);
 					}
-					$("#playerList").html(html);
-				}
 
-				if(data.rpcMethodName.toLowerCase() == "room/create"){
-					console.log(data.payload);
-					$("#roomId").text(data.payload);
-					alert("创建房间" + data.payload);
-				}
-
-				if(data.rpcMethodName.toLowerCase() == "room/list"){
-					console.log(data.payload);
-					var html = "";
-					for(var id in data.payload){
-						html += "<option value="+ id +">房间ID " + id + " 游戏ID "+ data.payload[id].gameId + " 房主 "+ data.payload[id].ownerId +"</option>";
+					if(data.rpcMethodName.toLowerCase() == "player/login") {
+						$("#name2").text(data.payload.roleName);
+						$("#sId").text(data.payload.sessionId);
 					}
-					$("#roomList").html(html);
+
+
+					if(data.rpcMethodName.toLowerCase() == "player/chat") {
+						$("#msgList").append($("<li><label>"+ data.source.playerName + "</label>:&nbsp;<span>"+ data.payload.msg +"</span></li>"));
+					}
+
+					if(data.rpcMethodName.toLowerCase() == "player/list") {
+						console.log(data.payload);
+						var html = "";
+						for(var id in data.payload){
+							html += "<option value="+ id +">"+ data.payload[id].name + " - "+ id +"</option>";
+						}
+						$("#playerList").html(html);
+					}
+
+					if(data.rpcMethodName.toLowerCase() == "room/create"){
+						console.log(data.payload);
+						$("#roomId").text(data.payload);
+						alert("创建房间" + data.payload);
+					}
+
+					if(data.rpcMethodName.toLowerCase() == "room/join"){
+						console.log(data.payload);
+						$("#roomId").text(data.payload);
+						alert("加入房间" + data.payload);
+					}
+
+					if(data.rpcMethodName.toLowerCase() == "room/info"){
+						console.log(data.payload);						
+						
+						var html = "";
+						for(var id in data.payload.members){
+							html += "<li>"+ data.payload.members[id].name + " - "+ id +"</li>";
+						}
+						$("#members").html(html);
+					}
+
+					if(data.rpcMethodName.toLowerCase() == "room/chat"){
+						console.log(data.payload);						
+						$("#groupmsgs").append($("<li><label>"+ data.source.playerName + "</label>:&nbsp;<span>"+ data.payload.msg +"</span></li>"));
+					}
+
+
+					if(data.rpcMethodName.toLowerCase() == "room/list"){
+						console.log(data.payload);
+						var html = "<option value=''>请选择</option>";
+						for(var id in data.payload){
+							html += "<option value="+ id +">房间ID " + id + " 游戏ID "+ data.payload[id].gameId + " 房主 "+ data.payload[id].ownerId +"</option>";
+						}
+						$("#roomList").html(html);
+					}
+				}else{
+					console.log(data.payload);
+					alert(data.message);
 				}
 
 			}; 			
@@ -132,6 +167,17 @@
 				socket.send(JSON.stringify(msg));
 	   		});
 
+	   		$("#roomList").change(function(){
+	   			if($("#roomList").val() != "请选择"){
+	   				var msg = {
+						rpcMethod:"room/info", 
+						params:[parseInt($("#roomList").val()),],
+						sessionId:$("#sId").text()
+					};
+					socket.send(JSON.stringify(msg));	
+				}
+	   		});
+
 	   		$("#cBtn").click(function(){
 	   			var msg = {
 					rpcMethod:"room/create", 
@@ -140,6 +186,30 @@
 				};
 				socket.send(JSON.stringify(msg));
 	   		});
+
+	   		$("#addRoomBtn").click(function(){
+	   			if($("#roomList").val() != "请选择"){
+		   			var msg = {
+						rpcMethod:"room/join", 
+						params:[parseInt($("#roomList").val())],
+						sessionId:$("#sId").text()
+					};
+					socket.send(JSON.stringify(msg));
+				}
+	   		});
+
+			$("#gBtn").click(function(){
+				if($("#roomList").val() != "请选择"){
+	   				var msg = {
+						rpcMethod:"room/chat", 
+						params:[parseInt($("#roomList").val().trim()),$("#groupMsg").val().trim()],
+						sessionId:$("#sId").text()
+					};
+					socket.send(JSON.stringify(msg));
+				}
+	   		});
+
+
 	   		$("#roomListBtn").click(function(){
 	   			var msg = {
 					rpcMethod:"room/list", 

@@ -42,9 +42,7 @@ public class PlayerController {
 	public void login(long playerSessionId, GameContext ctx){
 		PlayerSession playerSession = ctx.getPlayerSession();
 		if(playerSession.getChannel() != null && playerSession.getChannel().isActive()){
-			Map<String, Object> payload = new HashMap<String, Object>();
-			payload.put("msg", "user is logined");
-			GameResult result = ReturnUtils.failed("player/login", payload);
+			GameResult result = ReturnUtils.failed("player/login", "user has logined");
 			ctx.getChannel().writeAndFlush(new TextWebSocketFrame(JsonUtil.toJson(result)));
 			return;
 		} else {

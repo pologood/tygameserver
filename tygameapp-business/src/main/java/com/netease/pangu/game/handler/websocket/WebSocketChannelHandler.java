@@ -59,11 +59,8 @@ public class WebSocketChannelHandler extends SimpleChannelInboundHandler<TextWeb
 			PlayerSession playerSession = playerSessionManager.getSession(playerSessionId);
 			if(playerSession != null){			
 				context = new GameContext(ctx, playerSession, frame);
-			}else{
-			
-				Map<String, Object> payload = new HashMap<String, Object>();
-				payload.put("msg", "user is not registered");
-				GameResult result = ReturnUtils.succ(rpcMethodName, payload);
+			}else{			
+				GameResult result = ReturnUtils.failed(rpcMethodName, "user hasn't registered");
 				ctx.channel().writeAndFlush(new TextWebSocketFrame(JsonUtil.toJson(result)));
 				return;
 			}
