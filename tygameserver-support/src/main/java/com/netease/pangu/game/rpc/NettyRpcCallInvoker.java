@@ -1,4 +1,4 @@
-package com.netease.pangu.game.service;
+package com.netease.pangu.game.rpc;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -17,9 +17,9 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.stereotype.Component;
 
 import com.google.common.base.Strings;
-import com.netease.pangu.game.annotation.NettyRpcCall;
-import com.netease.pangu.game.annotation.NettyRpcController;
-import com.netease.pangu.game.meta.GameContext;
+import com.netease.pangu.game.common.meta.GameContext;
+import com.netease.pangu.game.rpc.annotation.NettyRpcCall;
+import com.netease.pangu.game.rpc.annotation.NettyRpcController;
 
 @Component
 public class NettyRpcCallInvoker {

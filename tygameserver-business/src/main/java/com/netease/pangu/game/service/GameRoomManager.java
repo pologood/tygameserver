@@ -14,10 +14,10 @@ import javax.annotation.Resource;
 
 import org.springframework.stereotype.Component;
 
-import com.netease.pangu.game.meta.GameRoom;
-import com.netease.pangu.game.meta.GameRoom.RoomType;
-import com.netease.pangu.game.meta.GameRoom.Status;
-import com.netease.pangu.game.meta.PlayerSession;
+import com.netease.pangu.game.common.meta.GameRoom;
+import com.netease.pangu.game.common.meta.GameRoom.RoomType;
+import com.netease.pangu.game.common.meta.GameRoom.Status;
+import com.netease.pangu.game.common.meta.PlayerSession;
 import com.netease.pangu.game.service.PlayerSessionManager.SessionCallable;
 
 @Component

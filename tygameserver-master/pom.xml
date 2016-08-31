@@ -5,12 +5,5 @@
     <artifactId>tygameserver</artifactId>
     <version>0.0.1-SNAPSHOT</version>
   </parent>
-  <artifactId>tygameserver-business</artifactId>
-  <dependencies>
-  	<dependency>
-  		<groupId>com.netease.pangu.tygameserver</groupId>
-	    <artifactId>tygameserver-support</artifactId>
-	    <version>0.0.1-SNAPSHOT</version>
-  	</dependency>
-  </dependencies>
+  <artifactId>tygameserver-master</artifactId>
 </project>

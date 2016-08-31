@@ -12,8 +12,8 @@ import javax.annotation.Resource;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
-import com.netease.pangu.game.meta.Player;
-import com.netease.pangu.game.meta.PlayerSession;
+import com.netease.pangu.game.common.meta.Player;
+import com.netease.pangu.game.common.meta.PlayerSession;
 
 import io.netty.channel.Channel;
 

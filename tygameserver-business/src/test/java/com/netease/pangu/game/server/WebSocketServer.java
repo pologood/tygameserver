@@ -45,6 +45,7 @@ public final class WebSocketServer {
 		} finally {
 			bossGroup.shutdownGracefully();
 			workerGroup.shutdownGracefully();
+			context.close();
 		}
 	}
 }

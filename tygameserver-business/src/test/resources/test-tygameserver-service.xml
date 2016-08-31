@@ -13,5 +13,5 @@
 		   http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
 		   http://www.springframework.org/schema/task
 		   http://www.springframework.org/schema/task/spring-task-3.1.xsd">
-	<import resource="classpath*:/bean/tygameapp-beans.xml"/>
+	<import resource="classpath*:/bean/tygameserver-beans.xml"/>
 </beans>

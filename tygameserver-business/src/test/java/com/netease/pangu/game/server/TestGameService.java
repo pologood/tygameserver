@@ -8,7 +8,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = "classpath:test-tygameapp-service.xml")
+@ContextConfiguration(locations = "classpath:test-tygameserver-service.xml")
 public class TestGameService extends AbstractJUnit4SpringContextTests {
 	@Test
 	public void Test(){

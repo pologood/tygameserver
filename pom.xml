@@ -161,6 +161,8 @@
 	</dependencies>
 	<modules>
 		<module>tygameserver-business</module>
+		<module>tygameserver-master</module>
+		<module>tygameserver-support</module>
 	</modules>
 	<build>
 		<pluginManagement>

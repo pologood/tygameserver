@@ -7,7 +7,7 @@ import javax.annotation.Resource;
 
 import org.springframework.stereotype.Component;
 
-import com.netease.pangu.game.meta.Player;
+import com.netease.pangu.game.common.meta.Player;
 
 @Component
 public class PlayerManager {

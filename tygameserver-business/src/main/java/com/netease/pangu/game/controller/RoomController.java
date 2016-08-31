@@ -5,13 +5,12 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
-import com.netease.pangu.game.annotation.NettyRpcCall;
-import com.netease.pangu.game.annotation.NettyRpcController;
-import com.netease.pangu.game.meta.GameContext;
-import com.netease.pangu.game.meta.GameRoom;
-import com.netease.pangu.game.meta.GameRoom.Status;
-import com.netease.pangu.game.meta.Player;
-import com.netease.pangu.game.meta.PlayerSession;
+import com.netease.pangu.game.common.meta.GameContext;
+import com.netease.pangu.game.common.meta.GameRoom;
+import com.netease.pangu.game.common.meta.Player;
+import com.netease.pangu.game.common.meta.PlayerSession;
+import com.netease.pangu.game.rpc.annotation.NettyRpcCall;
+import com.netease.pangu.game.rpc.annotation.NettyRpcController;
 import com.netease.pangu.game.service.GameRoomManager;
 import com.netease.pangu.game.service.PlayerManager;
 import com.netease.pangu.game.service.PlayerSessionManager;

@@ -1,5 +1,4 @@
 package com.netease.pangu.game.handler.websocket;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -10,9 +9,9 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import com.google.common.base.Strings;
-import com.netease.pangu.game.meta.GameContext;
-import com.netease.pangu.game.meta.PlayerSession;
-import com.netease.pangu.game.service.NettyRpcCallInvoker;
+import com.netease.pangu.game.common.meta.GameContext;
+import com.netease.pangu.game.common.meta.PlayerSession;
+import com.netease.pangu.game.rpc.NettyRpcCallInvoker;
 import com.netease.pangu.game.service.PlayerManager;
 import com.netease.pangu.game.service.PlayerSessionManager;
 import com.netease.pangu.game.util.JsonUtil;

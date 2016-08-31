@@ -1,4 +1,4 @@
-package com.netease.pangu.game.meta;
+package com.netease.pangu.game.common.meta;
 
 import java.util.Map;
 

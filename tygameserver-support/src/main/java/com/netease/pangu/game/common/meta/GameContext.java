@@ -1,4 +1,4 @@
-package com.netease.pangu.game.meta;
+package com.netease.pangu.game.common.meta;
 
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
