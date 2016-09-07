@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+option java_package = "com.netease.pangu.distribution.proto";
+option java_outer_classname = "AppWorkerManager";
+option objc_class_prefix = "HLW";
+
+package distribution;
+
+service AppWorkerManager {
+	rpc addAppWorker (AppNode) returns (RpcResult) {}
+}
+
+message AppNode {
+	string ip = 1;
+	int32 port = 2;
+	string name = 3;
+	int32 count = 4;
+	map<string, string> sys = 5;
+}
+
+message RpcResult {
+  int32 code = 1;
+  string message = 2;
+}
