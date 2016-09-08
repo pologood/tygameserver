@@ -2,7 +2,7 @@ package com.netease.pangu.game.distribution;
 
 import java.util.Map;
 
-public class AppNode {
+public class AppWorker {
 	private String ip;
 	private int port;
 	private String name;

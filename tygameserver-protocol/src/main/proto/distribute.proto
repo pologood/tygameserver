@@ -1,0 +1,36 @@
+syntax = "proto3";
+import "google/protobuf/any.proto";
+option java_multiple_files = true;
+option java_generic_services = true;
+option java_package = "com.netease.pangu.distribution.proto";
+option java_outer_classname = "GameDistributedProto";
+option objc_class_prefix = "HLW";
+
+package distribution;
+
+service AppMasterService {
+	rpc addAppWorker (Worker) returns (RpcResponse) {}
+}
+
+service AppWorkerService {
+	rpc call(MethodRequest) returns (RpcResponse) {}
+}
+
+message MethodRequest {
+	string beanName = 1;
+	string methodName = 2;
+	repeated google.protobuf.Any args = 3;
+} 
+
+message Worker {
+	string ip = 1;
+	int32 port = 2;
+	string name = 3;
+	int32 count = 4;
+	map<string, string> sys = 5;
+}
+
+message RpcResponse {
+  int32 code = 1;
+  string message = 2;
+}
