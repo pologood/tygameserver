@@ -15,7 +15,7 @@ import com.netease.pangu.game.util.ReturnUtils;
 import io.grpc.stub.StreamObserver;
 
 @Component
-public class AppWorkerManagerImpl extends AppMasterServiceGrpc.AppMasterServiceImplBase {
+public class AppMasterServiceImpl extends AppMasterServiceGrpc.AppMasterServiceImplBase {
 	private @Resource AppWorkerManager appWorkerManager;
 	@Override
 	public void addAppWorker(Worker request, StreamObserver<RpcResponse> responseObserver) {

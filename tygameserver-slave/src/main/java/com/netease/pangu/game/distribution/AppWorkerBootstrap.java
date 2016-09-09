@@ -3,46 +3,50 @@ package com.netease.pangu.game.distribution;
 import java.io.IOException;
 
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.stereotype.Component;
 
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
 
 @Component
-public class AppWorkerBootstrap implements Bootstrap  {
+public class AppWorkerBootstrap implements Bootstrap {
 	private final static Logger logger = Logger.getLogger(AppWorkerBootstrap.class);
 	private Server server;
-	private AppWorker appWorker;
+	@Value("${server.port}")
+	private int port = 9002;
+
 	@Override
 	public void init() {
-		server = ServerBuilder.forPort(appWorker.getPort()).build();
-		logger.info("Server started, listening on " + appWorker.getPort());
-	    Runtime.getRuntime().addShutdownHook(new Thread() {
-	      @Override
-	      public void run() {
-	    	logger.info("*** shutting down server since JVM is shutting down");
-	    	AppWorkerBootstrap.this.stop();
-	    	logger.info("*** server shut down");
-	      }
-	    });
+		server = ServerBuilder.forPort(port).build();
+		logger.info("Server started, listening on " + port);
+		Runtime.getRuntime().addShutdownHook(new Thread() {
+			@Override
+			public void run() {
+				logger.info("*** shutting down server since JVM is shutting down");
+				AppWorkerBootstrap.this.stop();
+				logger.info("*** server shut down");
+			}
+		});
 	}
-	
+
 	public void blockUntilShutdown() throws InterruptedException {
-	    if (server != null) {
-	      server.awaitTermination();
-	    }
+		if (server != null) {
+			server.awaitTermination();
+		}
 	}
 
 	@Override
 	public void stop() {
-		if(server != null){
+		if (server != null) {
 			server.shutdown();
 		}
 	}
 
 	@Override
 	public void start() {
-		if(server != null){
+		if (server != null) {
 			try {
 				server.start();
 			} catch (IOException e) {
@@ -50,5 +54,28 @@ public class AppWorkerBootstrap implements Bootstrap  {
 			}
 		}
 	}
+	
+	public int getPort() {
+		return port;
+	}
+
+	public void setPort(int port) {
+		this.port = port;
+	}
+	
+	public static void main(String[] args) {
+		ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("tygameserver-slave.xml");
+		AppWorkerBootstrap bootstrap = context.getBean(AppWorkerBootstrap.class);
+		int port = Integer.parseInt(args[0]);
+		bootstrap.setPort(port);
+		bootstrap.init();
+		bootstrap.start();
+		try {
+			bootstrap.blockUntilShutdown();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
+
 
 }

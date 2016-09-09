@@ -20,7 +20,7 @@ public class AppWorkerManager {
 	}
 	
 	public boolean addNode(AppWorker worker) {
-		return appNodes.putIfAbsent(getKey(worker), worker) == null ? true : false;
+		return appNodes.putIfAbsent(getKey(worker), worker) == null;
 	}
 	
 	public boolean removeNode(AppWorker worker){
