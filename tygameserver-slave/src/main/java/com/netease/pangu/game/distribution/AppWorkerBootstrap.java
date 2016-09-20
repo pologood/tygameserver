@@ -1,6 +1,9 @@
 package com.netease.pangu.game.distribution;
 
 import java.io.IOException;
+import java.net.InetAddress;
+
+import javax.annotation.Resource;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,6 +20,18 @@ public class AppWorkerBootstrap implements Bootstrap {
 	@Value("${server.port}")
 	private int port = 9002;
 
+	@Value("${server.name}")
+	private String name;
+	
+	@Value("${master.port}")
+	private int masterPort;
+
+	@Value("${master.ip}")
+	private String masterIp;
+	
+	@Resource
+	private AppMasterCallService appMasterCallService;
+	
 	@Override
 	public void init() {
 		server = ServerBuilder.forPort(port).build();
@@ -49,6 +64,12 @@ public class AppWorkerBootstrap implements Bootstrap {
 		if (server != null) {
 			try {
 				server.start();
+				AppWorker worker = new AppWorker();
+				worker.setIp(InetAddress.getLocalHost().getHostAddress());
+				worker.setName(InetAddress.getLocalHost().getHostName());
+				worker.setPort(port);
+				appMasterCallService.init(masterIp, masterPort);
+				appMasterCallService.addWorker(worker);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}

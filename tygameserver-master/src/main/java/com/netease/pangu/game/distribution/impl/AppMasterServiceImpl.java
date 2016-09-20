@@ -33,7 +33,7 @@ public class AppMasterServiceImpl extends AppMasterServiceGrpc.AppMasterServiceI
 			builder.setCode(ReturnUtils.FAILED);
 			builder.setMessage("add failed");
 		}
-		
+		System.out.println(request.toString());
 		RpcResponse result = builder.build();
 		responseObserver.onNext(result);
 		responseObserver.onCompleted();
