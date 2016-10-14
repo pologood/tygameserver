@@ -7,6 +7,7 @@ import javax.annotation.Resource;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.stereotype.Component;
 
@@ -33,7 +34,7 @@ public class AppWorkerBootstrap implements Bootstrap {
 	private AppMasterCallService appMasterCallService;
 	
 	@Override
-	public void init() {
+	public void init(ConfigurableApplicationContext context) {
 		server = ServerBuilder.forPort(port).build();
 		logger.info("Server started, listening on " + port);
 		Runtime.getRuntime().addShutdownHook(new Thread() {
@@ -89,7 +90,7 @@ public class AppWorkerBootstrap implements Bootstrap {
 		AppWorkerBootstrap bootstrap = context.getBean(AppWorkerBootstrap.class);
 		int port = Integer.parseInt(args[0]);
 		bootstrap.setPort(port);
-		bootstrap.init();
+		bootstrap.init(context);
 		bootstrap.start();
 		try {
 			bootstrap.blockUntilShutdown();
