@@ -20,19 +20,19 @@ import com.netease.pangu.game.util.ReturnUtils.GameResult;
 
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 
-@NettyRpcController
+@NettyRpcController("/room")
 public class RoomController {
 	@Resource private PlayerSessionManager playerSessionManager;
 	@Resource private PlayerManager playerManager;
 	@Resource private GameRoomManager gameRoomManager;
 	
-	@NettyRpcCall("room/list")
+	@NettyRpcCall("/list")
 	public void listRoom(GameContext ctx){
-		GameResult result = ReturnUtils.succ("room/list", gameRoomManager.getRooms());
+		GameResult result = ReturnUtils.succ("/room/list", gameRoomManager.getRooms());
 		ctx.getChannel().writeAndFlush(new TextWebSocketFrame(JsonUtil.toJson(result)));
 	}
 	
-	@NettyRpcCall("room/create")
+	@NettyRpcCall("/create")
 	public void createRoom(long gameId, int maxSize,GameContext ctx){
 		PlayerSession pSession = ctx.getPlayerSession();
 		long roomId = gameRoomManager.createRoom(gameId, pSession.getId(), maxSize);
@@ -45,7 +45,7 @@ public class RoomController {
 		ctx.getChannel().writeAndFlush(new TextWebSocketFrame(JsonUtil.toJson(result)));
 	}
 	
-	@NettyRpcCall("room/join")
+	@NettyRpcCall("/join")
 	public void joinRoom(long roomId, GameContext ctx){
 		PlayerSession pSession = ctx.getPlayerSession();
 		boolean isOk = gameRoomManager.joinRoom(pSession.getId(), roomId);
@@ -58,7 +58,7 @@ public class RoomController {
 		ctx.getChannel().writeAndFlush(new TextWebSocketFrame(JsonUtil.toJson(result)));
 	}
 	
-	@NettyRpcCall("room/info")
+	@NettyRpcCall("/info")
 	public void getRoom(long roomId, GameContext ctx){
 		GameRoom room = gameRoomManager.getGameRoom(roomId);
 		Map<String, Object> payload = new HashMap<String, Object>();
@@ -73,7 +73,7 @@ public class RoomController {
 		ctx.getChannel().writeAndFlush(new TextWebSocketFrame(JsonUtil.toJson(result)));
 	}
 	
-	@NettyRpcCall("room/chat")
+	@NettyRpcCall("/chat")
 	public void chat(long roomId, String msg, GameContext ctx){
 		PlayerSession pSession = ctx.getPlayerSession();
 		GameRoom room = gameRoomManager.getGameRoom(roomId);

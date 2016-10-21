@@ -1,4 +1,4 @@
-package com.netease.pangu.game.rpc;
+package com.netease.pangu.game.http;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -13,30 +13,30 @@ import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 
 import org.apache.commons.lang3.math.NumberUtils;
+import org.omg.CosNaming.NamingContextExtPackage.URLStringHelper;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
-import org.springframework.stereotype.Component;
 
 import com.google.common.base.Strings;
+import com.google.common.net.UrlEscapers;
 import com.netease.pangu.game.common.meta.GameContext;
-import com.netease.pangu.game.rpc.annotation.NettyRpcCall;
-import com.netease.pangu.game.rpc.annotation.NettyRpcController;
+import com.netease.pangu.game.http.annotation.HttpController;
+import com.netease.pangu.game.http.annotation.HttpRequestMapping;
 import com.netease.pangu.game.util.NettyHttpUtil;
 
-@Component
-public class NettyRpcCallInvoker {
+public class HttpRequestInvoker {
 	private Map<String, Object> controllerMap;
 	private Map<String, Method> methodMap;
-	private Map<String, String> nettyRpcCallAnnoValueMap;
+	private Map<String, String> httpRequestMappingAnnoValueMap;
 	@Resource
 	private ConfigurableListableBeanFactory beanFactory;
-	public static class NettyRpcCallException extends RuntimeException {
+	public static class HttpRequestException extends RuntimeException {
 		private static final long serialVersionUID = -169844953289757522L;
 
-		public NettyRpcCallException(String msg) {
+		public HttpRequestException(String msg) {
 			super(msg);
 		}
 
-		public NettyRpcCallException(String message, Throwable cause) {
+		public HttpRequestException(String message, Throwable cause) {
 			super(message, cause);
 		}
 	}
@@ -46,7 +46,7 @@ public class NettyRpcCallInvoker {
 	}
 	
 	private Object getController(String rpcMethodName){
-		return controllerMap.get(nettyRpcCallAnnoValueMap.get(rpcMethodName));
+		return controllerMap.get(httpRequestMappingAnnoValueMap.get(rpcMethodName));
 		
 	}
 	
@@ -75,8 +75,7 @@ public class NettyRpcCallInvoker {
 			}
 		}
 		try {
-			Object result = method.invoke(controller, convertedArgs.toArray(new Object[0]));
-			
+			return method.invoke(controller, convertedArgs.toArray(new Object[0]));
 		} catch (IllegalAccessException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -93,40 +92,34 @@ public class NettyRpcCallInvoker {
 	@PostConstruct
 	public void init() {
 		methodMap = new HashMap<String, Method>();
-		nettyRpcCallAnnoValueMap = new HashMap<String, String>();
-		controllerMap = beanFactory.getBeansWithAnnotation(NettyRpcController.class);
+		httpRequestMappingAnnoValueMap = new HashMap<String, String>();
+		controllerMap = beanFactory.getBeansWithAnnotation(HttpController.class);
 		for (Entry<String, Object> entry : controllerMap.entrySet()) {
-			initAndCheckMethodsByNettyRpcCall(entry.getKey(), entry.getValue().getClass());
+			initAndCheckMethodsByHttpRequest(entry.getKey(), entry.getValue().getClass());
 		}
 	}
 
-	public void initAndCheckMethodsByNettyRpcCall(String controllerName, Class<?> clazz){
+	public void initAndCheckMethodsByHttpRequest(String controllerName, Class<?> clazz){
 		Class<?> currentClazz = clazz;
 		Object controller = controllerMap.get(controllerName);
-		NettyRpcController nettyRpcAnno = controller.getClass().getAnnotation(NettyRpcController.class);	
+		HttpController httpAnno = controller.getClass().getAnnotation(HttpController.class);	
 		while(currentClazz != Object.class){
 			Method[] methods = currentClazz.getDeclaredMethods();
 			for(final Method method: methods){
-				if(method.getModifiers() == Modifier.PUBLIC && method.isAnnotationPresent(NettyRpcCall.class)){
-					NettyRpcCall anno = method.getAnnotation(NettyRpcCall.class);
+				if(method.getModifiers() == Modifier.PUBLIC && method.isAnnotationPresent(HttpRequestMapping.class)){
+					HttpRequestMapping anno = method.getAnnotation(HttpRequestMapping.class);
 					if(Strings.isNullOrEmpty(anno.value())){
-						throw new NettyRpcCallException("NettyRpcCall value can't be empty");
+						throw new HttpRequestException("HttpRequestMapping value can't be empty");
 					}
-					String requestPath = NettyHttpUtil.resolveUrlPath(NettyHttpUtil.resolveStartWithEscape(nettyRpcAnno.value())) + NettyHttpUtil.resolveStartWithEscape(anno.value());
-
+					String requestPath = NettyHttpUtil.resolveUrlPath(NettyHttpUtil.resolveStartWithEscape(httpAnno.value())) + NettyHttpUtil.resolveStartWithEscape(anno.value());
 					if(methodMap.containsKey(requestPath)){
-						throw new NettyRpcCallException("NettyRpcCall value must be unique");
+						throw new HttpRequestException("HttpRequestMapping value must be unique");
 					}
 					methodMap.put(requestPath, method);
-					nettyRpcCallAnnoValueMap.put(requestPath, controllerName);
+					httpRequestMappingAnnoValueMap.put(requestPath, controllerName);
 				}
 			}
 			currentClazz = currentClazz.getSuperclass();
 		}
-	}
-
-	public static void main(String[] args) {
-		NettyRpcCallInvoker manager = new NettyRpcCallInvoker();
-		manager.init();
 	}
 }

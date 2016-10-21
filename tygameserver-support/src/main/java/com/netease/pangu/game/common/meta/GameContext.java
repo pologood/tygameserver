@@ -6,10 +6,12 @@ import io.netty.channel.ChannelHandlerContext;
 public class GameContext {
 	private final ChannelHandlerContext channelHandlerContext;
 	private final PlayerSession playerSession;
+	private final String rpcMethodName;
 	private final Object frame;
-	public GameContext(ChannelHandlerContext context, PlayerSession playerSession, Object frame){
+	public GameContext(ChannelHandlerContext context, PlayerSession playerSession, String rpcMethodName, Object frame){
 		this.channelHandlerContext = context;
 		this.playerSession = playerSession;
+		this.rpcMethodName = rpcMethodName;
 		this.frame = frame;
 		
 	}
@@ -27,5 +29,9 @@ public class GameContext {
 	
 	public Object getFrame() {
 		return frame;
+	}
+	
+	public String getRpcMethodName() {
+		return rpcMethodName;
 	}
 }

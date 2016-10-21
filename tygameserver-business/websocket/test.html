@@ -62,22 +62,22 @@
 				console.log('Client received a message', event.data);
 				data = JSON.parse(event.data);
 				if(data.code == 1){
-					if(data.rpcMethodName.toLowerCase() == "player/reg") {
+					if(data.rpcMethodName.toLowerCase() == "/player/reg") {
 						$("#name2").text(data.payload.roleName);
 						$("#sId").text(data.payload.sessionId);
 					}
 
-					if(data.rpcMethodName.toLowerCase() == "player/login") {
+					if(data.rpcMethodName.toLowerCase() == "/player/login") {
 						$("#name2").text(data.payload.roleName);
 						$("#sId").text(data.payload.sessionId);
 					}
 
 
-					if(data.rpcMethodName.toLowerCase() == "player/chat") {
+					if(data.rpcMethodName.toLowerCase() == "/player/chat") {
 						$("#msgList").append($("<li><label>"+ data.source.playerName + "</label>:&nbsp;<span>"+ data.payload.msg +"</span></li>"));
 					}
 
-					if(data.rpcMethodName.toLowerCase() == "player/list") {
+					if(data.rpcMethodName.toLowerCase() == "/player/list") {
 						console.log(data.payload);
 						var html = "";
 						for(var id in data.payload){
@@ -86,19 +86,19 @@
 						$("#playerList").html(html);
 					}
 
-					if(data.rpcMethodName.toLowerCase() == "room/create"){
+					if(data.rpcMethodName.toLowerCase() == "/room/create"){
 						console.log(data.payload);
 						$("#roomId").text(data.payload);
 						alert("创建房间" + data.payload);
 					}
 
-					if(data.rpcMethodName.toLowerCase() == "room/join"){
+					if(data.rpcMethodName.toLowerCase() == "/room/join"){
 						console.log(data.payload);
 						$("#roomId").text(data.payload);
 						alert("加入房间" + data.payload);
 					}
 
-					if(data.rpcMethodName.toLowerCase() == "room/info"){
+					if(data.rpcMethodName.toLowerCase() == "/room/info"){
 						console.log(data.payload);						
 						
 						var html = "";
@@ -108,13 +108,13 @@
 						$("#members").html(html);
 					}
 
-					if(data.rpcMethodName.toLowerCase() == "room/chat"){
+					if(data.rpcMethodName.toLowerCase() == "/room/chat"){
 						console.log(data.payload);						
 						$("#groupmsgs").append($("<li><label>"+ data.source.playerName + "</label>:&nbsp;<span>"+ data.payload.msg +"</span></li>"));
 					}
 
 
-					if(data.rpcMethodName.toLowerCase() == "room/list"){
+					if(data.rpcMethodName.toLowerCase() == "/room/list"){
 						console.log(data.payload);
 						var html = "<option value=''>请选择</option>";
 						for(var id in data.payload){
@@ -137,14 +137,14 @@
 				console.log('Client notified socket has closed',event.data); 
 			}; 
 			$("#registerBtn").click(function(){
-				var msg = {rpcMethod:"player/reg", 
+				var msg = {rpcMethod:"/player/reg", 
 					params:[$("#name").val().trim(),]
 				};
 				socket.send(JSON.stringify(msg));
 			});
 
 			$("#loginBtn").click(function(){
-				var msg = {rpcMethod:"player/login", 
+				var msg = {rpcMethod:"/player/login", 
 					params:[$("#name").val().trim(),],
 					sessionId:$("#name").val().trim()
 				};
@@ -152,7 +152,7 @@
 			});
 
 			$("#refresh").click(function(){
-				var msg = {rpcMethod:"player/list", 
+				var msg = {rpcMethod:"/player/list", 
 					sessionId:$("#sId").text()
 				};
 				socket.send(JSON.stringify(msg));
@@ -160,7 +160,7 @@
 
 			$("#sendMsg").click(function(){
 				var msg = {
-					rpcMethod:"player/chat", 
+					rpcMethod:"/player/chat", 
 					params:[parseInt($("#playerList").val()), $("#msg").val()],
 					sessionId:$("#sId").text()
 				};
@@ -170,7 +170,7 @@
 	   		$("#roomList").change(function(){
 	   			if($("#roomList").val() != "请选择"){
 	   				var msg = {
-						rpcMethod:"room/info", 
+						rpcMethod:"/room/info", 
 						params:[parseInt($("#roomList").val()),],
 						sessionId:$("#sId").text()
 					};
@@ -180,7 +180,7 @@
 
 	   		$("#cBtn").click(function(){
 	   			var msg = {
-					rpcMethod:"room/create", 
+					rpcMethod:"/room/create", 
 					params:[1, 10],
 					sessionId:$("#sId").text()
 				};
@@ -190,7 +190,7 @@
 	   		$("#addRoomBtn").click(function(){
 	   			if($("#roomList").val() != "请选择"){
 		   			var msg = {
-						rpcMethod:"room/join", 
+						rpcMethod:"/room/join", 
 						params:[parseInt($("#roomList").val())],
 						sessionId:$("#sId").text()
 					};
@@ -201,7 +201,7 @@
 			$("#gBtn").click(function(){
 				if($("#roomList").val() != "请选择"){
 	   				var msg = {
-						rpcMethod:"room/chat", 
+						rpcMethod:"/room/chat", 
 						params:[parseInt($("#roomList").val().trim()),$("#groupMsg").val().trim()],
 						sessionId:$("#sId").text()
 					};
@@ -212,7 +212,7 @@
 
 	   		$("#roomListBtn").click(function(){
 	   			var msg = {
-					rpcMethod:"room/list", 
+					rpcMethod:"/room/list", 
 					sessionId:$("#sId").text()
 				};
 				socket.send(JSON.stringify(msg));

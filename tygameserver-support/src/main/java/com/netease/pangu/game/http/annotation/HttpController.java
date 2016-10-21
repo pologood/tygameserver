@@ -11,5 +11,5 @@ import org.springframework.stereotype.Component;
 @Target({ElementType.TYPE})
 @Component
 public @interface HttpController {
-
+	String value() default "";
 }

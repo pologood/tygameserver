@@ -24,4 +24,16 @@ public class NettyHttpUtil {
         String location =  req.headers().get(HttpHeaderNames.HOST) + webSocketPath;
         return "ws://" + location;
     }
+	
+	public static String resolveUrlPath(String path){
+		return path.replace("//", "/");
+	}
+	
+	public static String resolveStartWithEscape(String path){
+		if(!path.isEmpty()){
+			return path.startsWith("/")? path: "/" + path;
+		} else{
+			return path;
+		} 
+	}
 }

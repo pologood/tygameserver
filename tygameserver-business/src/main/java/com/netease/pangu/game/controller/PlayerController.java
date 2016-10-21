@@ -20,13 +20,13 @@ import com.netease.pangu.game.util.ReturnUtils.GameResult;
 
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 
-@NettyRpcController
+@NettyRpcController("/player")
 public class PlayerController {
 	@Resource private PlayerSessionManager playerSessionManager;
 	@Resource private PlayerManager playerManager;
 	@Resource private GameRoomManager gameRoomManager;
 	
-	@NettyRpcCall("player/reg")
+	@NettyRpcCall("/reg")
 	public void register(String name, GameContext ctx){
 		Player player = playerManager.createPlayer(name);
 		PlayerSession playerSession = playerSessionManager.createPlayerSession(player, ctx.getChannel());
@@ -38,7 +38,7 @@ public class PlayerController {
 		playerSession.sendMessage(new TextWebSocketFrame(JsonUtil.toJson(result)));
 	}
 	
-	@NettyRpcCall("player/login")
+	@NettyRpcCall("/login")
 	public void login(long playerSessionId, GameContext ctx){
 		PlayerSession playerSession = ctx.getPlayerSession();
 		if(playerSession.getChannel() != null && playerSession.getChannel().isActive()){
@@ -55,7 +55,7 @@ public class PlayerController {
 		}
 	}
 	
-	@NettyRpcCall("player/list")
+	@NettyRpcCall("/list")
 	public void list(GameContext ctx){
 		TreeMap<Long, Player> map = new TreeMap<Long, Player>();
 		for(Long sesssionId : playerSessionManager.getPlayerSessions().keySet()){
@@ -65,7 +65,7 @@ public class PlayerController {
 		ctx.getChannelHandlerContext().channel().writeAndFlush(new TextWebSocketFrame(JsonUtil.toJson(result)));		
 	}
 	
-	@NettyRpcCall("player/chat")
+	@NettyRpcCall("/chat")
 	public void chat(long sessionId, String msg){
 		PlayerSession playerSession = playerSessionManager.getSession(sessionId);
 		Map<String, Object> payload = new HashMap<String, Object>();
