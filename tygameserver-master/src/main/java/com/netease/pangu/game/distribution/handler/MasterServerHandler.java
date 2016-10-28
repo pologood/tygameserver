@@ -1,11 +1,24 @@
 package com.netease.pangu.game.distribution.handler;
 
 import java.nio.charset.Charset;
+import java.util.List;
+import java.util.Map;
 
+import javax.annotation.Resource;
+
+import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
+import com.google.common.base.Strings;
+import com.netease.pangu.game.common.meta.GameContext;
+import com.netease.pangu.game.common.meta.PlayerSession;
+import com.netease.pangu.game.rpc.WsRpcCallInvoker;
+import com.netease.pangu.game.service.PlayerSessionManager;
+import com.netease.pangu.game.util.JsonUtil;
 import com.netease.pangu.game.util.NettyHttpUtil;
+import com.netease.pangu.game.util.ReturnUtils;
+import com.netease.pangu.game.util.ReturnUtils.GameResult;
 
 import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.buffer.Unpooled;
@@ -26,6 +39,10 @@ import io.netty.handler.codec.http.websocketx.WebSocketServerHandshakerFactory;
 @Component
 public class MasterServerHandler extends ChannelInboundHandlerAdapter {
 	private static String WEB_SOCKET_PATH = "websocket";
+	@Resource
+	private WsRpcCallInvoker wsRpcCallInvoker;
+	@Resource
+	private PlayerSessionManager playerSessionManager;
 	
 	@Override
 	public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
@@ -40,9 +57,30 @@ public class MasterServerHandler extends ChannelInboundHandlerAdapter {
 		}
 	}
 
-	private void handleWebSocketFrame(ChannelHandlerContext ctx, WebSocketFrame req) {
-		if(req instanceof TextWebSocketFrame){
-			
+	private void handleWebSocketFrame(ChannelHandlerContext ctx, WebSocketFrame frame) {
+		if(frame instanceof TextWebSocketFrame){
+			String dataStr = ((TextWebSocketFrame) frame).text();
+			Map<String, Object> data = JsonUtil.fromJson(dataStr);
+			String rpcMethodName = (String) data.get("rpcMethod");
+			String sessionId = (String) data.get("sessionId");
+			@SuppressWarnings("unchecked")
+			List<Object> args = (List<Object>) data.get("params");
+			GameContext context = null;
+			if (Strings.isNullOrEmpty(sessionId)) {
+				context = new GameContext(ctx, null, rpcMethodName, frame);
+			} else {
+				Double num = NumberUtils.toDouble(sessionId);
+				long playerSessionId = num.longValue();
+				PlayerSession playerSession = playerSessionManager.getSession(playerSessionId);
+				if (playerSession != null) {
+					context = new GameContext(ctx, playerSession, rpcMethodName, frame);
+				} else {
+					GameResult result = ReturnUtils.failed(rpcMethodName, "user hasn't registered");
+					ctx.channel().writeAndFlush(new TextWebSocketFrame(JsonUtil.toJson(result)));
+					return;
+				}
+			}
+			wsRpcCallInvoker.invoke(rpcMethodName, args, context);
 		}
 	}
 
