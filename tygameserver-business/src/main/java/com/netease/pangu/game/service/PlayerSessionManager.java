@@ -79,6 +79,7 @@ public class PlayerSessionManager {
 		playerSession.setRoomId(0L);
 		playerSession.setId(uniqueIdGeneratorService.generateSessionId());
 		playerSession.setCreateTime(System.currentTimeMillis());
+		playerSession.setChannel(channel);
 		sessions.put(playerSession.getId(), playerSession);
 		return playerSession;
 	}

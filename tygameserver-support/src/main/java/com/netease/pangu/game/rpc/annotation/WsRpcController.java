@@ -10,6 +10,6 @@ import org.springframework.stereotype.Component;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE})
 @Component
-public @interface NettyRpcController {
+public @interface WsRpcController {
 	String value() default "";
 }

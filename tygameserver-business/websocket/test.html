@@ -61,69 +61,69 @@
 			socket.onmessage = function(event) { 
 				console.log('Client received a message', event.data);
 				data = JSON.parse(event.data);
-				if(data.code == 1){
+				if(data.content.code == 1){
 					if(data.rpcMethodName.toLowerCase() == "/player/reg") {
-						$("#name2").text(data.payload.roleName);
-						$("#sId").text(data.payload.sessionId);
+						$("#name2").text(data.content.payload.roleName);
+						$("#sId").text(data.content.payload.sessionId);
 					}
 
 					if(data.rpcMethodName.toLowerCase() == "/player/login") {
-						$("#name2").text(data.payload.roleName);
-						$("#sId").text(data.payload.sessionId);
+						$("#name2").text(data.content.payload.roleName);
+						$("#sId").text(data.content.payload.sessionId);
 					}
 
 
 					if(data.rpcMethodName.toLowerCase() == "/player/chat") {
-						$("#msgList").append($("<li><label>"+ data.source.playerName + "</label>:&nbsp;<span>"+ data.payload.msg +"</span></li>"));
+						$("#msgList").append($("<li><label>"+ data.content.source.playerName + "</label>:&nbsp;<span>"+ data.content.payload.msg +"</span></li>"));
 					}
 
 					if(data.rpcMethodName.toLowerCase() == "/player/list") {
-						console.log(data.payload);
+						console.log(data.content.payload);
 						var html = "";
-						for(var id in data.payload){
-							html += "<option value="+ id +">"+ data.payload[id].name + " - "+ id +"</option>";
+						for(var id in data.content.payload){
+							html += "<option value="+ id +">"+ data.content.payload[id].name + " - "+ id +"</option>";
 						}
 						$("#playerList").html(html);
 					}
 
 					if(data.rpcMethodName.toLowerCase() == "/room/create"){
-						console.log(data.payload);
-						$("#roomId").text(data.payload);
-						alert("创建房间" + data.payload);
+						console.log(data.content.payload);
+						$("#roomId").text(data.content.payload);
+						alert("创建房间" + data.content.payload);
 					}
 
 					if(data.rpcMethodName.toLowerCase() == "/room/join"){
-						console.log(data.payload);
-						$("#roomId").text(data.payload);
-						alert("加入房间" + data.payload);
+						console.log(data.content.payload);
+						$("#roomId").text(data.content.payload);
+						alert("加入房间" + data.content.payload);
 					}
 
 					if(data.rpcMethodName.toLowerCase() == "/room/info"){
-						console.log(data.payload);						
+						console.log(data.content.payload);						
 						
 						var html = "";
-						for(var id in data.payload.members){
-							html += "<li>"+ data.payload.members[id].name + " - "+ id +"</li>";
+						for(var id in data.content.payload.members){
+							html += "<li>"+ data.content.payload.members[id].name + " - "+ id +"</li>";
 						}
 						$("#members").html(html);
 					}
 
 					if(data.rpcMethodName.toLowerCase() == "/room/chat"){
-						console.log(data.payload);						
-						$("#groupmsgs").append($("<li><label>"+ data.source.playerName + "</label>:&nbsp;<span>"+ data.payload.msg +"</span></li>"));
+						console.log(data.content.payload);						
+						$("#groupmsgs").append($("<li><label>"+ data.source.playerName + "</label>:&nbsp;<span>"+ data.content.payload.msg +"</span></li>"));
 					}
 
 
 					if(data.rpcMethodName.toLowerCase() == "/room/list"){
-						console.log(data.payload);
+						console.log(data.content.payload);
 						var html = "<option value=''>请选择</option>";
-						for(var id in data.payload){
-							html += "<option value="+ id +">房间ID " + id + " 游戏ID "+ data.payload[id].gameId + " 房主 "+ data.payload[id].ownerId +"</option>";
+						for(var id in data.content.payload){
+							html += "<option value="+ id +">房间ID " + id + " 游戏ID "+ data.content.payload[id].gameId + " 房主 "+ data.content.payload[id].ownerId +"</option>";
 						}
 						$("#roomList").html(html);
 					}
 				}else{
-					console.log(data.payload);
+					console.log(data.content.payload);
 					alert(data.message);
 				}
 

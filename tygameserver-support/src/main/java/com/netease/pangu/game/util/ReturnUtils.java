@@ -4,64 +4,54 @@ public class ReturnUtils {
 	public final static int SUCC = 1;
 	public final static int FAILED = 0;
 	
-	public static GameResult succ(String rpcMethodName, String message){
-		return succ(rpcMethodName, null, null , message);
+	
+	public static GameResult succ(String message){
+		return succ(null, null , message);
 	}
 	
-	public static GameResult succ(String rpcMethodName, Object payload){
-		return succ(rpcMethodName, payload, null, null);
+	public static GameResult succ(Object payload){
+		return succ(payload, null, null);
+	}
+
+	public static GameResult succ(Object payload, String message){
+		return succ(payload, null, message);
 	}
 	
-	public static GameResult succ(String rpcMethodName, Object payload, String message){
-		return succ(rpcMethodName, payload, null);
+	public static GameResult succ(Object payload, Object source){
+		return succ(payload, source , null);
 	}
 	
-	public static GameResult succ(String rpcMethodName, Object payload, Object source){
-		return succ(rpcMethodName, payload, source , null);
-	}
-	
-	public static GameResult succ(String rpcMethodName, Object payload, Object source, String message){
+	public static GameResult succ(Object payload, Object source, String message){
 		GameResult result = new GameResult();
 		result.setCode(SUCC);
 		result.setPayload(payload);
-		result.setRpcMethodName(rpcMethodName);
 		result.setSource(source);
 		result.setMessage(message);
 		return result;
 	}
 	
-	public static GameResult failed(String rpcMethodName, Object payload, Object source, String message){
+	public static GameResult failed(Object payload, Object source, String message){
 		GameResult result = new GameResult();
 		result.setCode(FAILED);
 		result.setPayload(payload);
-		result.setRpcMethodName(rpcMethodName);
 		result.setSource(source);
 		result.setMessage(message);
 		return result;
 	}
 	
-	public static GameResult failed(String rpcMethodName, Object payload, String message){
-		return failed(rpcMethodName, payload, null, message);
+	public static GameResult failed(Object payload, String message){
+		return failed(payload, null, message);
 	}
 	
-	public static GameResult failed(String rpcMethodName, String message){
-		return failed(rpcMethodName, null, null, message);
+	public static GameResult failed(String message){
+		return failed(null, null, message);
 	}
 	
 	public static class GameResult {
-		private String rpcMethodName;
 		private int code;
 		private Object payload;
 		private Object source;
 		private String message;
-		public String getRpcMethodName() {
-			return rpcMethodName;
-		}
-
-		public void setRpcMethodName(String rpcMethodName) {
-			this.rpcMethodName = rpcMethodName;
-		}
-
 		public int getCode() {
 			return code;
 		}

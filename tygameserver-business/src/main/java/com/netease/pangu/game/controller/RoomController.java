@@ -9,8 +9,8 @@ import com.netease.pangu.game.common.meta.GameContext;
 import com.netease.pangu.game.common.meta.GameRoom;
 import com.netease.pangu.game.common.meta.Player;
 import com.netease.pangu.game.common.meta.PlayerSession;
-import com.netease.pangu.game.rpc.annotation.NettyRpcCall;
-import com.netease.pangu.game.rpc.annotation.NettyRpcController;
+import com.netease.pangu.game.rpc.annotation.WsRpcCall;
+import com.netease.pangu.game.rpc.annotation.WsRpcController;
 import com.netease.pangu.game.service.GameRoomManager;
 import com.netease.pangu.game.service.PlayerManager;
 import com.netease.pangu.game.service.PlayerSessionManager;
@@ -20,46 +20,46 @@ import com.netease.pangu.game.util.ReturnUtils.GameResult;
 
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 
-@NettyRpcController("/room")
+@WsRpcController("/room")
 public class RoomController {
 	@Resource private PlayerSessionManager playerSessionManager;
 	@Resource private PlayerManager playerManager;
 	@Resource private GameRoomManager gameRoomManager;
 	
-	@NettyRpcCall("/list")
-	public void listRoom(GameContext ctx){
-		GameResult result = ReturnUtils.succ("/room/list", gameRoomManager.getRooms());
-		ctx.getChannel().writeAndFlush(new TextWebSocketFrame(JsonUtil.toJson(result)));
+	@WsRpcCall("/list")
+	public GameResult listRoom(GameContext ctx){
+		GameResult result = ReturnUtils.succ(gameRoomManager.getRooms());
+		return result;
 	}
 	
-	@NettyRpcCall("/create")
-	public void createRoom(long gameId, int maxSize,GameContext ctx){
+	@WsRpcCall("/create")
+	public GameResult createRoom(long gameId, int maxSize,GameContext ctx){
 		PlayerSession pSession = ctx.getPlayerSession();
 		long roomId = gameRoomManager.createRoom(gameId, pSession.getId(), maxSize);
 		GameResult result;
 		if(roomId > 0){
-			result = ReturnUtils.succ("room/create", roomId);
+			result = ReturnUtils.succ(roomId);
 		}else{
-			result = ReturnUtils.failed("room/create", "create room failed");
+			result = ReturnUtils.failed("create room failed");
 		}
-		ctx.getChannel().writeAndFlush(new TextWebSocketFrame(JsonUtil.toJson(result)));
+		return result;
 	}
 	
-	@NettyRpcCall("/join")
-	public void joinRoom(long roomId, GameContext ctx){
+	@WsRpcCall("/join")
+	public GameResult joinRoom(long roomId, GameContext ctx){
 		PlayerSession pSession = ctx.getPlayerSession();
 		boolean isOk = gameRoomManager.joinRoom(pSession.getId(), roomId);
 		GameResult result;
 		if(isOk){
-			result = ReturnUtils.succ("room/join", roomId);
+			result = ReturnUtils.succ(roomId);
 		}else{
-			result = ReturnUtils.failed("room/join", String.format("failed to join %d", roomId));
+			result = ReturnUtils.failed(String.format("failed to join %d", roomId));
 		}
-		ctx.getChannel().writeAndFlush(new TextWebSocketFrame(JsonUtil.toJson(result)));
+		return result;
 	}
 	
-	@NettyRpcCall("/info")
-	public void getRoom(long roomId, GameContext ctx){
+	@WsRpcCall("/info")
+	public GameResult getRoom(long roomId, GameContext ctx){
 		GameRoom room = gameRoomManager.getGameRoom(roomId);
 		Map<String, Object> payload = new HashMap<String, Object>();
 		Map<Long, Player>  players = playerSessionManager.getPlayers(room.getPlayerSessionIds());
@@ -69,11 +69,11 @@ public class RoomController {
 		payload.put("maxSize", room.getMaxSize());
 		payload.put("count", room.getPlayerSessionIds().size());
 		payload.put("owner", playerSessionManager.getSession(room.getOwnerId()).getPlayer().getName());
-		GameResult result = ReturnUtils.succ("room/info", payload);
-		ctx.getChannel().writeAndFlush(new TextWebSocketFrame(JsonUtil.toJson(result)));
+		GameResult result = ReturnUtils.succ(payload);
+		return result;
 	}
 	
-	@NettyRpcCall("/chat")
+	@WsRpcCall("/chat")
 	public void chat(long roomId, String msg, GameContext ctx){
 		PlayerSession pSession = ctx.getPlayerSession();
 		GameRoom room = gameRoomManager.getGameRoom(roomId);
@@ -84,10 +84,10 @@ public class RoomController {
 		source.put("sessionId", pSession.getId());
 		Player player = pSession.getPlayer();
 		source.put("playerName", player.getName());
-		GameResult result = ReturnUtils.succ("room/chat", payload, source);		
+		GameResult result = ReturnUtils.succ(payload, source);		
 		for(PlayerSession member: members.values()){
 			if(member.getChannel()!= null && member.getChannel().isActive()){
-				member.sendMessage(new TextWebSocketFrame(JsonUtil.toJson(result)));
+				member.sendJSONMessage(result);
 			}
 		}
 	}

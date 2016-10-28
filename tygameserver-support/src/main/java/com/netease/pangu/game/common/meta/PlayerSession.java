@@ -2,7 +2,10 @@ package com.netease.pangu.game.common.meta;
 
 import java.util.Map;
 
+import com.netease.pangu.game.util.JsonUtil;
+
 import io.netty.channel.Channel;
+import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 
 public class PlayerSession {
 	private final static int WATI_MILLIS = 5 * 1000;
@@ -24,6 +27,12 @@ public class PlayerSession {
 	public void sendMessage(Object msg){
 		if (channel != null) {
 			channel.writeAndFlush(msg);
+		}
+	}
+	
+	public void sendJSONMessage(Object msg){
+		if (channel != null) {
+			channel.writeAndFlush(new TextWebSocketFrame(JsonUtil.toJson(msg)));
 		}
 	}
 	

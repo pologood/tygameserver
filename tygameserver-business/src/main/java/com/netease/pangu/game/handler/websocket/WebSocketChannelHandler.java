@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 import com.google.common.base.Strings;
 import com.netease.pangu.game.common.meta.GameContext;
 import com.netease.pangu.game.common.meta.PlayerSession;
-import com.netease.pangu.game.rpc.NettyRpcCallInvoker;
+import com.netease.pangu.game.rpc.WsRpcCallInvoker;
 import com.netease.pangu.game.service.PlayerManager;
 import com.netease.pangu.game.service.PlayerSessionManager;
 import com.netease.pangu.game.util.JsonUtil;
@@ -33,7 +33,7 @@ import io.netty.util.concurrent.GlobalEventExecutor;
 @Sharable
 public class WebSocketChannelHandler extends SimpleChannelInboundHandler<TextWebSocketFrame> {
 	@Resource
-	private NettyRpcCallInvoker nettyRpcCallInvoker;
+	private WsRpcCallInvoker nettyRpcCallInvoker;
 	@Resource
 	private PlayerSessionManager playerSessionManager;
 	@Resource
@@ -95,7 +95,6 @@ public class WebSocketChannelHandler extends SimpleChannelInboundHandler<TextWeb
 
 	@Override
 	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-		Channel incoming = ctx.channel();
 		cause.printStackTrace();
 		ctx.close();
 	}
