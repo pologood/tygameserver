@@ -42,7 +42,10 @@ public final class WebSocketServer {
 
 			Channel ch = b.bind(PORT).sync().channel();
 			ch.closeFuture().sync();
-		} finally {
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+		finally {
 			bossGroup.shutdownGracefully();
 			workerGroup.shutdownGracefully();
 			context.close();

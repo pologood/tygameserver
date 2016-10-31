@@ -15,7 +15,7 @@ public class WsRpcResponse {
 	public static WsRpcResponse create(String rpcMethodName, Object content){
 		WsRpcResponse response = new WsRpcResponse(rpcMethodName);
 		response.setContent(content);
-		return new WsRpcResponse(rpcMethodName);
+		return response;
 	}
 	
 	public WsRpcResponse(String rpcMethodName){

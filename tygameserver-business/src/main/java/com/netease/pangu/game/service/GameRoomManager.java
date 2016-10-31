@@ -18,7 +18,8 @@ import com.netease.pangu.game.common.meta.GameRoom;
 import com.netease.pangu.game.common.meta.GameRoom.RoomType;
 import com.netease.pangu.game.common.meta.GameRoom.Status;
 import com.netease.pangu.game.common.meta.PlayerSession;
-import com.netease.pangu.game.service.PlayerSessionManager.SessionCallable;
+import com.netease.pangu.game.meta.Player;
+import com.netease.pangu.game.service.AbstractPlayerSessionManager.SessionCallable;
 
 @Component
 public class GameRoomManager {
@@ -58,9 +59,9 @@ public class GameRoomManager {
 	 * @return roomId
 	 */
 	public long createRoom(final long gameId, final long playerSessionId, final int maxSize) {
-		return playerSessionManager.updatePlayerSession(playerSessionId, new SessionCallable<Long>() {
+		return playerSessionManager.updatePlayerSession(playerSessionId, new SessionCallable<Long, Player>() {
 			@Override
-			public Long call(PlayerSession playerSession) {
+			public Long call(PlayerSession<Player> playerSession) {
 				if (playerSession.getRoomId() == 0) {
 					long roomId = uniqueIdGeneratorService.generateRoomId();
 					GameRoom room = new GameRoom();
@@ -98,9 +99,9 @@ public class GameRoomManager {
 	 * @return
 	 */
 	public boolean joinRoom(final long playerSessionId, final long roomId) {
-		return playerSessionManager.updatePlayerSession(playerSessionId, new SessionCallable<Boolean>() {
+		return playerSessionManager.updatePlayerSession(playerSessionId, new SessionCallable<Boolean, Player>() {
 			@Override
-			public Boolean call(PlayerSession playerSession) {
+			public Boolean call(PlayerSession<Player> playerSession) {
 				if (playerSession.getRoomId() == 0) {
 					GameRoom room = getGameRoom(roomId);
 					if (canJoin(roomId)) {
@@ -132,9 +133,9 @@ public class GameRoomManager {
 	 * @return
 	 */
 	public boolean exitRoom(final long playerSessionId) {
-		return playerSessionManager.updatePlayerSession(playerSessionId, new SessionCallable<Boolean>() {
+		return playerSessionManager.updatePlayerSession(playerSessionId, new SessionCallable<Boolean, Player>() {
 			@Override
-			public Boolean call(PlayerSession playerSession) {
+			public Boolean call(PlayerSession<Player> playerSession) {
 				if (playerSession.getRoomId() > 0) {
 					GameRoom room = getGameRoom(playerSession.getRoomId());
 					room.getPlayerSessionIds().remove(playerSessionId);

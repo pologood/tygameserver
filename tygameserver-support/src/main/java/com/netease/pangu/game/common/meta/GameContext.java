@@ -5,7 +5,7 @@ import io.netty.channel.ChannelHandlerContext;
 
 public class GameContext {
 	private final ChannelHandlerContext channelHandlerContext;
-	private final PlayerSession playerSession;
+	private final PlayerSession<?> playerSession;
 	private final String rpcMethodName;
 	private final Object frame;
 	public GameContext(ChannelHandlerContext context, PlayerSession playerSession, String rpcMethodName, Object frame){

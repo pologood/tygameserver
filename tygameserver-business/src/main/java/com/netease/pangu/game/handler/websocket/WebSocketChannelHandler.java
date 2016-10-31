@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 import com.google.common.base.Strings;
 import com.netease.pangu.game.common.meta.GameContext;
 import com.netease.pangu.game.common.meta.PlayerSession;
+import com.netease.pangu.game.meta.Player;
 import com.netease.pangu.game.rpc.WsRpcCallInvoker;
 import com.netease.pangu.game.service.PlayerManager;
 import com.netease.pangu.game.service.PlayerSessionManager;
@@ -55,7 +56,7 @@ public class WebSocketChannelHandler extends SimpleChannelInboundHandler<TextWeb
 		} else {
 			Double num = NumberUtils.toDouble(sessionId);
 			long playerSessionId = num.longValue();
-			PlayerSession playerSession = playerSessionManager.getSession(playerSessionId);
+			PlayerSession<Player> playerSession = playerSessionManager.getSession(playerSessionId);
 			if (playerSession != null) {
 				context = new GameContext(ctx, playerSession, rpcMethodName, frame);
 			} else {

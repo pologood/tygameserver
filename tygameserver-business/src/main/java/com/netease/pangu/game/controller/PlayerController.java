@@ -7,8 +7,8 @@ import java.util.TreeMap;
 import javax.annotation.Resource;
 
 import com.netease.pangu.game.common.meta.GameContext;
-import com.netease.pangu.game.common.meta.Player;
 import com.netease.pangu.game.common.meta.PlayerSession;
+import com.netease.pangu.game.meta.Player;
 import com.netease.pangu.game.rpc.WsRpcResponse;
 import com.netease.pangu.game.rpc.annotation.WsRpcCall;
 import com.netease.pangu.game.rpc.annotation.WsRpcController;
@@ -16,7 +16,6 @@ import com.netease.pangu.game.service.GameRoomManager;
 import com.netease.pangu.game.service.PlayerManager;
 import com.netease.pangu.game.service.PlayerSessionManager;
 import com.netease.pangu.game.util.JsonUtil;
-import com.netease.pangu.game.util.NettyHttpUtil;
 import com.netease.pangu.game.util.ReturnUtils;
 import com.netease.pangu.game.util.ReturnUtils.GameResult;
 
@@ -30,8 +29,10 @@ public class PlayerController {
 	
 	@WsRpcCall("/reg")
 	public GameResult register(String name, GameContext ctx){
-		Player player = playerManager.createPlayer(name);
-		PlayerSession playerSession = playerSessionManager.createPlayerSession(player, ctx.getChannel());
+		Player player = new Player();
+		player.setName(name);
+		player = playerManager.createPlayer(player);
+		PlayerSession<Player> playerSession = playerSessionManager.createPlayerSession(player, ctx.getChannel());
 		Map<String, Object> payload = new HashMap<String, Object>();
 		payload.put("sessionId", playerSession.getId());
 		payload.put("roleName", name);
@@ -40,7 +41,8 @@ public class PlayerController {
 	
 	@WsRpcCall("/login")
 	public void login(long playerSessionId, GameContext ctx){
-		PlayerSession playerSession = ctx.getPlayerSession();
+		@SuppressWarnings("unchecked")
+		PlayerSession<Player> playerSession = (PlayerSession<Player>)ctx.getPlayerSession();
 		if(playerSession.getChannel() != null && playerSession.getChannel().isActive()){
 			GameResult result = ReturnUtils.failed("user has logined");
 			ctx.getChannel().writeAndFlush(new TextWebSocketFrame(JsonUtil.toJson(result)));
@@ -67,7 +69,7 @@ public class PlayerController {
 	
 	@WsRpcCall("/chat")
 	public void chat(long sessionId, String msg, GameContext context){
-		PlayerSession playerSession = playerSessionManager.getSession(sessionId);
+		PlayerSession<Player> playerSession = playerSessionManager.getSession(sessionId);
 		Map<String, Object> payload = new HashMap<String, Object>();
 		payload.put("msg", msg);
 		Map<String, Object> source = new HashMap<String, Object>();

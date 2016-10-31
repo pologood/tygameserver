@@ -14,7 +14,7 @@ import com.google.common.base.Strings;
 import com.netease.pangu.game.common.meta.GameContext;
 import com.netease.pangu.game.common.meta.PlayerSession;
 import com.netease.pangu.game.rpc.WsRpcCallInvoker;
-import com.netease.pangu.game.service.PlayerSessionManager;
+import com.netease.pangu.game.service.AbstractPlayerSessionManager;
 import com.netease.pangu.game.util.JsonUtil;
 import com.netease.pangu.game.util.NettyHttpUtil;
 import com.netease.pangu.game.util.ReturnUtils;
@@ -42,7 +42,7 @@ public class MasterServerHandler extends ChannelInboundHandlerAdapter {
 	@Resource
 	private WsRpcCallInvoker wsRpcCallInvoker;
 	@Resource
-	private PlayerSessionManager playerSessionManager;
+	private AbstractPlayerSessionManager playerSessionManager;
 	
 	@Override
 	public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {

@@ -186,6 +186,7 @@
 		<module>tygameserver-support</module>
 		<module>tygameserver-protocol</module>
 		<module>tygameserver-slave</module>
+		<module>tygameserver-config</module>
 	</modules>
 	<build>
 		<pluginManagement>

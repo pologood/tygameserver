@@ -7,7 +7,7 @@ import com.netease.pangu.game.util.JsonUtil;
 import io.netty.channel.Channel;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 
-public class PlayerSession {
+public class PlayerSession<P extends IPlayer> {
 	private final static int WATI_MILLIS = 5 * 1000;
 
 	public static enum Status {
@@ -15,7 +15,7 @@ public class PlayerSession {
 	}
 	
 	private long id;
-	private Player player;
+	private P player;
 	private long roomId;
 	private Channel channel;
 	private Map<String, Object> attrs;
@@ -84,10 +84,10 @@ public class PlayerSession {
 	public void setId(long id) {
 		this.id = id;
 	}
-	public Player getPlayer() {
+	public P getPlayer() {
 		return player;
 	}
-	public void setPlayer(Player player) {
+	public void setPlayer(P player) {
 		this.player = player;
 	}
 

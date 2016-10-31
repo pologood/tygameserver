@@ -7,13 +7,13 @@ import javax.annotation.Resource;
 
 import com.netease.pangu.game.common.meta.GameContext;
 import com.netease.pangu.game.common.meta.GameRoom;
-import com.netease.pangu.game.common.meta.Player;
+import com.netease.pangu.game.common.meta.IPlayer;
 import com.netease.pangu.game.common.meta.PlayerSession;
 import com.netease.pangu.game.rpc.annotation.WsRpcCall;
 import com.netease.pangu.game.rpc.annotation.WsRpcController;
 import com.netease.pangu.game.service.GameRoomManager;
-import com.netease.pangu.game.service.PlayerManager;
-import com.netease.pangu.game.service.PlayerSessionManager;
+import com.netease.pangu.game.service.AbstractPlayerManager;
+import com.netease.pangu.game.service.AbstractPlayerSessionManager;
 import com.netease.pangu.game.util.JsonUtil;
 import com.netease.pangu.game.util.ReturnUtils;
 import com.netease.pangu.game.util.ReturnUtils.GameResult;
@@ -22,8 +22,8 @@ import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 
 @WsRpcController("/room")
 public class RoomController {
-	@Resource private PlayerSessionManager playerSessionManager;
-	@Resource private PlayerManager playerManager;
+	@Resource private AbstractPlayerSessionManager playerSessionManager;
+	@Resource private AbstractPlayerManager playerManager;
 	@Resource private GameRoomManager gameRoomManager;
 	
 	@WsRpcCall("/list")
@@ -62,7 +62,7 @@ public class RoomController {
 	public GameResult getRoom(long roomId, GameContext ctx){
 		GameRoom room = gameRoomManager.getGameRoom(roomId);
 		Map<String, Object> payload = new HashMap<String, Object>();
-		Map<Long, Player>  players = playerSessionManager.getPlayers(room.getPlayerSessionIds());
+		Map<Long, IPlayer>  players = playerSessionManager.getPlayers(room.getPlayerSessionIds());
 		payload.put("members", players);
 		payload.put("id", room.getId());
 		payload.put("state", room.getStatus().ordinal());
@@ -82,7 +82,7 @@ public class RoomController {
 		payload.put("msg", msg);
 		Map<String, Object> source = new HashMap<String, Object>();
 		source.put("sessionId", pSession.getId());
-		Player player = pSession.getPlayer();
+		IPlayer player = pSession.getPlayer();
 		source.put("playerName", player.getName());
 		GameResult result = ReturnUtils.succ(payload, source);		
 		for(PlayerSession member: members.values()){
