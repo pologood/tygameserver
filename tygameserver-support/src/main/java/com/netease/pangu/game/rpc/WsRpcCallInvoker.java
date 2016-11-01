@@ -48,9 +48,8 @@ public class WsRpcCallInvoker {
 
 	private Object getController(String rpcMethodName) {
 		return controllerMap.get(nettyRpcCallAnnoValueMap.get(rpcMethodName));
-
 	}
-
+	
 	public Object invoke(String rpcMethodName, List<Object> args, GameContext context) {
 		Method method = getMethod(rpcMethodName);
 		Object controller = getController(rpcMethodName);

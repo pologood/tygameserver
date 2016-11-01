@@ -13,16 +13,18 @@ import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 
 import org.apache.commons.lang3.math.NumberUtils;
-import org.omg.CosNaming.NamingContextExtPackage.URLStringHelper;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.stereotype.Component;
 
 import com.google.common.base.Strings;
-import com.google.common.net.UrlEscapers;
-import com.netease.pangu.game.common.meta.GameContext;
 import com.netease.pangu.game.http.annotation.HttpController;
 import com.netease.pangu.game.http.annotation.HttpRequestMapping;
 import com.netease.pangu.game.util.NettyHttpUtil;
 
+import io.netty.handler.codec.http.HttpRequest;
+import io.netty.handler.codec.http.HttpResponse;
+
+@Component
 public class HttpRequestInvoker {
 	private Map<String, Object> controllerMap;
 	private Map<String, Method> methodMap;
@@ -50,7 +52,7 @@ public class HttpRequestInvoker {
 		
 	}
 	
-	public Object invoke(String rpcMethodName, List<Object> args, GameContext context){
+	public <Player> Object invoke(String rpcMethodName, List<Object> args, HttpRequest request, HttpResponse response){
 		Method method = getMethod(rpcMethodName);
 		Object controller = getController(rpcMethodName);
 		Class<?>[] paramTypes = method.getParameterTypes();
@@ -70,8 +72,10 @@ public class HttpRequestInvoker {
 				convertedArgs.add(num.floatValue());
 			}else if(String.class.isAssignableFrom(paramTypes[i])){
 				convertedArgs.add(String.valueOf(args.get(i)));
-			}else if(GameContext.class.isAssignableFrom(paramTypes[i])){
-				convertedArgs.add(context);
+			}else if(HttpResponse.class.isAssignableFrom(paramTypes[i])){
+				convertedArgs.add(response);
+			}else if(HttpRequest.class.isAssignableFrom(paramTypes[i])){
+				convertedArgs.add(request);
 			}
 		}
 		try {

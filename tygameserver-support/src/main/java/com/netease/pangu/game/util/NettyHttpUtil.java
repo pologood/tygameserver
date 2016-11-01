@@ -1,5 +1,11 @@
 package com.netease.pangu.game.util;
 
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+
 import com.netease.pangu.game.common.meta.GameContext;
 import com.netease.pangu.game.rpc.WsRpcResponse;
 
@@ -10,8 +16,13 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.FullHttpResponse;
 import io.netty.handler.codec.http.HttpHeaderNames;
+import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.HttpUtil;
+import io.netty.handler.codec.http.QueryStringDecoder;
+import io.netty.handler.codec.http.multipart.Attribute;
+import io.netty.handler.codec.http.multipart.HttpPostRequestDecoder;
+import io.netty.handler.codec.http.multipart.InterfaceHttpData;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 
 public class NettyHttpUtil {
@@ -25,13 +36,13 @@ public class NettyHttpUtil {
 		}
 	}
 	
-	public static void sendWsResponse(GameContext context, Channel channel, Object content){
+	public static void sendWsResponse(@SuppressWarnings("rawtypes") GameContext context, Channel channel, Object content){
 		WsRpcResponse response = WsRpcResponse.create(context.getRpcMethodName());
 		response.setContent(content);
 		channel.writeAndFlush(new TextWebSocketFrame(JsonUtil.toJson(response)));
 	}
 	
-	public static void sendWsResponse(GameContext context, WsRpcResponse response){
+	public static void sendWsResponse(@SuppressWarnings("rawtypes") GameContext context, WsRpcResponse response){
 		context.getChannel().writeAndFlush(new TextWebSocketFrame(JsonUtil.toJson(response)));
 	}
 	
@@ -51,4 +62,27 @@ public class NettyHttpUtil {
 			return path;
 		} 
 	}
+	
+	public static Map<String, String> parseRequest(FullHttpRequest request) throws IOException{
+        Map<String, String> params = new HashMap<String, String>();
+
+        if (request.method() == HttpMethod.GET) {
+            QueryStringDecoder decoder = new QueryStringDecoder(request.uri());
+            for(Entry<String, List<String>> entry: decoder.parameters().entrySet()){
+            	params.put(entry.getKey(), entry.getValue().get(0));
+            }
+        } else if (request.method() == HttpMethod.POST) {
+            HttpPostRequestDecoder decoder = new HttpPostRequestDecoder(request);
+            decoder.offer(request);
+            List<InterfaceHttpData> parmList = decoder.getBodyHttpDatas();
+            for (InterfaceHttpData parm : parmList) {
+                Attribute data = (Attribute) parm;
+                params.put(data.getName(), data.getValue());
+            }
+        } else{
+        	throw new UnsupportedOperationException("http method not support");
+        }
+
+        return params;
+    }
 }

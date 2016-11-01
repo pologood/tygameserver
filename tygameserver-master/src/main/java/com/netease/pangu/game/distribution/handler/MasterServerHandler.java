@@ -1,6 +1,6 @@
 package com.netease.pangu.game.distribution.handler;
 
-import java.nio.charset.Charset;
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 import com.google.common.base.Strings;
 import com.netease.pangu.game.common.meta.GameContext;
 import com.netease.pangu.game.common.meta.PlayerSession;
+import com.netease.pangu.game.http.HttpRequestInvoker;
 import com.netease.pangu.game.meta.Player;
 import com.netease.pangu.game.rpc.WsRpcCallInvoker;
 import com.netease.pangu.game.service.PlayerSessionManager;
@@ -21,7 +22,6 @@ import com.netease.pangu.game.util.NettyHttpUtil;
 import com.netease.pangu.game.util.ReturnUtils;
 import com.netease.pangu.game.util.ReturnUtils.GameResult;
 
-import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
@@ -29,13 +29,11 @@ import io.netty.handler.codec.http.DefaultFullHttpResponse;
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpResponseStatus;
-import io.netty.handler.codec.http.HttpUtil;
 import io.netty.handler.codec.http.HttpVersion;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import io.netty.handler.codec.http.websocketx.WebSocketFrame;
 import io.netty.handler.codec.http.websocketx.WebSocketServerHandshaker;
 import io.netty.handler.codec.http.websocketx.WebSocketServerHandshakerFactory;
-import io.netty.handler.codec.http2.HttpConversionUtil;
 
 @Sharable
 @Lazy
@@ -44,6 +42,8 @@ public class MasterServerHandler extends ChannelInboundHandlerAdapter {
 	private static String WEB_SOCKET_PATH = "websocket";
 	@Resource
 	private WsRpcCallInvoker wsRpcCallInvoker;
+	@Resource 
+	private HttpRequestInvoker httpRequestInvoker;
 	@Resource
 	private PlayerSessionManager playerSessionManager;
 	
@@ -87,7 +87,7 @@ public class MasterServerHandler extends ChannelInboundHandlerAdapter {
 		}
 	}
 
-	private void handleHttpRequest(ChannelHandlerContext ctx, FullHttpRequest req, String webSocketPath) {
+	private void handleHttpRequest(ChannelHandlerContext ctx, FullHttpRequest req, String webSocketPath) throws IOException {
 		if (!req.decoderResult().isSuccess()) {
 			NettyHttpUtil.sendHttpResponse(ctx, req,
 					new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.BAD_REQUEST));
@@ -105,8 +105,9 @@ public class MasterServerHandler extends ChannelInboundHandlerAdapter {
 					handshaker.handshake(ctx.channel(), req);
 				}
 			}else{
-				
-				NettyHttpUtil.sendHttpResponse(ctx, req, new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK, Unpooled.copiedBuffer("hello",Charset.forName("UTF-8"))));
+				Map<String, String> params = NettyHttpUtil.parseRequest(req);
+				//httpRequestInvoker.invoke(rpcMethodName, args, req, response)
+				//NettyHttpUtil.sendHttpResponse(ctx, req, new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK, Unpooled.copiedBuffer("hello",Charset.forName("UTF-8"))));
 			}
 			
 		}else{
