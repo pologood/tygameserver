@@ -13,26 +13,29 @@ import org.springframework.stereotype.Component;
 import com.google.common.base.Strings;
 import com.netease.pangu.game.common.meta.GameContext;
 import com.netease.pangu.game.common.meta.PlayerSession;
+import com.netease.pangu.game.meta.Player;
 import com.netease.pangu.game.rpc.WsRpcCallInvoker;
-import com.netease.pangu.game.service.AbstractPlayerSessionManager;
+import com.netease.pangu.game.service.PlayerSessionManager;
 import com.netease.pangu.game.util.JsonUtil;
 import com.netease.pangu.game.util.NettyHttpUtil;
 import com.netease.pangu.game.util.ReturnUtils;
 import com.netease.pangu.game.util.ReturnUtils.GameResult;
 
-import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.buffer.Unpooled;
+import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.handler.codec.http.DefaultFullHttpResponse;
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpResponseStatus;
+import io.netty.handler.codec.http.HttpUtil;
 import io.netty.handler.codec.http.HttpVersion;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import io.netty.handler.codec.http.websocketx.WebSocketFrame;
 import io.netty.handler.codec.http.websocketx.WebSocketServerHandshaker;
 import io.netty.handler.codec.http.websocketx.WebSocketServerHandshakerFactory;
+import io.netty.handler.codec.http2.HttpConversionUtil;
 
 @Sharable
 @Lazy
@@ -42,7 +45,7 @@ public class MasterServerHandler extends ChannelInboundHandlerAdapter {
 	@Resource
 	private WsRpcCallInvoker wsRpcCallInvoker;
 	@Resource
-	private AbstractPlayerSessionManager playerSessionManager;
+	private PlayerSessionManager playerSessionManager;
 	
 	@Override
 	public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
@@ -65,15 +68,15 @@ public class MasterServerHandler extends ChannelInboundHandlerAdapter {
 			String sessionId = (String) data.get("sessionId");
 			@SuppressWarnings("unchecked")
 			List<Object> args = (List<Object>) data.get("params");
-			GameContext context = null;
+			GameContext<Player> context = null;
 			if (Strings.isNullOrEmpty(sessionId)) {
-				context = new GameContext(ctx, null, rpcMethodName, frame);
+				context = new GameContext<Player>(ctx, null, rpcMethodName, frame);
 			} else {
 				Double num = NumberUtils.toDouble(sessionId);
 				long playerSessionId = num.longValue();
-				PlayerSession playerSession = playerSessionManager.getSession(playerSessionId);
+				PlayerSession<Player> playerSession = playerSessionManager.getSession(playerSessionId);
 				if (playerSession != null) {
-					context = new GameContext(ctx, playerSession, rpcMethodName, frame);
+					context = new GameContext<Player>(ctx, playerSession, rpcMethodName, frame);
 				} else {
 					GameResult result = ReturnUtils.failed(rpcMethodName, "user hasn't registered");
 					ctx.channel().writeAndFlush(new TextWebSocketFrame(JsonUtil.toJson(result)));
@@ -102,6 +105,7 @@ public class MasterServerHandler extends ChannelInboundHandlerAdapter {
 					handshaker.handshake(ctx.channel(), req);
 				}
 			}else{
+				
 				NettyHttpUtil.sendHttpResponse(ctx, req, new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK, Unpooled.copiedBuffer("hello",Charset.forName("UTF-8"))));
 			}
 			

@@ -124,7 +124,7 @@ public class MasterBootstrap implements Bootstrap {
 	}
 
 	public static void main(String[] args) {
-		ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("tygameserver-master.xml");
+		ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("tygameserver-master-service.xml");
 		MasterBootstrap bootstrap = context.getBean(MasterBootstrap.class);
 		int port = Integer.parseInt(args[0]);
 		bootstrap.setPort(port);

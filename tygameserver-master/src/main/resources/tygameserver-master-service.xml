@@ -14,7 +14,7 @@
            http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
            http://www.springframework.org/schema/cache 
 		   http://www.springframework.org/schema/cache/spring-cache.xsd">
-   	<import resource="classpath*:tygameserver-support.xml"/>
+   	<import resource="classpath*:tygameserver-support-service.xml"/>
    	<bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
     	<property name="ignoreUnresolvablePlaceholders" value="true"/>
     	<property name="locations">

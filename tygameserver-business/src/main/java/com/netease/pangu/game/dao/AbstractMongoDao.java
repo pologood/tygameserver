@@ -15,6 +15,10 @@ public class AbstractMongoDao<T> {
 	private T nullIfEmpty(List<T> list) {
 		return list == null || list.isEmpty() ? null : list.get(0);
 	}
+	
+	public String getCollectionName(Class<T> clazz){
+		return mongoTemplate.getCollectionName(clazz);
+	}
 
 	public T findOne(Query query, Class<T> clazz) {
 		return nullIfEmpty(mongoTemplate.find(query, clazz));
@@ -28,12 +32,16 @@ public class AbstractMongoDao<T> {
 		return mongoTemplate.updateFirst(query, update, clazz);
 	}
 	
-	public void insert(T object){
+	public void addObject(T object){
 		mongoTemplate.insert(object);
 	}
 	
-	public void insert(List<T> list){
+	public void addAll(List<T> list){
 		mongoTemplate.insertAll(list);
+	}
+
+	public MongoTemplate getMongoTemplate() {
+		return mongoTemplate;
 	}
 	
 }

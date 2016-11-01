@@ -1,38 +1,28 @@
 package com.netease.pangu.game.service;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
 import javax.annotation.Resource;
 
 import com.netease.pangu.game.common.meta.IPlayer;
 
 public abstract class AbstractPlayerManager<P extends IPlayer> {
-	private final Map<Long, P> players;
 	@Resource
 	private UniqueIDGeneratorService uniqueIdGeneratorService;
 	
 	public AbstractPlayerManager(){
-		 players = new ConcurrentHashMap<Long, P>();
 	}
-	
+	/**
+	 * 
+	 * @param player
+	 * @return 如果角色已存在返回存在的角色
+	 */
 	public P createPlayer(P player){
 		long playerId = uniqueIdGeneratorService.generatePlayerId();
-		player.setId(playerId);
-		if(players.put(playerId, player) == null){
-			return player;
-		}
-		return null;
+		player.setPid(playerId);
+		return put(playerId, player);
 	}
 	
-	public boolean remove(long key){
-		if(players.remove(key) != null){
-			return true;
-		}
-		return false;
-	}
+	protected abstract P put(long playerId, P player); 
 	
-	public P get(long key){
-		return players.get(key);
-	}
+	
+	protected abstract P get(long playerId);
 }

@@ -19,8 +19,8 @@ import io.grpc.ManagedChannelBuilder;
 
 @Service
 public class AppWorkerCallService {
-	private ConcurrentMap<String, AppWorkerServiceGrpc.AppWorkerServiceFutureStub> futureStubMap = new ConcurrentHashMap();
-	private ConcurrentMap<String, AppWorkerServiceGrpc.AppWorkerServiceBlockingStub> blockingStubMap = new ConcurrentHashMap();
+	private ConcurrentMap<String, AppWorkerServiceGrpc.AppWorkerServiceFutureStub> futureStubMap = new ConcurrentHashMap<String, AppWorkerServiceGrpc.AppWorkerServiceFutureStub>();
+	private ConcurrentMap<String, AppWorkerServiceGrpc.AppWorkerServiceBlockingStub> blockingStubMap = new ConcurrentHashMap<String, AppWorkerServiceGrpc.AppWorkerServiceBlockingStub>();
 	
 	public boolean addBlockingStub(AppWorker worker){
 		ManagedChannel channel = ManagedChannelBuilder.forAddress(worker.getIp(), worker.getPort()).usePlaintext(true).build();

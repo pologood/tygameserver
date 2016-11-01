@@ -3,12 +3,12 @@ package com.netease.pangu.game.common.meta;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 
-public class GameContext {
+public class GameContext<T extends IPlayer> {
 	private final ChannelHandlerContext channelHandlerContext;
-	private final PlayerSession<?> playerSession;
+	private final PlayerSession<T> playerSession;
 	private final String rpcMethodName;
 	private final Object frame;
-	public GameContext(ChannelHandlerContext context, PlayerSession playerSession, String rpcMethodName, Object frame){
+	public GameContext(ChannelHandlerContext context, PlayerSession<T> playerSession, String rpcMethodName, Object frame){
 		this.channelHandlerContext = context;
 		this.playerSession = playerSession;
 		this.rpcMethodName = rpcMethodName;
@@ -23,7 +23,7 @@ public class GameContext {
 		return channelHandlerContext.channel();
 	}
 	
-	public PlayerSession getPlayerSession() {
+	public PlayerSession<T> getPlayerSession() {
 		return playerSession;
 	}
 	

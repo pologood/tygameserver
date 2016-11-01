@@ -1,25 +1,35 @@
 package com.netease.pangu.game.service;
 
-import java.util.concurrent.atomic.AtomicLong;
+import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
 
 import org.springframework.stereotype.Service;
 
+import com.netease.pangu.game.dao.UniqueIDGenerateDao;
+
 @Service
 public class UniqueIDGeneratorService {
+	@Resource private UniqueIDGenerateDao uniqueIDGenerateDao;
+	private final String PlayerID_KEY = "PlayerId";
+	private final String SesssionID_KEY = "SesssionId";
+	private final String RoomId_KEY = "RoomId";
 	
-	private final AtomicLong PlayerID = new AtomicLong(100000);
-	private final AtomicLong SesssionID = new AtomicLong(10000);
-	private final AtomicLong RoomId = new AtomicLong(10000);
+	@PostConstruct
+	public void init(){
+		uniqueIDGenerateDao.getAndSetInitValue(PlayerID_KEY, 10000);
+		uniqueIDGenerateDao.getAndSetInitValue(SesssionID_KEY, 10000);
+		uniqueIDGenerateDao.getAndSetInitValue(RoomId_KEY, 10000);
+	}
 	
 	public long generatePlayerId() {
-		return PlayerID.incrementAndGet();
+		return uniqueIDGenerateDao.generate(PlayerID_KEY);
 	}
 	
 	public long generateSessionId() {
-		return SesssionID.incrementAndGet();
+		return uniqueIDGenerateDao.generate(SesssionID_KEY);
 	}
 	
 	public long generateRoomId() {
-		return RoomId.incrementAndGet();
+		return uniqueIDGenerateDao.generate(RoomId_KEY);
 	}
 }
