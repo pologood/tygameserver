@@ -10,6 +10,11 @@
 	<dependencies>
 		<dependency>
 			<groupId>com.netease.pangu.tygameserver</groupId>
+			<artifactId>tygameserver-business</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>com.netease.pangu.tygameserver</groupId>
 			<artifactId>tygameserver-protocol</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>

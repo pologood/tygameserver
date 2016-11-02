@@ -1,6 +1,7 @@
 package com.netease.pangu.game.util;
 
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -9,16 +10,19 @@ import java.util.Map.Entry;
 import com.netease.pangu.game.common.meta.GameContext;
 import com.netease.pangu.game.rpc.WsRpcResponse;
 
+import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
+import io.netty.handler.codec.http.DefaultFullHttpResponse;
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.FullHttpResponse;
 import io.netty.handler.codec.http.HttpHeaderNames;
 import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.HttpUtil;
+import io.netty.handler.codec.http.HttpVersion;
 import io.netty.handler.codec.http.QueryStringDecoder;
 import io.netty.handler.codec.http.multipart.Attribute;
 import io.netty.handler.codec.http.multipart.HttpPostRequestDecoder;
@@ -54,7 +58,7 @@ public class NettyHttpUtil {
 	public static String resolveUrlPath(String path){
 		return path.replace("//", "/");
 	}
-	
+
 	public static String resolveStartWithEscape(String path){
 		if(!path.isEmpty()){
 			return path.startsWith("/")? path: "/" + path;
@@ -85,4 +89,12 @@ public class NettyHttpUtil {
 
         return params;
     }
+	
+	public static FullHttpResponse createBadRequestResponse(){
+		return new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.BAD_REQUEST);
+	}
+	
+	public static FullHttpResponse createHttpResponse(HttpResponseStatus status, String msg){
+		return new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, status, Unpooled.copiedBuffer(msg, Charset.forName("UTF-8")));
+	} 
 }

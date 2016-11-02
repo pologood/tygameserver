@@ -32,7 +32,7 @@ import io.netty.handler.ssl.util.SelfSignedCertificate;
 public class MasterBootstrap implements Bootstrap {
 	private final static Logger logger = Logger.getLogger(MasterBootstrap.class);
 	private static final boolean SSL = System.getProperty("ssl") != null;
-	private static final int PORT = Integer.parseInt(System.getProperty("port", SSL ? "8443" : "8080"));
+	private static final int PORT = Integer.parseInt(System.getProperty("port", SSL ? "8180" : "8080"));
 	private Server server;
 	@Value("${server.port}")
 	private int port = 9001;
@@ -84,7 +84,6 @@ public class MasterBootstrap implements Bootstrap {
 			Channel ch = b.bind(PORT).sync().channel();
 			ch.closeFuture().sync();
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} finally {
 			bossGroup.shutdownGracefully();

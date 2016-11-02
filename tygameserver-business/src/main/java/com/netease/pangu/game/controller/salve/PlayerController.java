@@ -1,4 +1,4 @@
-package com.netease.pangu.game.controller;
+package com.netease.pangu.game.controller.salve;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -28,7 +28,7 @@ public class PlayerController {
 	@Resource private GameRoomManager gameRoomManager;
 	
 	@WsRpcCall("/reg")
-	public GameResult register(String name, GameContext ctx){
+	public GameResult register(String name, GameContext<Player> ctx){
 		Player player = new Player();
 		player.setName(name);
 		player = playerManager.createPlayer(player);
@@ -40,8 +40,7 @@ public class PlayerController {
 	}
 	
 	@WsRpcCall("/login")
-	public void login(long playerSessionId, GameContext ctx){
-		@SuppressWarnings("unchecked")
+	public void login(long playerSessionId, GameContext<Player> ctx){
 		PlayerSession<Player> playerSession = (PlayerSession<Player>)ctx.getPlayerSession();
 		if(playerSession.getChannel() != null && playerSession.getChannel().isActive()){
 			GameResult result = ReturnUtils.failed("user has logined");
@@ -58,7 +57,7 @@ public class PlayerController {
 	}
 	
 	@WsRpcCall("/list")
-	public GameResult list(GameContext ctx){
+	public GameResult list(GameContext<Player> ctx){
 		TreeMap<Long, Player> map = new TreeMap<Long, Player>();
 		for(Long sesssionId : playerSessionManager.getPlayerSessions().keySet()){
 			map.put(sesssionId, playerSessionManager.getPlayerSessions().get(sesssionId).getPlayer());
@@ -68,7 +67,7 @@ public class PlayerController {
 	}
 	
 	@WsRpcCall("/chat")
-	public void chat(long sessionId, String msg, GameContext context){
+	public void chat(long sessionId, String msg, GameContext<Player> context){
 		PlayerSession<Player> playerSession = playerSessionManager.getSession(sessionId);
 		Map<String, Object> payload = new HashMap<String, Object>();
 		payload.put("msg", msg);
