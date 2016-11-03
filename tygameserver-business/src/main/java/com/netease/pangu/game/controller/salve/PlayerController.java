@@ -28,9 +28,10 @@ public class PlayerController {
 	@Resource private GameRoomManager gameRoomManager;
 	
 	@WsRpcCall("/reg")
-	public GameResult register(String name, GameContext<Player> ctx){
+	public GameResult register(String name, String uuid, GameContext<Player> ctx){
 		Player player = new Player();
 		player.setName(name);
+		player.setUuid(uuid);
 		player = playerManager.createPlayer(player);
 		PlayerSession<Player> playerSession = playerSessionManager.createPlayerSession(player, ctx.getChannel());
 		Map<String, Object> payload = new HashMap<String, Object>();

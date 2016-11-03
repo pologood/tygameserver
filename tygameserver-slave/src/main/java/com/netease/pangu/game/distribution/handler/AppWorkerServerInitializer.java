@@ -15,7 +15,7 @@ import io.netty.handler.codec.http.websocketx.extensions.compression.WebSocketSe
 import io.netty.handler.ssl.SslContext;
 
 @Component
-public class SlaveServerInitializer extends ChannelInitializer<SocketChannel> {
+public class AppWorkerServerInitializer extends ChannelInitializer<SocketChannel> {
 
 private static final String WEBSOCKET_PATH = "/websocket";
     @Resource
@@ -33,7 +33,7 @@ private static final String WEBSOCKET_PATH = "/websocket";
         pipeline.addLast(new HttpObjectAggregator(65536));
         pipeline.addLast(new WebSocketServerCompressionHandler());
         pipeline.addLast(new WebSocketServerProtocolHandler(WEBSOCKET_PATH, null, true));
-        pipeline.addLast(beanFactory.getBean(SlaveServerHandler.class));
+        pipeline.addLast(beanFactory.getBean(AppWorkerServerHandler.class));
     }
 
 	public SslContext getSslCtx() {

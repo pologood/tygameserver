@@ -18,7 +18,7 @@ import io.grpc.stub.StreamObserver;
 public class AppMasterServiceImpl extends AppMasterServiceGrpc.AppMasterServiceImplBase {
 	private @Resource AppWorkerManager appWorkerManager;
 	@Override
-	public void addAppWorker(Worker request, StreamObserver<RpcResponse> responseObserver) {
+	public void addOrUpdateAppWorker(Worker request, StreamObserver<RpcResponse> responseObserver) {
 		AppWorker appWorker = new AppWorker();
 		appWorker.setIp(request.getIp());
 		appWorker.setName(request.getName());
@@ -26,14 +26,23 @@ public class AppMasterServiceImpl extends AppMasterServiceGrpc.AppMasterServiceI
 		appWorker.setSys(request.getSysMap());
 		appWorker.setCount(request.getCount());
 		RpcResponse.Builder builder = RpcResponse.newBuilder();
-		if(appWorkerManager.addNode(appWorker)){
-			builder.setCode(ReturnUtils.SUCC);
-			builder.setMessage(JsonUtil.toJson(appWorkerManager.getWorkersMap()));
+		if(!appWorkerManager.contains(appWorker)){
+			if(appWorkerManager.addNode(appWorker)){
+				builder.setCode(ReturnUtils.SUCC);
+				builder.setMessage(JsonUtil.toJson(appWorkerManager.getWorkersMap()));
+			}else{
+				builder.setCode(ReturnUtils.FAILED);
+				builder.setMessage("add failed");
+			}
 		}else{
-			builder.setCode(ReturnUtils.FAILED);
-			builder.setMessage("add failed");
+			if(appWorkerManager.updateNode(appWorker)){
+				builder.setCode(ReturnUtils.SUCC);
+				builder.setMessage(JsonUtil.toJson(appWorkerManager.getWorkersMap()));
+			}else{
+				builder.setCode(ReturnUtils.FAILED);
+				builder.setMessage("add failed");
+			}
 		}
-		System.out.println(request.toString());
 		RpcResponse result = builder.build();
 		responseObserver.onNext(result);
 		responseObserver.onCompleted();

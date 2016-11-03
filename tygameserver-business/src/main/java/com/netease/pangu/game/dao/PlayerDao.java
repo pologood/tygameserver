@@ -14,6 +14,17 @@ public class PlayerDao extends AbstractMongoDao<Player> {
 		return this.findOne(query, Player.class);
 	}
 	
+	public Player getPlayerByUUID(String uuid){
+		Query query = new Query(Criteria.where("uuid").is(uuid));
+		return this.findOne(query, Player.class);
+	}
+	
+	
+	public Player getPlayerByName(String name){
+		Query query = new Query(Criteria.where("name").is(name));
+		return this.findOne(query, Player.class);
+	}
+	
 	public void addPlayer(Player player){
 		this.addObject(player);
 	}

@@ -18,7 +18,8 @@ public class AppWorkerServiceImpl extends AppWorkerServiceGrpc.AppWorkerServiceI
 		logger.info(request.getBeanName());
 		RpcResponse.Builder builder = RpcResponse.newBuilder();
 		builder.setCode(ReturnUtils.SUCC);
-		builder.setMessage("hello");
+		
+		builder.setMessage("call method not implemented");
 		RpcResponse result = builder.build();
 		responseObserver.onNext(result);
 		responseObserver.onCompleted();

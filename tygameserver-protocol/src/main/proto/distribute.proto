@@ -9,7 +9,7 @@ option objc_class_prefix = "HLW";
 package distribution;
 
 service AppMasterService {
-	rpc addAppWorker (Worker) returns (RpcResponse) {}
+	rpc addOrUpdateAppWorker (Worker) returns (RpcResponse) {}
 }
 
 service AppWorkerService {

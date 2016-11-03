@@ -4,6 +4,7 @@
 	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:context="http://www.springframework.org/schema/context"
 	xmlns:p="http://www.springframework.org/schema/p" xmlns:c="http://www.springframework.org/schema/c"
 	xmlns:cache="http://www.springframework.org/schema/cache"
+	xmlns:task="http://www.springframework.org/schema/task"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans 
            http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
            http://www.springframework.org/schema/context
@@ -13,7 +14,9 @@
            http://www.springframework.org/schema/tx 
            http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
            http://www.springframework.org/schema/cache 
-		   http://www.springframework.org/schema/cache/spring-cache.xsd">	
+		   http://www.springframework.org/schema/cache/spring-cache.xsd
+		   http://www.springframework.org/schema/task
+		   http://www.springframework.org/schema/task/spring-task-3.1.xsd">	
    	<import resource="classpath*:tygameserver-business-service.xml"/>
    	<bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
     	<property name="ignoreUnresolvablePlaceholders" value="true"/>
@@ -28,5 +31,11 @@
     </bean>
 	<context:annotation-config />
 	<context:component-scan base-package="com.netease.pangu.game.distribution" />
+	<context:component-scan base-package="com.netease.pangu.game.core" />
 	<context:component-scan base-package="com.netease.pangu.game.demo.business.controller.http" />
+	
+	<!-- 定时任务  -->
+	<task:executor id="executor" pool-size="5" />  
+   	<task:scheduler id="scheduler" pool-size="10" />  
+    <task:annotation-driven executor="executor" scheduler="scheduler" />
 </beans>

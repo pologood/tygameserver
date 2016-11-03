@@ -39,6 +39,8 @@ public class MasterBootstrap implements Bootstrap {
 	@Resource
 	private AppMasterServiceImpl appMasterServiceImpl;
 
+	private ConfigurableApplicationContext context;
+	
 	@Override
 	public void start() {
 		if (server != null) {
@@ -49,11 +51,6 @@ public class MasterBootstrap implements Bootstrap {
 				e.printStackTrace();
 			}
 		}
-	}
-
-	@Override
-	public void init(ConfigurableApplicationContext context) {
-		server = ServerBuilder.forPort(port).addService(appMasterServiceImpl).build();
 		logger.info("Server started, listening on " + port);
 		SslContext sslCtx;
 		if (SSL) {
@@ -99,6 +96,13 @@ public class MasterBootstrap implements Bootstrap {
 				logger.info("*** server shut down");
 			}
 		});
+	}
+
+	@Override
+	public void init(ConfigurableApplicationContext context) {
+		server = ServerBuilder.forPort(port).addService(appMasterServiceImpl).build();
+		this.context = context;
+		
 	}
 
 	public void blockUntilShutdown() throws InterruptedException {

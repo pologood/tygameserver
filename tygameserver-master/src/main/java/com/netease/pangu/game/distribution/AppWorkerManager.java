@@ -19,8 +19,16 @@ public class AppWorkerManager {
 		return Collections.unmodifiableMap(appNodes);
 	}
 	
+	public boolean contains(AppWorker worker){
+		return appNodes.containsKey(getKey(worker));
+	}
+	
 	public boolean addNode(AppWorker worker) {
 		return appNodes.putIfAbsent(getKey(worker), worker) == null;
+	}
+	
+	public boolean updateNode(AppWorker worker) {
+		return appNodes.replace(getKey(worker), worker) != null;
 	}
 	
 	public boolean removeNode(AppWorker worker){

@@ -3,6 +3,9 @@ package com.netease.pangu.game.distribution;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.security.cert.CertificateException;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Resource;
 import javax.net.ssl.SSLException;
@@ -13,12 +16,16 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.stereotype.Component;
 
-import com.netease.pangu.game.distribution.handler.SlaveServerInitializer;
+import com.netease.pangu.distribution.proto.RpcResponse;
+import com.netease.pangu.game.distribution.handler.AppWorkerServerInitializer;
+import com.netease.pangu.game.service.GameRoomManager;
+import com.netease.pangu.game.service.PlayerManager;
 
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
+import io.netty.channel.ChannelFuture;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
@@ -34,70 +41,36 @@ public class AppWorkerBootstrap implements Bootstrap {
 	private static final boolean SSL = System.getProperty("ssl") != null;
 	private static final int PORT = Integer.parseInt(System.getProperty("port", SSL ? "8181" : "8081"));
 	private Server server;
+	private ConfigurableApplicationContext context;
 	@Value("${server.port}")
 	private int port = 9002;
 
 	@Value("${server.name}")
 	private String name;
-	
+
 	@Value("${master.port}")
 	private int masterPort;
 
 	@Value("${master.ip}")
 	private String masterIp;
-	
+
 	@Resource
 	private AppMasterCallService appMasterCallService;
+
+	@Resource
+	private GameRoomManager gameRoomManager;
+
+	@Resource
+	private PlayerManager playerManager;
 	
+	private AppWorker worker;
+
 	@Override
 	public void init(ConfigurableApplicationContext context) {
 		server = ServerBuilder.forPort(port).build();
+		this.context = context;
 		logger.info("Server started, listening on " + port);
-		logger.info("Server started, listening on " + port);
-		SslContext sslCtx;
-		if (SSL) {
-			try {
-				SelfSignedCertificate ssc = new SelfSignedCertificate();
-				sslCtx = SslContextBuilder.forServer(ssc.certificate(), ssc.privateKey()).build();
-				
-			} catch (SSLException | CertificateException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} finally{
-				sslCtx = null;
-			}
-			
-		} else {
-			sslCtx = null;
-		}
-		
-		EventLoopGroup bossGroup = new NioEventLoopGroup(1);
-		EventLoopGroup workerGroup = new NioEventLoopGroup();
-		try {
-			ServerBootstrap b = new ServerBootstrap();
-			SlaveServerInitializer initializer = context.getBean(SlaveServerInitializer.class);
-			initializer.setSslCtx(sslCtx);
-			b.group(bossGroup, workerGroup).channel(NioServerSocketChannel.class)
-					.handler(new LoggingHandler(LogLevel.INFO)).childHandler(initializer);
 
-			Channel ch = b.bind(PORT).sync().channel();
-			ch.closeFuture().sync();
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} finally {
-			bossGroup.shutdownGracefully();
-			workerGroup.shutdownGracefully();
-			context.close();
-		}
-		Runtime.getRuntime().addShutdownHook(new Thread() {
-			@Override
-			public void run() {
-				logger.info("*** shutting down server since JVM is shutting down");
-				AppWorkerBootstrap.this.stop();
-				logger.info("*** server shut down");
-			}
-		});
 	}
 
 	public void blockUntilShutdown() throws InterruptedException {
@@ -118,18 +91,73 @@ public class AppWorkerBootstrap implements Bootstrap {
 		if (server != null) {
 			try {
 				server.start();
-				AppWorker worker = new AppWorker();
+				worker = new AppWorker();
 				worker.setIp(InetAddress.getLocalHost().getHostAddress());
 				worker.setName(InetAddress.getLocalHost().getHostName());
-				worker.setPort(port);
+				worker.setPort(PORT);
+				playerManager.setCurrentAppWorker(worker);
 				appMasterCallService.init(masterIp, masterPort);
-				appMasterCallService.addWorker(worker);
+				logger.info("app worker init");
+				ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor();
+				service.scheduleAtFixedRate(new Runnable() {
+					@Override
+					public void run() {
+						worker.setCount(gameRoomManager.getRooms().size());
+						RpcResponse response = appMasterCallService.addOrUpdateWorker(worker);
+						logger.info(response.getMessage());
+					}
+				}, 3, 3, TimeUnit.SECONDS);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
+		SslContext sslCtx;
+		if (SSL) {
+			try {
+				SelfSignedCertificate ssc = new SelfSignedCertificate();
+				sslCtx = SslContextBuilder.forServer(ssc.certificate(), ssc.privateKey()).build();
+
+			} catch (SSLException | CertificateException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} finally {
+				sslCtx = null;
+			}
+
+		} else {
+			sslCtx = null;
+		}
+
+		EventLoopGroup bossGroup = new NioEventLoopGroup(1);
+		EventLoopGroup workerGroup = new NioEventLoopGroup();
+		try {
+			ServerBootstrap b = new ServerBootstrap();
+			AppWorkerServerInitializer initializer = context.getBean(AppWorkerServerInitializer.class);
+			initializer.setSslCtx(sslCtx);
+			b.group(bossGroup, workerGroup).channel(NioServerSocketChannel.class)
+					.handler(new LoggingHandler(LogLevel.INFO)).childHandler(initializer);
+
+			Channel ch = b.bind(PORT).sync().channel();
+			ChannelFuture future = ch.closeFuture();
+			future.sync();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			bossGroup.shutdownGracefully();
+			workerGroup.shutdownGracefully();
+			context.close();
+		}
+		Runtime.getRuntime().addShutdownHook(new Thread() {
+			@Override
+			public void run() {
+				logger.info("*** shutting down server since JVM is shutting down");
+				AppWorkerBootstrap.this.stop();
+				logger.info("*** server shut down");
+			}
+		});
 	}
-	
+
 	public int getPort() {
 		return port;
 	}
@@ -137,7 +165,7 @@ public class AppWorkerBootstrap implements Bootstrap {
 	public void setPort(int port) {
 		this.port = port;
 	}
-	
+
 	public static void main(String[] args) {
 		ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("tygameserver-slave-service.xml");
 		AppWorkerBootstrap bootstrap = context.getBean(AppWorkerBootstrap.class);
@@ -151,6 +179,5 @@ public class AppWorkerBootstrap implements Bootstrap {
 			e.printStackTrace();
 		}
 	}
-
 
 }
