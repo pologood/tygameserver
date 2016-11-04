@@ -81,13 +81,13 @@ public class HttpRequestInvoker {
 	public <Player> FullHttpResponse invoke(String requestUri, Map<String, String> args, FullHttpRequest request) {
 		Method method = getMethod(requestUri);
 		Object controller = getController(requestUri);
-		final Parameter[] parameters = method.getParameters();
+		final Class<?>[] parameterTypes = method.getParameterTypes();
 		try {
 			Map<Integer, String> paramsIndex = getParamsIndex(requestUri);
 			List<Object> convertedArgs = new ArrayList<Object>();
-			for (Integer i = 0; i < parameters.length; i++) {
-				if (Long.class.isAssignableFrom(parameters[i].getType())
-						|| long.class.isAssignableFrom(parameters[i].getType())) {
+			for (Integer i = 0; i < parameterTypes.length; i++) {
+				if (Long.class.isAssignableFrom(parameterTypes[i])
+						|| long.class.isAssignableFrom(parameterTypes[i])) {
 					String arg = args.get(paramsIndex.get(i));
 					if (arg == null) {
 						logger.info(String.format("parameter %s is null", arg));
@@ -95,8 +95,8 @@ public class HttpRequestInvoker {
 					}
 					Double num = NumberUtils.toDouble(arg);
 					convertedArgs.add(num.longValue());
-				} else if (Integer.class.isAssignableFrom(parameters[i].getType())
-						|| int.class.isAssignableFrom(parameters[i].getType())) {
+				} else if (Integer.class.isAssignableFrom(parameterTypes[i])
+						|| int.class.isAssignableFrom(parameterTypes[i])) {
 					String arg = args.get(paramsIndex.get(i));
 					if (arg == null) {
 						logger.info(String.format("parameter %s is null", arg));
@@ -104,8 +104,8 @@ public class HttpRequestInvoker {
 					}
 					Double num = NumberUtils.toDouble(arg);
 					convertedArgs.add(num.intValue());
-				} else if (Double.class.isAssignableFrom(parameters[i].getType())
-						|| double.class.isAssignableFrom(parameters[i].getType())) {
+				} else if (Double.class.isAssignableFrom(parameterTypes[i])
+						|| double.class.isAssignableFrom(parameterTypes[i])) {
 					String arg = args.get(paramsIndex.get(i));
 					if (arg == null) {
 						logger.info(String.format("parameter %s is null", arg));
@@ -113,8 +113,8 @@ public class HttpRequestInvoker {
 					}
 					Double num = NumberUtils.toDouble(arg);
 					convertedArgs.add(num);
-				} else if (Float.class.isAssignableFrom(parameters[i].getType())
-						|| float.class.isAssignableFrom(parameters[i].getType())) {
+				} else if (Float.class.isAssignableFrom(parameterTypes[i])
+						|| float.class.isAssignableFrom(parameterTypes[i])) {
 					String arg = args.get(paramsIndex.get(i));
 					if (arg == null) {
 						logger.info(String.format("parameter %s is null", arg));
@@ -122,14 +122,14 @@ public class HttpRequestInvoker {
 					}
 					Double num = NumberUtils.toDouble(arg);
 					convertedArgs.add(num.floatValue());
-				} else if (String.class.isAssignableFrom(parameters[i].getType())) {
+				} else if (String.class.isAssignableFrom(parameterTypes[i])) {
 					String arg = args.get(paramsIndex.get(i));
 					if (arg == null) {
 						logger.info(String.format("parameter %s is null", arg));
 						return NettyHttpUtil.createBadRequestResponse();
 					}
 					convertedArgs.add(arg);
-				} else if (HttpRequest.class.isAssignableFrom(parameters[i].getType())) {
+				} else if (HttpRequest.class.isAssignableFrom(parameterTypes[i])) {
 					convertedArgs.add(request);
 				}
 			}
