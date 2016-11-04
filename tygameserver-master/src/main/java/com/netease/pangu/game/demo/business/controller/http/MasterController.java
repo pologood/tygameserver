@@ -13,13 +13,18 @@ import com.netease.pangu.game.distribution.NodeManager;
 import com.netease.pangu.game.http.annotation.HttpController;
 import com.netease.pangu.game.http.annotation.HttpRequestMapping;
 import com.netease.pangu.game.meta.Player;
+import com.netease.pangu.game.rpc.annotation.WsRpcCall;
+import com.netease.pangu.game.rpc.annotation.WsRpcController;
 import com.netease.pangu.game.service.PlayerManager;
 
+@WsRpcController("/master")
 @HttpController("/master")
 public class MasterController {
 	@Resource NodeScheduleService appWorkerScheduleService;
 	@Resource PlayerManager playerManager;
-	@Resource NodeManager nodeManager; 
+	@Resource NodeManager nodeManager;
+	
+	@WsRpcCall("/app")
 	@HttpRequestMapping("/app")
 	public Map<String,Object> getNode(String uuid){
 		Node node = null;
@@ -44,6 +49,7 @@ public class MasterController {
 		return null;
 	}
 	
+	@WsRpcCall("/player")
 	@HttpRequestMapping("/player")
 	public Map<String, Object> getPlayerByUUID(String uuid){
 		Player player = playerManager.getPlayerByUUID(uuid);
