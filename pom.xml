@@ -183,8 +183,7 @@
 			    <version>3.20.0-GA</version>
 			</dependency>
 		</dependencies>
-	</dependencyManagement>
-
+	</dependencyManagement>	
 	<modules>
 		<module>tygameserver-business</module>
 		<module>tygameserver-master</module>
@@ -192,7 +191,14 @@
 		<module>tygameserver-protocol</module>
 		<module>tygameserver-slave</module>
 		<module>tygameserver-config</module>
-	</modules>
+	</modules>	
+	<dependencies>
+		<dependency>
+				<groupId>junit</groupId>
+				<artifactId>junit</artifactId>
+				<scope>test</scope>
+			</dependency>
+	</dependencies>
 	<build>
 		<pluginManagement>
 			<plugins>
