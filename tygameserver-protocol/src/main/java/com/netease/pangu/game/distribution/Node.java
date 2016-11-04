@@ -2,10 +2,11 @@ package com.netease.pangu.game.distribution;
 
 import java.util.Map;
 
-public class AppWorker {
+public class Node {
 	private String ip;
 	private int port;
 	private String name;
+	private String hostName;
 	private int count;
 	private Map<String, String> sys;
 	public String getIp() {
@@ -55,10 +56,10 @@ public class AppWorker {
 		if (obj == null) {
 			return false;
 		}
-		if (!(obj instanceof AppWorker)) {
+		if (!(obj instanceof Node)) {
 			return false;
 		}
-		AppWorker other = (AppWorker) obj;
+		Node other = (Node) obj;
 		if (ip == null) {
 			if (other.ip != null) {
 				return false;
@@ -77,5 +78,11 @@ public class AppWorker {
 			return false;
 		}
 		return true;
+	}
+	public String getHostName() {
+		return hostName;
+	}
+	public void setHostName(String hostName) {
+		this.hostName = hostName;
 	}
 }

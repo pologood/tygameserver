@@ -32,6 +32,10 @@ public class PlayerDao extends AbstractMongoDao<Player> {
 	public void updatePlayer(Player player){
 		Query query = new Query(Criteria.where("pId").is(player.getPid()));
 		Update update = Update.update("name", player.getName());
+		update.addToSet("writeToDbTime", player.getWriteToDbTime());
+		update.addToSet("server", player.getServer());
+		update.addToSet("lastLoginTime", player.getLastLoginTime());
+		update.addToSet("uuid", player.getUuid());
 		this.update(query, update, Player.class);
 	}
 }

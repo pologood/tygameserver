@@ -1,8 +1,8 @@
 package com.netease.pangu.game.core.service;
 
-import com.netease.pangu.game.distribution.AppWorker;
-import com.netease.pangu.game.distribution.AppWorkerManager;
+import com.netease.pangu.game.distribution.Node;
+import com.netease.pangu.game.distribution.NodeManager;
 
 public interface ISchedule {
-	public AppWorker schedule(AppWorkerManager manager);
+	public Node schedule(NodeManager manager);
 }

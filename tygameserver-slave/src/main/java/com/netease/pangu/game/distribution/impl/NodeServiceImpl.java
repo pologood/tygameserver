@@ -3,16 +3,16 @@ package com.netease.pangu.game.distribution.impl;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 
-import com.netease.pangu.distribution.proto.AppWorkerServiceGrpc;
 import com.netease.pangu.distribution.proto.MethodRequest;
+import com.netease.pangu.distribution.proto.NodeServiceGrpc;
 import com.netease.pangu.distribution.proto.RpcResponse;
 import com.netease.pangu.game.util.ReturnUtils;
 
 import io.grpc.stub.StreamObserver;
 
 @Component
-public class AppWorkerServiceImpl extends AppWorkerServiceGrpc.AppWorkerServiceImplBase {
-	private final static Logger logger = Logger.getLogger(AppWorkerServiceImpl.class);
+public class NodeServiceImpl extends NodeServiceGrpc.NodeServiceImplBase {
+	private final static Logger logger = Logger.getLogger(NodeServiceImpl.class);
 	@Override
 	public void call(MethodRequest request, StreamObserver<RpcResponse> responseObserver) {
 		logger.info(request.getBeanName());

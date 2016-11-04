@@ -1,7 +1,6 @@
 package com.netease.pangu.game.meta;
 
 import java.io.Serializable;
-import java.util.Map;
 
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -15,7 +14,7 @@ public class Player implements IPlayer, Serializable {
 	private long pId;
 	private long writeToDbTime;
 	private long lastLoginTime;
-	private Map<String, Object> serverAttrs;
+	private String server;
 	@Override
 	public String getName() {
 		return this.name;
@@ -38,13 +37,6 @@ public class Player implements IPlayer, Serializable {
 	public void setUuid(String uuid) {
 		this.uuid = uuid;
 	}
-	
-	public Map<String, Object> getServerAttrs() {
-		return serverAttrs;
-	}
-	public void setServerAttrs(Map<String, Object> serverAttrs) {
-		this.serverAttrs = serverAttrs;
-	}
 	public long getpId() {
 		return pId;
 	}
@@ -62,6 +54,12 @@ public class Player implements IPlayer, Serializable {
 	}
 	public void setLastLoginTime(long lastLoginTime) {
 		this.lastLoginTime = lastLoginTime;
+	}
+	public String getServer() {
+		return server;
+	}
+	public void setServer(String server) {
+		this.server = server;
 	}
 
 }

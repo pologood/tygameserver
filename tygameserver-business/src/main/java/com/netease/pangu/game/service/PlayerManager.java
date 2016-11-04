@@ -5,13 +5,13 @@ import javax.annotation.Resource;
 import org.springframework.stereotype.Component;
 
 import com.netease.pangu.game.dao.PlayerDao;
-import com.netease.pangu.game.distribution.AppWorker;
+import com.netease.pangu.game.distribution.Node;
 import com.netease.pangu.game.meta.Player;
 
 @Component
 public class PlayerManager extends AbstractPlayerManager<Player> {
 	@Resource private PlayerDao playerDao;
-	private AppWorker currentAppWorker;
+	private Node currentNode;
 	@Override
 	protected Player put(long playerId, Player player) {
 		Player p = playerDao.getPlayer(playerId);
@@ -35,12 +35,12 @@ public class PlayerManager extends AbstractPlayerManager<Player> {
 		return playerDao.getPlayer(playerId);
 	}
 
-	public AppWorker getCurrentAppWorker() {
-		return currentAppWorker;
+	public Node getCurrentNode() {
+		return currentNode;
 	}
 
-	public void setCurrentAppWorker(AppWorker currentAppWorker) {
-		this.currentAppWorker = currentAppWorker;
+	public void setCurrentNode(Node node) {
+		this.currentNode = node;
 	}
 
 }

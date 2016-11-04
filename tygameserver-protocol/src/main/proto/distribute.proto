@@ -8,11 +8,11 @@ option objc_class_prefix = "HLW";
 
 package distribution;
 
-service AppMasterService {
-	rpc addOrUpdateAppWorker (Worker) returns (RpcResponse) {}
+service MasterService {
+	rpc addOrUpdateNode (AppNode) returns (RpcResponse) {}
 }
 
-service AppWorkerService {
+service NodeService {
 	rpc call(MethodRequest) returns (RpcResponse) {}
 }
 
@@ -22,7 +22,7 @@ message MethodRequest {
 	repeated google.protobuf.Any args = 3;
 } 
 
-message Worker {
+message AppNode {
 	string ip = 1;
 	int32 port = 2;
 	string name = 3;

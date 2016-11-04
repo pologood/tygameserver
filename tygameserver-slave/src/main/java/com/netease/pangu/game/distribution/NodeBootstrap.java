@@ -17,7 +17,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.stereotype.Component;
 
 import com.netease.pangu.distribution.proto.RpcResponse;
-import com.netease.pangu.game.distribution.handler.AppWorkerServerInitializer;
+import com.netease.pangu.game.distribution.handler.NodeServerInitializer;
 import com.netease.pangu.game.service.GameRoomManager;
 import com.netease.pangu.game.service.PlayerManager;
 
@@ -36,15 +36,18 @@ import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.util.SelfSignedCertificate;
 
 @Component
-public class AppWorkerBootstrap implements Bootstrap {
-	private final static Logger logger = Logger.getLogger(AppWorkerBootstrap.class);
+public class NodeBootstrap implements Bootstrap {
+	private final static Logger logger = Logger.getLogger(NodeBootstrap.class);
 	private static final boolean SSL = System.getProperty("ssl") != null;
-	private static final int PORT = Integer.parseInt(System.getProperty("port", SSL ? "8181" : "8081"));
 	private Server server;
 	private ConfigurableApplicationContext context;
-	@Value("${server.port}")
-	private int port = 9002;
+	@Value("${server.rpcPort}")
+	private int rpcPort = 9002;
+	
+	@Value("${server.httpPort}")
+	private int httpPort = 8080;
 
+	
 	@Value("${server.name}")
 	private String name;
 
@@ -55,7 +58,7 @@ public class AppWorkerBootstrap implements Bootstrap {
 	private String masterIp;
 
 	@Resource
-	private AppMasterCallService appMasterCallService;
+	private MasterCallService appMasterCallService;
 
 	@Resource
 	private GameRoomManager gameRoomManager;
@@ -63,13 +66,37 @@ public class AppWorkerBootstrap implements Bootstrap {
 	@Resource
 	private PlayerManager playerManager;
 	
-	private AppWorker worker;
+	private Node node;
 
+	public int getRpcPort() {
+		return rpcPort;
+	}
+
+	public void setRpcPort(int rpcPort) {
+		this.rpcPort = rpcPort;
+	}
+
+	public int getHttpPort() {
+		return httpPort;
+	}
+
+	public void setHttpPort(int httpPort) {
+		this.httpPort = httpPort;
+	}
+	
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+	
 	@Override
 	public void init(ConfigurableApplicationContext context) {
-		server = ServerBuilder.forPort(port).build();
+		server = ServerBuilder.forPort(rpcPort).build();
 		this.context = context;
-		logger.info("Server started, listening on " + port);
+		logger.info("RPC Server started, listening on " + rpcPort);
 
 	}
 
@@ -91,20 +118,25 @@ public class AppWorkerBootstrap implements Bootstrap {
 		if (server != null) {
 			try {
 				server.start();
-				worker = new AppWorker();
-				worker.setIp(InetAddress.getLocalHost().getHostAddress());
-				worker.setName(InetAddress.getLocalHost().getHostName());
-				worker.setPort(PORT);
-				playerManager.setCurrentAppWorker(worker);
+				node = new Node();
+				node.setIp(InetAddress.getLocalHost().getHostAddress());
+				node.setHostName(InetAddress.getLocalHost().getHostName());
+				node.setName(name);
+				node.setPort(httpPort);
+				playerManager.setCurrentNode(node);
 				appMasterCallService.init(masterIp, masterPort);
 				logger.info("app worker init");
 				ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor();
 				service.scheduleAtFixedRate(new Runnable() {
 					@Override
 					public void run() {
-						worker.setCount(gameRoomManager.getRooms().size());
-						RpcResponse response = appMasterCallService.addOrUpdateWorker(worker);
+						try{
+							node.setCount(gameRoomManager.getRooms().size());
+							RpcResponse response = appMasterCallService.addOrUpdateNode(node);
 						logger.info(response.getMessage());
+						}catch(Exception e){
+							e.printStackTrace();
+						}
 					}
 				}, 3, 3, TimeUnit.SECONDS);
 			} catch (IOException e) {
@@ -132,16 +164,15 @@ public class AppWorkerBootstrap implements Bootstrap {
 		EventLoopGroup workerGroup = new NioEventLoopGroup();
 		try {
 			ServerBootstrap b = new ServerBootstrap();
-			AppWorkerServerInitializer initializer = context.getBean(AppWorkerServerInitializer.class);
+			NodeServerInitializer initializer = context.getBean(NodeServerInitializer.class);
 			initializer.setSslCtx(sslCtx);
 			b.group(bossGroup, workerGroup).channel(NioServerSocketChannel.class)
 					.handler(new LoggingHandler(LogLevel.INFO)).childHandler(initializer);
 
-			Channel ch = b.bind(PORT).sync().channel();
+			Channel ch = b.bind(httpPort).sync().channel();
 			ChannelFuture future = ch.closeFuture();
 			future.sync();
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} finally {
 			bossGroup.shutdownGracefully();
@@ -152,25 +183,21 @@ public class AppWorkerBootstrap implements Bootstrap {
 			@Override
 			public void run() {
 				logger.info("*** shutting down server since JVM is shutting down");
-				AppWorkerBootstrap.this.stop();
+				NodeBootstrap.this.stop();
 				logger.info("*** server shut down");
 			}
 		});
 	}
 
-	public int getPort() {
-		return port;
-	}
-
-	public void setPort(int port) {
-		this.port = port;
-	}
-
 	public static void main(String[] args) {
 		ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("tygameserver-slave-service.xml");
-		AppWorkerBootstrap bootstrap = context.getBean(AppWorkerBootstrap.class);
-		int port = Integer.parseInt(args[0]);
-		bootstrap.setPort(port);
+		NodeBootstrap bootstrap = context.getBean(NodeBootstrap.class);
+		int httpPort = Integer.parseInt(args[0]);
+		int rpcPort = Integer.parseInt(args[1]);
+		String name = args[2];
+		bootstrap.setHttpPort(httpPort);
+		bootstrap.setRpcPort(rpcPort);
+		bootstrap.setName(name);
 		bootstrap.init(context);
 		bootstrap.start();
 		try {
@@ -179,5 +206,5 @@ public class AppWorkerBootstrap implements Bootstrap {
 			e.printStackTrace();
 		}
 	}
-
+	
 }

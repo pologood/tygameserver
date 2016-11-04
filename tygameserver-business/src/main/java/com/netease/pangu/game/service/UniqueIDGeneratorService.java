@@ -1,5 +1,7 @@
 package com.netease.pangu.game.service;
 
+import java.util.concurrent.atomic.AtomicLong;
+
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 
@@ -11,14 +13,11 @@ import com.netease.pangu.game.dao.UniqueIDGenerateDao;
 public class UniqueIDGeneratorService {
 	@Resource private UniqueIDGenerateDao uniqueIDGenerateDao;
 	private final String PlayerID_KEY = "PlayerId";
-	private final String SesssionID_KEY = "SesssionId";
-	private final String RoomId_KEY = "RoomId";
-	
+	private final AtomicLong SessionID = new AtomicLong(10000);
+	private final AtomicLong RoomID = new AtomicLong(1);
 	@PostConstruct
 	public void init(){
 		uniqueIDGenerateDao.getAndSetInitValue(PlayerID_KEY, 10000);
-		uniqueIDGenerateDao.getAndSetInitValue(SesssionID_KEY, 10000);
-		uniqueIDGenerateDao.getAndSetInitValue(RoomId_KEY, 10000);
 	}
 	
 	public long generatePlayerId() {
@@ -26,10 +25,10 @@ public class UniqueIDGeneratorService {
 	}
 	
 	public long generateSessionId() {
-		return uniqueIDGenerateDao.generate(SesssionID_KEY);
+		return SessionID.getAndIncrement();
 	}
 	
 	public long generateRoomId() {
-		return uniqueIDGenerateDao.generate(RoomId_KEY);
+		return RoomID.getAndIncrement();
 	}
 }

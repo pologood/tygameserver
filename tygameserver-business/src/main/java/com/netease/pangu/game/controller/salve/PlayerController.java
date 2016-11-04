@@ -8,6 +8,7 @@ import javax.annotation.Resource;
 
 import com.netease.pangu.game.common.meta.GameContext;
 import com.netease.pangu.game.common.meta.PlayerSession;
+import com.netease.pangu.game.distribution.Node;
 import com.netease.pangu.game.meta.Player;
 import com.netease.pangu.game.rpc.WsRpcResponse;
 import com.netease.pangu.game.rpc.annotation.WsRpcCall;
@@ -32,7 +33,13 @@ public class PlayerController {
 		Player player = new Player();
 		player.setName(name);
 		player.setUuid(uuid);
+		Node node = playerManager.getCurrentNode();
+		player.setServer(node.getName());
+		long current = System.currentTimeMillis();
+		player.setWriteToDbTime(current);
+		player.setLastLoginTime(current);
 		player = playerManager.createPlayer(player);
+		
 		PlayerSession<Player> playerSession = playerSessionManager.createPlayerSession(player, ctx.getChannel());
 		Map<String, Object> payload = new HashMap<String, Object>();
 		payload.put("sessionId", playerSession.getId());

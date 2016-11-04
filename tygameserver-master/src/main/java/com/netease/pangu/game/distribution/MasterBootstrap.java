@@ -13,7 +13,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.stereotype.Component;
 
 import com.netease.pangu.game.distribution.handler.MasterServerInitializer;
-import com.netease.pangu.game.distribution.impl.AppMasterServiceImpl;
+import com.netease.pangu.game.distribution.impl.MasterServiceImpl;
 
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
@@ -37,7 +37,7 @@ public class MasterBootstrap implements Bootstrap {
 	@Value("${server.port}")
 	private int port = 9001;
 	@Resource
-	private AppMasterServiceImpl appMasterServiceImpl;
+	private MasterServiceImpl appMasterServiceImpl;
 
 	private ConfigurableApplicationContext context;
 	

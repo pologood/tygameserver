@@ -10,32 +10,32 @@ import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.protobuf.Any;
-import com.netease.pangu.distribution.proto.AppWorkerServiceGrpc;
 import com.netease.pangu.distribution.proto.MethodRequest;
+import com.netease.pangu.distribution.proto.NodeServiceGrpc;
 import com.netease.pangu.distribution.proto.RpcResponse;
 
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 
 @Service
-public class AppWorkerCallService {
-	private ConcurrentMap<String, AppWorkerServiceGrpc.AppWorkerServiceFutureStub> futureStubMap = new ConcurrentHashMap<String, AppWorkerServiceGrpc.AppWorkerServiceFutureStub>();
-	private ConcurrentMap<String, AppWorkerServiceGrpc.AppWorkerServiceBlockingStub> blockingStubMap = new ConcurrentHashMap<String, AppWorkerServiceGrpc.AppWorkerServiceBlockingStub>();
+public class NodeCallService {
+	private ConcurrentMap<String, NodeServiceGrpc.NodeServiceFutureStub> futureStubMap = new ConcurrentHashMap<String, NodeServiceGrpc.NodeServiceFutureStub>();
+	private ConcurrentMap<String, NodeServiceGrpc.NodeServiceBlockingStub> blockingStubMap = new ConcurrentHashMap<String, NodeServiceGrpc.NodeServiceBlockingStub>();
 	
-	public boolean addBlockingStub(AppWorker worker){
+	public boolean addBlockingStub(Node worker){
 		ManagedChannel channel = ManagedChannelBuilder.forAddress(worker.getIp(), worker.getPort()).usePlaintext(true).build();
-		AppWorkerServiceGrpc.AppWorkerServiceBlockingStub stub = AppWorkerServiceGrpc.newBlockingStub(channel);
-		return blockingStubMap.putIfAbsent(AppWorkerManager.getKey(worker), stub) == null;
+		NodeServiceGrpc.NodeServiceBlockingStub stub = NodeServiceGrpc.newBlockingStub(channel);
+		return blockingStubMap.putIfAbsent(worker.getName(), stub) == null;
 	}
 	
-	public boolean addFutureStub(AppWorker worker){
+	public boolean addFutureStub(Node worker){
 		ManagedChannel channel = ManagedChannelBuilder.forAddress(worker.getIp(), worker.getPort()).usePlaintext(true).build();
-		AppWorkerServiceGrpc.AppWorkerServiceFutureStub stub = AppWorkerServiceGrpc.newFutureStub(channel);
-		return futureStubMap.putIfAbsent(AppWorkerManager.getKey(worker), stub) == null;
+		NodeServiceGrpc.NodeServiceFutureStub stub = NodeServiceGrpc.newFutureStub(channel);
+		return futureStubMap.putIfAbsent(worker.getName(), stub) == null;
 	}
 	
-	public void callFuture(AppWorker worker, String beanName, String methodName, List<Any> args){
-		AppWorkerServiceGrpc.AppWorkerServiceFutureStub stub = futureStubMap.get(AppWorkerManager.getKey(worker));
+	public void callFuture(Node worker, String beanName, String methodName, List<Any> args){
+		NodeServiceGrpc.NodeServiceFutureStub stub = futureStubMap.get(worker.getName());
 		MethodRequest.Builder mBuilder = MethodRequest.newBuilder();
 		mBuilder.setBeanName(beanName);
 		mBuilder.setMethodName(methodName);

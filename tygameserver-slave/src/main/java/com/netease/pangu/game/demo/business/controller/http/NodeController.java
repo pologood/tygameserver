@@ -10,7 +10,7 @@ import com.netease.pangu.game.http.annotation.HttpRequestMapping;
 import com.netease.pangu.game.service.GameRoomManager;
 
 @HttpController("/slave")
-public class AppWorkerController {
+public class NodeController {
 	@Resource private GameRoomManager gameRoomManager;
 	
 	@HttpRequestMapping("/room/info")
