@@ -54,10 +54,9 @@
 	<script type="text/javascript">
 		$(function(){
 			$("#loadBtn").click(function(){
-				$.getJSON("http://127.0.0.1:8080/master/app?uuid="+$("#uuid").val(), function(data){
-						// 创建一个Socket实例
-					
-					var socket = new WebSocket('ws://127.0.0.1:8081/websocket'); 
+				$.getJSON("http://littlegame.tianyu.163.com/master/app?uuid="+$("#uuid").val(), function(data){
+						// 创建一个Socket实例					
+					var socket = new WebSocket('ws://' + data.ip + ':'+data.port+'/websocket'); 
 
 					// 打开Socket 
 					socket.onopen = function(event) { 

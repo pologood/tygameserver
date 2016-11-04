@@ -1,4 +1,4 @@
-package com.netease.pangu.game.controller.salve;
+package com.netease.pangu.game.controller.slave;
 
 import java.util.HashMap;
 import java.util.Map;
