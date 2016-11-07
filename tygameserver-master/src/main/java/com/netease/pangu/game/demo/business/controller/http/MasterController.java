@@ -16,6 +16,7 @@ import com.netease.pangu.game.meta.Player;
 import com.netease.pangu.game.rpc.annotation.WsRpcCall;
 import com.netease.pangu.game.rpc.annotation.WsRpcController;
 import com.netease.pangu.game.service.PlayerManager;
+import com.netease.pangu.game.util.JsonUtil;
 
 @WsRpcController("/master")
 @HttpController("/master")
@@ -26,7 +27,7 @@ public class MasterController {
 	
 	@WsRpcCall("/app")
 	@HttpRequestMapping("/app")
-	public Map<String,Object> getNode(String uuid){
+	public String getNode(String uuid, String callback){
 		Node node = null;
 		Player player = playerManager.getPlayerByUUID(uuid);
 		if(player != null){
@@ -44,9 +45,9 @@ public class MasterController {
 			workerInfo.put("ip", node.getIp());
 			workerInfo.put("port", node.getPort());
 			workerInfo.put("name", node.getName());
-			return workerInfo;
+			return callback + "(" + JsonUtil.toJson(workerInfo) + ")";
 		}
-		return null;
+		return  callback + "(" +null + ")";
 	}
 	
 	@WsRpcCall("/player")

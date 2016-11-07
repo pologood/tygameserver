@@ -19,7 +19,6 @@ public class PlayerDao extends AbstractMongoDao<Player> {
 		return this.findOne(query, Player.class);
 	}
 	
-	
 	public Player getPlayerByName(String name){
 		Query query = new Query(Criteria.where("name").is(name));
 		return this.findOne(query, Player.class);
