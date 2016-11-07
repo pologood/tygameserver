@@ -133,7 +133,11 @@ public class HttpRequestInvoker {
 				}
 			}
 			Object result = method.invoke(controller, convertedArgs.toArray(new Object[0]));
-			return NettyHttpUtil.createHttpResponse(HttpResponseStatus.OK, JsonUtil.toJson(result));
+			if(String.class.isAssignableFrom(result.getClass())){
+				return NettyHttpUtil.createHttpResponse(HttpResponseStatus.OK, (String)result);
+			}else{
+				return NettyHttpUtil.createHttpResponse(HttpResponseStatus.OK, JsonUtil.toJson(result));
+			}
 		} catch (IllegalAccessException e) {
 			e.printStackTrace();
 		} catch (IllegalArgumentException e) {

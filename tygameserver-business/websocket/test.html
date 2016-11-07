@@ -52,9 +52,10 @@
 	</div>	
 
 	<script type="text/javascript">
+		
 		$(function(){
 			$("#loadBtn").click(function(){
-				$.getJSON("http://littlegame.tianyu.163.com/master/app?uuid="+$("#uuid").val(), function(data){
+				$.getJSON("http://littlegame.tianyu.163.com/master/app?uuid="+$("#uuid").val() + "&callback=?", function(data){
 						// 创建一个Socket实例					
 					var socket = new WebSocket('ws://' + data.ip + ':'+data.port+'/websocket'); 
 
