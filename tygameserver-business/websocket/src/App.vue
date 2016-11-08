@@ -32,70 +32,88 @@
       </div>           
 
       <div class="form-inline">
-        <label>房间列表</label>
-        <button id="roomListBtn" class="btn btn-primary">房间列表</button>
-      </div>
+        <div class="form-group">
+          <select id="roomList" v-model="roomSelected">
+            <option value="-1">请选择房间</option>
+            <option v-for="item in roomList" v-bind:value="item.id">{{item.id}}</option>
+          </select>
+          <button id="addRoomBtn" class="btn btn-primary" v-on:click="addRoomBtnHandle">加入</button>
+          <button id="roomListBtn" class="btn btn-primary" v-on:click="roomListBtnHandle">刷新</button>
+        </div>        
+      </div>      
 
-      <div>
-        <select id="roomList">
-          <option>请选择房间</option>
-        </select>
-        <button id="addRoomBtn" class="btn btn-primary" v-on:click="addRoomBtnHandle">加入</button>
-      </div>
+      
+      <div class="row">
+        <!--成员列表-->
+        <div class="col-md-2">
+          <h2>成员列表</h2>
+          <table class="table">
+            <thead>
+              <tr>
+                <th>成员列表</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="item in members">
+                <th>{{item.name}}</th>
+              </tr>
+            </tbody>
+          </table>
+        </div>  
+        <!--成员列表-->
 
-      <!--成员列表-->
-      <div>
-        <h2>成员列表</h2>
-        <table class="table">
-          <thead>
-            <tr>
-              <th>成员列表</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="item in members">
-              <th>{{item.name}}</th>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-      <!--成员列表-->
+        <!--聊天-->
+        <div class="col-md-10">
+          <h2>群聊</h2>
+          <div class="chatCnt">
+            <ul>
+              <li v-for="item in groupmsgs">{{item}}</li>
+            </ul>
+          </div>         
 
-      <!--聊天-->
-      <div>
-        <h2>群聊</h2>
-        <ul>
-          <li v-for="item in groupmsgs">{{item}}</li>
-        </ul>
-        <div class="form-inline">
-          <input id="groupMsg" type="text" class="form-control" placeholder="发送消息"/>
-          <button id="gBtn" class="btn btn-primary" v-on:click="gBtnHandle">发送消息</button>
+          <div class="row">
+            <div class="col-md-10">
+              <input id="groupMsg" type="text" class="form-control" placeholder="发送消息"/>
+            </div>
+            <div class="col-md-2 sendBtnCnt">
+              <button id="gBtn" class="btn btn-primary sendBtn" v-on:click="gBtnHandle">发送消息</button>
+            </div>            
+          </div>
         </div>
-      </div>
-      <!--聊天-->
+        <!--聊天-->
+      </div>  
 
       <!--消息列表-->
       <div>
         <h2>消息列表</h2>
-        <ul>
-          <li v-for="item in msgList">{{item}}</li>
-        </ul>
+        <div class="msgCnt">
+          <ul>
+            <li v-for="item in msgList">{{item}}</li>
+          </ul>
+        </div>        
       </div>
       <!--消息列表-->
 
       <div>
-        <div class="form-inline">
-          <label>SessionId: </label>
-          <label></label>
-          <select id="playerList">
-            <option v-for="(item,key) in playerList" v-bind:value="key">{{item.name}}</option>
-          </select>
-          <button id="refresh" class="btn btn-primary" v-on:click="refreshHandle">刷新</button>
+        <div class="row">
+
+          <div class="col-md-2">
+            <select id="playerList">
+              <option v-for="(item,key) in playerList" v-bind:value="key">{{item.name}}</option>
+            </select>
+            <button id="refresh" class="btn btn-primary" v-on:click="refreshHandle">刷新</button>
+          </div>         
+
+          <div class="col-md-10">
+            <div class="col-md-8">
+              <input id="msg" type="text" class="form-control"/>
+            </div>
+            <div>
+              <button id="sendMsg" class="btn btn-primary col-md-4" v-on:click="sendMsgHandle">发送消息</button>
+            </div>         
+          </div>  
         </div>
-        <div class="form-inline">
-          <input id="msg" type="text" class="form-control"/>
-          <button id="sendMsg" class="btn btn-primary" v-on:click="sendMsgHandle">发送消息</button>
-        </div>        
+
       </div>
       
     </div>
@@ -110,7 +128,7 @@ export default {
   name: 'app',
   data(){
     return{
-      roomList:[],//房间列表
+      roomList:{},//房间列表
       userName:'未知',//用户名
       signupName:'',//登录的名
       sessionId:'未知',
@@ -119,7 +137,8 @@ export default {
       roomId:'未知',//房间账号
       members:[],//成员，
       groupmsgs:[],//消息列表
-      uuid:""
+      uuid:"",
+      roomSelected:"-1",//选择的房间号
     }
   },
   components: {
@@ -139,13 +158,13 @@ export default {
 						console.log('Client open a message',event.data); 
 					};
 
-           // 监听消息
+          // 监听消息
 					socket.onmessage = function(event) { 
 						console.log('Client received a message', event.data);
 						data = JSON.parse(event.data);
 						if(data.content.code == 1){
 							if(data.rpcMethodName.toLowerCase() == "/player/reg") {
-                self.sessionId=data.content.payload.sessionId;
+                self.sessionId=data.content.payload.sessionId.toString();
                 self.userName=data.content.payload.roleName;
 							}
 
@@ -200,11 +219,7 @@ export default {
 
 							if(data.rpcMethodName.toLowerCase() == "/room/list"){
 								console.log(data.content.payload);
-								var html = "<option value=''>请选择</option>";
-								for(var id in data.content.payload){
-									html += "<option value="+ id +">房间ID " + id + " 游戏ID "+ data.content.payload[id].gameId + " 房主 "+ data.content.payload[id].ownerId +"</option>";
-								}
-								$("#roomList").html(html);
+                self.roomList = data.content.payload;
 							}
 						}else{
 							console.log(data.content.payload);
@@ -238,11 +253,11 @@ export default {
       });
     },
     registerBtnHandle(){
-        alert(this.signupName)
+        console.log("注册用户");
         var msg = {rpcMethod:"/player/reg", 
           params:[this.signupName.trim(),this.uuid]
         };
-        socket.send(window.JSON.stringify(msg));        
+        socket.send(window.JSON.stringify(msg));
     },
     loginBtnHandle(){
         var msg = {rpcMethod:"/player/login", 
@@ -266,6 +281,7 @@ export default {
       socket.send(window.JSON.stringify(msg));
     },
     cBtnHandle(){
+      console.log("创建房间");
       var msg = {
         rpcMethod:"/room/create", 
         params:[1, 10],
@@ -274,8 +290,8 @@ export default {
       socket.send(window.JSON.stringify(msg));
     },
     addRoomBtnHandle(){
-      if($("#roomList").val() != "请选择"){
-          var msg = {
+      if(this.roomSelected!=-1){
+        var msg = {
           rpcMethod:"/room/join", 
           params:[parseInt($("#roomList").val())],
           sessionId:this.sessionId
@@ -293,7 +309,7 @@ export default {
         socket.send(window.JSON.stringify(msg));
       }
     },
-    roomListBtn(){
+    roomListBtnHandle(){
       var msg = {
         rpcMethod:"/room/list", 
         sessionId:this.sessionId
@@ -318,4 +334,10 @@ var socket;
 }
 h1{font-size: 50px;color: #2c3e50;}
 .form-inline{margin-bottom: 10px;}
+.chatCnt{width: 100%;border: 1px solid #357ebd;height: 400px;border-radius: 10px;}
+.row{margin-top: 10px;}
+.sendBtnCnt{text-align: right;}
+.sendBtn{width: 100%;}
+.msgCnt{width: 100%;height: 400px;border: 1px solid #357ebd;border-radius: 10px;}
+body{padding-bottom: 200px;}
 </style>
