@@ -73,7 +73,7 @@
 
           <div class="row">
             <div class="col-md-10">
-              <input id="groupMsg" type="text" class="form-control" placeholder="发送消息"/>
+              <input id="groupMsg" type="text" class="form-control" placeholder="发送消息" v-model="sendChatMsg"/>
             </div>
             <div class="col-md-2 sendBtnCnt">
               <button id="gBtn" class="btn btn-primary sendBtn" v-on:click="gBtnHandle">发送消息</button>
@@ -98,15 +98,15 @@
         <div class="row">
 
           <div class="col-md-2">
-            <select id="playerList">
-              <option v-for="(item,key) in playerList" v-bind:value="key">{{item.name}}</option>
+            <select id="playerList" v-model="playerSelected">
+              <option v-for="item in playerList" v-bind:value="item.id">{{item.name}}</option>
             </select>
             <button id="refresh" class="btn btn-primary" v-on:click="refreshHandle">刷新</button>
           </div>         
 
           <div class="col-md-10">
             <div class="col-md-8">
-              <input id="msg" type="text" class="form-control"/>
+              <input id="msg" type="text" class="form-control" v-model="sendPrivateMsg"/>
             </div>
             <div>
               <button id="sendMsg" class="btn btn-primary col-md-4" v-on:click="sendMsgHandle">发送消息</button>
@@ -133,10 +133,13 @@ export default {
       signupName:'',//登录的名
       sessionId:'未知',
       msgList:[],//聊天记录
+      sendChatMsg:'',
       playerList:[],//玩家列表
+      playerSelected:'',//选择私聊的用户
       roomId:'未知',//房间账号
       members:[],//成员，
       groupmsgs:[],//消息列表
+      sendPrivateMsg:'',//私聊
       uuid:"",
       roomSelected:"-1",//选择的房间号
     }
@@ -237,19 +240,6 @@ export default {
 						console.log('Client notified socket has closed',event.data); 
 					};
 
-
-			   		// $("#roomList").change(function(){
-			   		// 	if($("#roomList").val() != "请选择"){
-			   		// 		var msg = {
-						// 		rpcMethod:"/room/info", 
-						// 		params:[parseInt($("#roomList").val()),],
-						// 		sessionId:$("#sId").text()
-						// 	};
-						// 	socket.send(JSON.stringify(msg));	
-						// }
-			   		// });
-          
-
       });
     },
     registerBtnHandle(){
@@ -275,7 +265,7 @@ export default {
     sendMsgHandle(){
       var msg = {
         rpcMethod:"/player/chat", 
-        params:[parseInt($("#playerList").val()), $("#msg").val()],
+        params:[parseInt(this.playerSelected),this.sendPrivateMsg],
         sessionId:this.sessionId
       };
       socket.send(window.JSON.stringify(msg));
@@ -293,17 +283,17 @@ export default {
       if(this.roomSelected!=-1){
         var msg = {
           rpcMethod:"/room/join", 
-          params:[parseInt($("#roomList").val())],
+          params:[parseInt(this.roomSelected)],
           sessionId:this.sessionId
         };
         socket.send(window.JSON.stringify(msg));
       }
     },
     gBtnHandle(){
-      if($("#roomList").val() != "请选择"){
+      if(this.roomSelected!=-1){
           var msg = {
           rpcMethod:"/room/chat", 
-          params:[parseInt($("#roomList").val().trim()),$("#groupMsg").val().trim()],
+          params:[parseInt(this.roomSelected),this.sendChatMsg.trim()],
           sessionId:this.sessionId
         };
         socket.send(window.JSON.stringify(msg));
