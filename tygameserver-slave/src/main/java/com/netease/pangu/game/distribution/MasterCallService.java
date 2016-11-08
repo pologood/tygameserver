@@ -36,9 +36,10 @@ public class MasterCallService {
 		AppNode.Builder request = AppNode.newBuilder();
 		request.setName(worker.getName());
 		request.setIp(worker.getIp());
+		request.setPort(worker.getPort());
+		request.setCount(worker.getCount());
 		RpcResponse response = null;
 		try {
-			request.setPort(worker.getPort());
 			response = stub.addOrUpdateNode(request.build());
 		} catch (StatusRuntimeException e) {
 			e.printStackTrace();

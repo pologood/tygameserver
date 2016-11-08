@@ -10,6 +10,7 @@ import com.netease.pangu.game.common.meta.GameRoom;
 import com.netease.pangu.game.common.meta.IPlayer;
 import com.netease.pangu.game.common.meta.PlayerSession;
 import com.netease.pangu.game.meta.Player;
+import com.netease.pangu.game.rpc.WsRpcResponse;
 import com.netease.pangu.game.rpc.annotation.WsRpcCall;
 import com.netease.pangu.game.rpc.annotation.WsRpcController;
 import com.netease.pangu.game.service.GameRoomManager;
@@ -85,7 +86,9 @@ public class RoomController {
 		GameResult result = ReturnUtils.succ(payload, source);		
 		for(PlayerSession<Player> member: members.values()){
 			if(member.getChannel()!= null && member.getChannel().isActive()){
-				member.sendJSONMessage(result);
+				WsRpcResponse response = WsRpcResponse.create(ctx.getRpcMethodName());
+				response.setContent(result);
+				member.sendJSONMessage(response);
 			}
 		}
 	}

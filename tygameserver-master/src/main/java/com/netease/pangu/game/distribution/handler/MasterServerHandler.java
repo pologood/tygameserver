@@ -83,7 +83,7 @@ public class MasterServerHandler extends ChannelInboundHandlerAdapter {
 					context = new GameContext<Player>(ctx, playerSession, rpcMethodName, frame);
 				} else {
 					GameResult result = ReturnUtils.failed(rpcMethodName, "user hasn't registered");
-					ctx.channel().writeAndFlush(new TextWebSocketFrame(JsonUtil.toJson(result)));
+					NettyHttpUtil.sendWsResponse(rpcMethodName, ctx.channel(), result);
 					return;
 				}
 			}

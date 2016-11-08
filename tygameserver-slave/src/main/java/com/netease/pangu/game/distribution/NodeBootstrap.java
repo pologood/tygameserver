@@ -20,6 +20,7 @@ import com.netease.pangu.distribution.proto.RpcResponse;
 import com.netease.pangu.game.distribution.handler.NodeServerInitializer;
 import com.netease.pangu.game.service.GameRoomManager;
 import com.netease.pangu.game.service.PlayerManager;
+import com.netease.pangu.game.service.PlayerSessionManager;
 
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
@@ -65,6 +66,9 @@ public class NodeBootstrap implements Bootstrap {
 
 	@Resource
 	private PlayerManager playerManager;
+	
+	@Resource
+	private PlayerSessionManager playerSessionManager;
 	
 	private Node node;
 
@@ -131,7 +135,7 @@ public class NodeBootstrap implements Bootstrap {
 					@Override
 					public void run() {
 						try{
-							node.setCount(gameRoomManager.getRooms().size());
+							node.setCount(playerSessionManager.getPlayerSessions().size());
 							RpcResponse response = appMasterCallService.addOrUpdateNode(node);
 						logger.info(response.getMessage());
 						}catch(Exception e){
