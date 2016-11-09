@@ -43,7 +43,7 @@ import io.netty.handler.codec.http.websocketx.WebSocketServerHandshakerFactory;
 @Lazy
 @Component
 public class MasterServerHandler extends ChannelInboundHandlerAdapter {
-	private static String WEB_SOCKET_PATH = "websocket";
+	private static String WEB_SOCKET_PATH = "ws";
 	@Resource
 	private WsRpcCallInvoker wsRpcCallInvoker;
 	@Resource 
