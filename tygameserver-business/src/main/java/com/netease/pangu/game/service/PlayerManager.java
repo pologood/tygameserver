@@ -21,7 +21,17 @@ public class PlayerManager extends AbstractPlayerManager<Player> {
 		}
 		return p;
 	}
-
+	
+	public void updatePlayer(Player player){
+		playerDao.updatePlayer(player);
+	}
+	
+	public void logout(Player player){
+		player.setWriteToDbTime(System.currentTimeMillis());
+		player.setServer("");
+		this.updatePlayer(player);
+	}
+	
 	public Player getPlayerByUUID(String uuid){
 		return playerDao.getPlayerByUUID(uuid);
 	}

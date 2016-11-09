@@ -33,8 +33,10 @@ public class NettyHttpUtil {
 	public static void sendHttpResponse(ChannelHandlerContext ctx, FullHttpRequest req, FullHttpResponse res){
 		if(res.status() ==  HttpResponseStatus.OK){
 			HttpUtil.setContentLength(res, res.content().readableBytes());
+			res.content().release();
 		}
 		ChannelFuture f = ctx.channel().writeAndFlush(res);
+	
 		if(!HttpUtil.isKeepAlive(req) || res.status() == HttpResponseStatus.OK){
 			f.addListener(ChannelFutureListener.CLOSE);
 		}

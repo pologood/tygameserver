@@ -16,12 +16,9 @@ import com.netease.pangu.game.rpc.annotation.WsRpcController;
 import com.netease.pangu.game.service.GameRoomManager;
 import com.netease.pangu.game.service.PlayerManager;
 import com.netease.pangu.game.service.PlayerSessionManager;
-import com.netease.pangu.game.util.JsonUtil;
 import com.netease.pangu.game.util.NettyHttpUtil;
 import com.netease.pangu.game.util.ReturnUtils;
 import com.netease.pangu.game.util.ReturnUtils.GameResult;
-
-import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 
 @WsRpcController("/player")
 public class PlayerController {
