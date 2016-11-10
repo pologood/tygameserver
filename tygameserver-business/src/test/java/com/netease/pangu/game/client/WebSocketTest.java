@@ -50,7 +50,7 @@ public class WebSocketTest {
 	public static class WebSocketDemoClient implements Runnable{
 		private String name;
 		private WebSocketClient client;
-		private URI uri = URI.create("ws://localhost:8080/websocket");
+		private URI uri = URI.create("ws://localhost:8080/ws");
 		public WebSocketDemoClient(String name) {
 			this.name = name;
 		}
@@ -67,7 +67,7 @@ public class WebSocketTest {
 	            Session session = fut.get();
 	            // Send a message
 	            Map<String, Object> obj = new HashMap<String, Object>();
-	            obj.put("rpcMethod","player/reg");	            
+	            obj.put("rpcMethod","/player/list");	            
 	            obj.put("params", Arrays.asList(name));
 	            session.getRemote().sendString(JsonUtil.toJson(obj));
 			} catch (Exception e) {
