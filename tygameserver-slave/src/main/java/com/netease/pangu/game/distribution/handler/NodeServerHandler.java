@@ -7,6 +7,7 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
@@ -69,20 +70,25 @@ public class NodeServerHandler extends ChannelInboundHandlerAdapter {
 			Map<String, Object> data = JsonUtil.fromJson(dataStr);
 			String rpcMethodName = (String) data.get("rpcMethod");
 			String uuid = (String)data.get("uuid");
-			long gameId = (Long)data.get("gameId");
+			Double tmp = NumberUtils.toDouble(data.get("gameId").toString());
+			long gameId = tmp.longValue();
 			@SuppressWarnings("unchecked")
 			Map<String, Object> args = (Map<String, Object>)data.get("params");
 			GameContext<AvatarSession<Avatar>> context = null;
 			Avatar avatar = avatarService.getAvatarByUUID(gameId, uuid);
-			AvatarSession<Avatar> session = avatarSessionService.getSession(avatar.getAvatarId());
-			if (session == null) {
-				session = avatarSessionService.createAvatarSession(avatar, ctx.channel());
+			if(avatar != null){
+				AvatarSession<Avatar> session = avatarSessionService.getSession(avatar.getAvatarId());
+				if (session == null) {
+					session = avatarSessionService.createAvatarSession(avatar, ctx.channel());
+				}
+				if(session.getChannel() == null || !session.getChannel().isActive()){
+					session.setChannel(ctx.channel());
+				}
+				context = new GameContext<AvatarSession<Avatar>>(ctx, session, rpcMethodName, frame);
+				wsRpcCallInvoker.invoke(rpcMethodName, args, context);
+			}else{
+				NettyHttpUtil.sendWsResponse(rpcMethodName, ctx.channel(), "avatar not init");
 			}
-			if(session.getChannel() == null || !session.getChannel().isActive()){
-				session.setChannel(ctx.channel());
-			}
-			context = new GameContext<AvatarSession<Avatar>>(ctx, session, rpcMethodName, frame);
-			wsRpcCallInvoker.invoke(rpcMethodName, args, context);
 		}
 	}
 

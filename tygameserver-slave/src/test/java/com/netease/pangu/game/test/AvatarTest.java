@@ -83,7 +83,7 @@ public class AvatarTest {
 
 	@Test
 	public void listTest() {
-		WSSocketClient socket = new WSSocketClient("ws://127.0.0.1:8081/ws");
+		WSSocketClient socket = new WSSocketClient("ws://127.0.0.1:8081/websocket");
 		socket.sendString("/avatar/list", "1", 1, new HashMap<String, Object>());
 	}
 
