@@ -1,5 +1,6 @@
-<template>
-  <div id="app">    
+<template>  
+  <div id="app">   
+    <router-view></router-view> 
     <div class="container">
       <h1>littlegame</h1>
 
@@ -41,7 +42,6 @@
           <button id="roomListBtn" class="btn btn-primary" v-on:click="roomListBtnHandle">刷新</button>
         </div>        
       </div>      
-
       
       <div class="row">
         <!--成员列表-->
@@ -67,7 +67,7 @@
           <h2>群聊</h2>
           <div class="chatCnt">
             <ul>
-              <li v-for="item in groupmsgs">{{item}}</li>
+              <li v-for="item in groupmsgs">{{item.msg}}</li>
             </ul>
           </div>         
 
@@ -123,6 +123,8 @@
 <script>
 import Hello from './components/Hello'
 import $ from 'jquery'
+
+require('bootstrap/dist/css/bootstrap.css')
 
 export default {
   name: 'app',
@@ -182,42 +184,29 @@ export default {
 
 							if(data.rpcMethodName.toLowerCase() == "/player/list") {
 								console.log(data.content.payload);
-								// var html = "";
-								// for(var id in data.content.payload){
-								// 	html += "<option value="+ id +">"+ data.content.payload[id].name + " - "+ id +"</option>";
-								// }
-								// $("#playerList").html(html);
                 self.playerList=data.content.payload;
 							}
 
 							if(data.rpcMethodName.toLowerCase() == "/room/create"){
                 console.log(data.content.payload);
                 self.roomId=data.content.payload;								
-								// $("#roomId").text(data.content.payload);
 								alert("创建房间" + data.content.payload);
 							}
 
 							if(data.rpcMethodName.toLowerCase() == "/room/join"){
 								console.log(data.content.payload);
                 self.roomId=data.content.payload;
-								// $("#roomId").text(data.content.payload);
 								alert("加入房间" + data.content.payload);
 							}
 
 							if(data.rpcMethodName.toLowerCase() == "/room/info"){
 								console.log(data.content.payload);					
-								// var html = "";
-								// for(var id in data.content.payload.members){
-								// 	html += "<li>"+ data.content.payload.members[id].name + " - "+ id +"</li>";
-								// }
-								// $("#members").html(html);
                 self.members = data.content.payload.members;
 							}
 
 							if(data.rpcMethodName.toLowerCase() == "/room/chat"){
 								console.log(data.content.payload);	
-                self.groupmsgs = data.content.payload;			
-								// $("#groupmsgs").append($("<li><label>"+ data.source.playerName + "</label>:&nbsp;<span>"+ data.content.payload.msg +"</span></li>"));
+                self.groupmsgs.push(data.content.payload);
 							}
 
 							if(data.rpcMethodName.toLowerCase() == "/room/list"){
