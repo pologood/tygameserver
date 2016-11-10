@@ -19,8 +19,6 @@ import com.netease.pangu.game.service.AvatarService;
 import com.netease.pangu.game.service.AvatarSessionService;
 import com.netease.pangu.game.util.JsonUtil;
 import com.netease.pangu.game.util.NettyHttpUtil;
-import com.netease.pangu.game.util.ReturnUtils;
-import com.netease.pangu.game.util.ReturnUtils.GameResult;
 
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandler.Sharable;
@@ -41,7 +39,7 @@ import io.netty.handler.codec.http.websocketx.WebSocketServerHandshakerFactory;
 @Lazy
 @Component
 public class NodeServerHandler extends ChannelInboundHandlerAdapter {
-	private static String WEB_SOCKET_PATH = "ws";
+	private static String WEB_SOCKET_PATH = "websocket";
 	@Resource
 	private WsRpcCallInvoker wsRpcCallInvoker;
 	@Resource
