@@ -13,6 +13,7 @@ import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 
 import org.apache.commons.lang3.math.NumberUtils;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.stereotype.Component;
 
@@ -20,12 +21,17 @@ import com.google.common.base.Strings;
 import com.netease.pangu.game.common.meta.GameContext;
 import com.netease.pangu.game.rpc.annotation.WsRpcCall;
 import com.netease.pangu.game.rpc.annotation.WsRpcController;
+import com.netease.pangu.game.util.MethodUtil;
 import com.netease.pangu.game.util.NettyHttpUtil;
+
+import javassist.NotFoundException;
 
 @Component
 public class WsRpcCallInvoker {
+	private final static Logger logger = Logger.getLogger(WsRpcCallInvoker.class);
 	private Map<String, Object> controllerMap;
 	private Map<String, Method> methodMap;
+	private Map<String, Map<Integer, String>> methodParamIndexMap;
 	private Map<String, String> nettyRpcCallAnnoValueMap;
 	@Resource
 	private ConfigurableListableBeanFactory beanFactory;
@@ -49,32 +55,71 @@ public class WsRpcCallInvoker {
 	private Object getController(String rpcMethodName) {
 		return controllerMap.get(nettyRpcCallAnnoValueMap.get(rpcMethodName));
 	}
-	
-	public Object invoke(String rpcMethodName, List<Object> args, GameContext context) {
+
+	public void invoke(String rpcMethodName, Map<String, Object> args, GameContext<?> context) {
 		Method method = getMethod(rpcMethodName);
 		Object controller = getController(rpcMethodName);
-		Class<?>[] paramTypes = method.getParameterTypes();
+		final Class<?>[] parameterTypes = method.getParameterTypes();
 		List<Object> convertedArgs = new ArrayList<Object>();
-		for (int i = 0; i < paramTypes.length; i++) {
-			if (Long.class.isAssignableFrom(paramTypes[i]) || long.class.isAssignableFrom(paramTypes[i])) {
-				Double num = NumberUtils.toDouble(String.valueOf(args.get(i)));
-				convertedArgs.add(num.longValue());
-			} else if (Integer.class.isAssignableFrom(paramTypes[i]) || int.class.isAssignableFrom(paramTypes[i])) {
-				Double num = NumberUtils.toDouble(String.valueOf(args.get(i)));
-				convertedArgs.add(num.intValue());
-			} else if (Double.class.isAssignableFrom(paramTypes[i]) || double.class.isAssignableFrom(paramTypes[i])) {
-				Double num = NumberUtils.toDouble(String.valueOf(args.get(i)));
-				convertedArgs.add(num);
-			} else if (Float.class.isAssignableFrom(paramTypes[i]) || float.class.isAssignableFrom(paramTypes[i])) {
-				Double num = NumberUtils.toDouble(String.valueOf(args.get(i)));
-				convertedArgs.add(num.floatValue());
-			} else if (String.class.isAssignableFrom(paramTypes[i])) {
-				convertedArgs.add(String.valueOf(args.get(i)));
-			} else if (GameContext.class.isAssignableFrom(paramTypes[i])) {
-				convertedArgs.add(context);
-			}
-		}
+		Map<Integer, String> paramsIndex = getParamsIndex(rpcMethodName);
 		try {
+			for (Integer i = 0; i < parameterTypes.length; i++) {
+				if (Long.class.isAssignableFrom(parameterTypes[i]) || long.class.isAssignableFrom(parameterTypes[i])) {
+					Object arg = args.get(paramsIndex.get(i));
+					if (arg == null) {
+						String err = String.format("parameter %s is null", arg);
+						logger.error(err);
+						NettyHttpUtil.sendWsResponse(context, err);
+						return;
+					}
+					Double num = NumberUtils.toDouble(arg.toString());
+					convertedArgs.add(num.longValue());
+				} else if (Integer.class.isAssignableFrom(parameterTypes[i])
+						|| int.class.isAssignableFrom(parameterTypes[i])) {
+					Object arg = args.get(paramsIndex.get(i));
+					if (arg == null) {
+						String err = String.format("parameter %s is null", arg);
+						logger.error(err);
+						NettyHttpUtil.sendWsResponse(context, err);
+						return;
+					}
+					Double num = NumberUtils.toDouble(arg.toString());
+					convertedArgs.add(num.intValue());
+				} else if (Double.class.isAssignableFrom(parameterTypes[i])
+						|| double.class.isAssignableFrom(parameterTypes[i])) {
+					Object arg = args.get(paramsIndex.get(i));
+					if (arg == null) {
+						String err = String.format("parameter %s is null", arg);
+						logger.error(err);
+						NettyHttpUtil.sendWsResponse(context, err);
+						return;
+					}
+					Double num = NumberUtils.toDouble(arg.toString());
+					convertedArgs.add(num);
+				} else if (Float.class.isAssignableFrom(parameterTypes[i])
+						|| float.class.isAssignableFrom(parameterTypes[i])) {
+					Object arg = args.get(paramsIndex.get(i));
+					if (arg == null) {
+						String err = String.format("parameter %s is null", arg);
+						logger.error(err);
+						NettyHttpUtil.sendWsResponse(context, err);
+						return;
+					}
+					Double num = NumberUtils.toDouble(arg.toString());
+					convertedArgs.add(num.floatValue());
+				} else if (String.class.isAssignableFrom(parameterTypes[i])) {
+					Object arg = args.get(paramsIndex.get(i));
+					if (arg == null) {
+						String err = String.format("parameter %s is null", arg);
+						logger.error(err);
+						NettyHttpUtil.sendWsResponse(context, err);
+						return;
+					}
+					convertedArgs.add(arg.toString());
+				} else if (GameContext.class.isAssignableFrom(parameterTypes[i])) {
+					convertedArgs.add(context);
+				}
+			}
 			Object result = method.invoke(controller, convertedArgs.toArray(new Object[0]));
 			if (result != null && !Void.class.isAssignableFrom(result.getClass())) {
 				if (!result.getClass().equals(WsRpcResponse.class)) {
@@ -94,13 +139,13 @@ public class WsRpcCallInvoker {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return null;
 	}
 
 	@PostConstruct
 	public void init() {
 		methodMap = new HashMap<String, Method>();
 		nettyRpcCallAnnoValueMap = new HashMap<String, String>();
+		methodParamIndexMap = new HashMap<String, Map<Integer, String>>();
 		controllerMap = beanFactory.getBeansWithAnnotation(WsRpcController.class);
 		for (Entry<String, Object> entry : controllerMap.entrySet()) {
 			initAndCheckMethodsByNettyRpcCall(entry.getKey(), entry.getValue().getClass());
@@ -126,12 +171,22 @@ public class WsRpcCallInvoker {
 					if (methodMap.containsKey(requestPath)) {
 						throw new NettyRpcCallException("NettyRpcCall value must be unique");
 					}
+					try {
+						methodParamIndexMap.put(requestPath, MethodUtil.getParameterIndexMap(method));
+					} catch (NotFoundException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 					methodMap.put(requestPath, method);
 					nettyRpcCallAnnoValueMap.put(requestPath, controllerName);
 				}
 			}
 			currentClazz = currentClazz.getSuperclass();
 		}
+	}
+
+	private Map<Integer, String> getParamsIndex(String requestUri) {
+		return methodParamIndexMap.get(requestUri);
 	}
 
 	public static void main(String[] args) {

@@ -2,16 +2,20 @@ package com.netease.pangu.game.meta;
 
 import java.io.Serializable;
 
+import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import com.netease.pangu.game.common.meta.IPlayer;
+import com.netease.pangu.game.common.meta.IAvatar;
 
-@Document(collection="player")
-public class Player implements IPlayer, Serializable {
+@Document(collection="avatar")
+public class Avatar implements IAvatar, Serializable {
 	private static final long serialVersionUID = 1L;
+	private ObjectId id;
 	private String name;
 	private String uuid;
-	private long pId;
+	private long gameId;
+	private long avatarId;
+	private String avatarImg;
 	private long writeToDbTime;
 	private long lastLoginTime;
 	private String server;
@@ -24,24 +28,12 @@ public class Player implements IPlayer, Serializable {
 		this.name = name;
 	}
 	@Override
-	public long getPid() {
-		return pId;
-	}
-	@Override
-	public void setPid(long id) {
-		pId = id;
-	}
 	public String getUuid() {
 		return uuid;
 	}
+	@Override
 	public void setUuid(String uuid) {
 		this.uuid = uuid;
-	}
-	public long getpId() {
-		return pId;
-	}
-	public void setpId(long pId) {
-		this.pId = pId;
 	}
 	public long getWriteToDbTime() {
 		return writeToDbTime;
@@ -60,6 +52,34 @@ public class Player implements IPlayer, Serializable {
 	}
 	public void setServer(String server) {
 		this.server = server;
+	}
+	@Override
+	public long getAvatarId() {
+		return avatarId;
+	}
+	@Override
+	public void setAvatarId(long id) {
+		this.avatarId = id;
+	}
+	@Override
+	public void setGameId(long gameId) {
+		this.gameId = gameId;
+	}
+	@Override
+	public long getGameId() {
+		return this.gameId;
+	}
+	public ObjectId getId() {
+		return id;
+	}
+	public void setId(ObjectId id) {
+		this.id = id;
+	}
+	public String getAvatarImg() {
+		return avatarImg;
+	}
+	public void setAvatarImg(String avatarImg) {
+		this.avatarImg = avatarImg;
 	}
 
 }

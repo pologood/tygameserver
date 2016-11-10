@@ -7,15 +7,13 @@ import com.netease.pangu.game.util.JsonUtil;
 import io.netty.channel.Channel;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 
-public class PlayerSession<P extends IPlayer> {
-	private final static int WATI_MILLIS = 5 * 1000;
+public class AvatarSession<A extends IAvatar> implements IAvatar{
+	private final static int WAIT_MILLIS = 5 * 1000;
 
 	public static enum Status {
 		NOT_CONNECTED, CONNECTING, CONNECTED, CLOSED
 	}
-	
-	private long id;
-	private P player;
+	private A avatar;
 	private long roomId;
 	private Channel channel;
 	private Map<String, Object> attrs;
@@ -59,7 +57,7 @@ public class PlayerSession<P extends IPlayer> {
 	public void close() {
 		if (channel != null) {
 			channel.flush();
-			channel.close().awaitUninterruptibly(WATI_MILLIS);
+			channel.close().awaitUninterruptibly(WAIT_MILLIS);
 		}
 	}
 
@@ -78,17 +76,52 @@ public class PlayerSession<P extends IPlayer> {
 	public void setLastestActiveTime(long lastestActiveTime) {
 		this.lastestActiveTime = lastestActiveTime;
 	}
-	public long getId() {
-		return id;
+	public A getAvatar() {
+		return avatar;
 	}
-	public void setId(long id) {
-		this.id = id;
+	public void setAvatar(A avatar) {
+		this.avatar = avatar;
 	}
-	public P getPlayer() {
-		return player;
+	@Override
+	public long getAvatarId() {
+		return avatar.getAvatarId();
 	}
-	public void setPlayer(P player) {
-		this.player = player;
+	@Override
+	public void setAvatarId(long id) {
+		throw new UnsupportedOperationException("method not support");
+	}
+	@Override
+	public String getName() {
+		return avatar.getName();
+	}
+	@Override
+	public void setName(String name) {
+		throw new UnsupportedOperationException("method not support");
+	}
+	@Override
+	public String getUuid() {
+		return avatar.getUuid();
+	}
+	@Override
+	public void setUuid(String uuid) {
+		throw new UnsupportedOperationException("method not support");
+	}
+	@Override
+	public String getServer() {
+		return avatar.getServer();
+	}
+	@Override
+	public void setServer(String server) {
+		throw new UnsupportedOperationException("method not support");
+		
+	}
+	@Override
+	public void setGameId(long gameId) {
+		throw new UnsupportedOperationException("method not support");
+	}
+	@Override
+	public long getGameId() {
+		return avatar.getGameId();
 	}
 
 }

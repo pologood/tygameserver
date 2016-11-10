@@ -18,8 +18,7 @@ import org.springframework.data.redis.core.ZSetOperations.TypedTuple;
 import org.springframework.util.Assert;
 
 public abstract class RedisDao<K, V> {
-	public RedisOperations<K, V> redisOperations;
-
+	private RedisOperations<K, V> redisOperations;
 	@Resource
 	public AutowireCapableBeanFactory beanFactory;
 
@@ -32,8 +31,9 @@ public abstract class RedisDao<K, V> {
 		Assert.notNull(bean);
 		redisOperations = (RedisOperations<K, V>) bean;
 	}
-
-	public RedisOperations<K, V> getRedisOperations() {
+	
+	
+	public RedisOperations<K, V> getRedisOperations(){
 		return redisOperations;
 	}
 
@@ -53,16 +53,16 @@ public abstract class RedisDao<K, V> {
 		redisOperations.delete(keys);
 	}
 
+	public boolean exist(K key) {
+		return redisOperations.hasKey(key);
+	}
+
 	public boolean setIfAbsent(K key, V value) {
 		return redisOperations.opsForValue().setIfAbsent(key, value);
 	}
 
 	public Object get(K key) {
 		return redisOperations.opsForValue().get(key);
-	}
-
-	public boolean exist(K key) {
-		return redisOperations.hasKey(key);
 	}
 
 	public Map<K, V> getWithKeys(List<K> keys) {
@@ -84,6 +84,25 @@ public abstract class RedisDao<K, V> {
 		redisOperations.opsForValue().multiSet(valueMap);
 	}
 
+	// Set Operations
+	@SuppressWarnings("unchecked")
+	public Long addToSet(K boundedkey, V ... value) {
+		return redisOperations.boundSetOps(boundedkey).add(value);
+	}
+	
+	public long removeFromSet(K boundedkey, V value) {
+		return redisOperations.boundSetOps(boundedkey).remove(value);
+	}
+	
+	public Set<V> getSetMembers(K boundedKey) {
+		return redisOperations.boundSetOps(boundedKey).members();
+	}
+	
+	public V popFromSet(K boudedKey){
+		return redisOperations.boundSetOps(boudedKey).pop();
+	}
+	
+	// ZSet Operations
 	public Long getRankInZSet(K boundedKey, V value) {
 		return redisOperations.boundZSetOps(boundedKey).rank(value);
 	}
@@ -102,15 +121,6 @@ public abstract class RedisDao<K, V> {
 
 	public Boolean addToZSet(K boundedkey, V value, double score) {
 		return redisOperations.boundZSetOps(boundedkey).add(value, score);
-	}
-
-	@SuppressWarnings("unchecked")
-	public Long addToSet(K boundedkey, V value) {
-		return redisOperations.boundSetOps(boundedkey).add(value);
-	}
-
-	public long removeFromSet(K boundedkey, V value) {
-		return redisOperations.boundSetOps(boundedkey).remove(value);
 	}
 
 	public long getZSetSize(K boundedKey) {
@@ -145,21 +155,50 @@ public abstract class RedisDao<K, V> {
 	public Set<V> getZSetValuesByScoreRange(K boundedKey, double minScore, double maxScore) {
 		return redisOperations.boundZSetOps(boundedKey).rangeByScore(minScore, maxScore);
 	}
-
+	
+	// Hash Operations
 	public <HK, HV> List<HV> getHashValues(K boundedKey, Collection<HK> keys) {
 		return redisOperations.<HK, HV> boundHashOps(boundedKey).multiGet(keys);
 	}
 
-	public <HK, HV> HV getHashValue(K boundedKey, HK keyInHash) {
+	public <HK, HV> HV get(K boundedKey, HK keyInHash) {
 		return redisOperations.<HK, HV> boundHashOps(boundedKey).get(keyInHash);
 	}
-
-	public Set<V> getSetMembers(K boundedKey) {
-		return redisOperations.boundSetOps(boundedKey).members();
+	
+	public <HK, HV> boolean putIfAbsent(K boundedKey, HK keyInHash, HV value) {
+		return redisOperations.<HK, HV> boundHashOps(boundedKey).putIfAbsent(keyInHash, value);
 	}
-
+	
+	public <HK, HV> void put(K boundedKey, HK keyInHash, HV value) {
+		redisOperations.<HK, HV> boundHashOps(boundedKey).put(keyInHash, value);
+	}
+	
+	public <HK, HV> void delete(K boundedKey, HK keyInHash) {
+		redisOperations.<HK, HV> boundHashOps(boundedKey).delete(keyInHash);
+	}
+	
 	public long getHashSize(K boundedKey) {
 		return redisOperations.boundHashOps(boundedKey).size();
 	}
+	
+	// List Operations
+	@SuppressWarnings("unchecked")
+	public Long rightPushAll(K boundedKey, V... values){
+		return redisOperations.boundListOps(boundedKey).rightPushAll(values);
+	}
+	
+	public Long getListSize(K boundedKey){
+		return redisOperations.boundListOps(boundedKey).size();
+	}
+	
+	public Long rightPush(K boundedKey, V value){
+		return redisOperations.boundListOps(boundedKey).rightPush(value);
+	}
+
+	public V leftPop(K boundedKey){
+		return redisOperations.boundListOps(boundedKey).leftPop();
+	}
+	
+	
 
 }

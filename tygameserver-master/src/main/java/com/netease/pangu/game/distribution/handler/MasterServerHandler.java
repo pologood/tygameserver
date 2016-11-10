@@ -14,11 +14,11 @@ import org.springframework.stereotype.Component;
 
 import com.google.common.base.Strings;
 import com.netease.pangu.game.common.meta.GameContext;
-import com.netease.pangu.game.common.meta.PlayerSession;
+import com.netease.pangu.game.common.meta.AvatarSession;
 import com.netease.pangu.game.http.HttpRequestInvoker;
-import com.netease.pangu.game.meta.Player;
+import com.netease.pangu.game.meta.Avatar;
 import com.netease.pangu.game.rpc.WsRpcCallInvoker;
-import com.netease.pangu.game.service.PlayerSessionManager;
+import com.netease.pangu.game.service.AvatarSessionService;
 import com.netease.pangu.game.util.JsonUtil;
 import com.netease.pangu.game.util.NettyHttpUtil;
 import com.netease.pangu.game.util.ReturnUtils;
@@ -48,8 +48,6 @@ public class MasterServerHandler extends ChannelInboundHandlerAdapter {
 	private WsRpcCallInvoker wsRpcCallInvoker;
 	@Resource 
 	private HttpRequestInvoker httpRequestInvoker;
-	@Resource
-	private PlayerSessionManager playerSessionManager;
 	
 	@Override
 	public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
@@ -69,24 +67,9 @@ public class MasterServerHandler extends ChannelInboundHandlerAdapter {
 			String dataStr = ((TextWebSocketFrame) frame).text();
 			Map<String, Object> data = JsonUtil.fromJson(dataStr);
 			String rpcMethodName = (String) data.get("rpcMethod");
-			String sessionId = (String) data.get("sessionId");
 			@SuppressWarnings("unchecked")
-			List<Object> args = (List<Object>) data.get("params");
-			GameContext<Player> context = null;
-			if (Strings.isNullOrEmpty(sessionId)) {
-				context = new GameContext<Player>(ctx, null, rpcMethodName, frame);
-			} else {
-				Double num = NumberUtils.toDouble(sessionId);
-				long playerSessionId = num.longValue();
-				PlayerSession<Player> playerSession = playerSessionManager.getSession(playerSessionId);
-				if (playerSession != null) {
-					context = new GameContext<Player>(ctx, playerSession, rpcMethodName, frame);
-				} else {
-					GameResult result = ReturnUtils.failed(rpcMethodName, "user hasn't registered");
-					NettyHttpUtil.sendWsResponse(rpcMethodName, ctx.channel(), result);
-					return;
-				}
-			}
+			Map<String, Object> args = (Map<String, Object>)data.get("params");
+			GameContext<Void> context = new GameContext<Void>(ctx, null, rpcMethodName, frame);
 			wsRpcCallInvoker.invoke(rpcMethodName, args, context);
 		}
 	}

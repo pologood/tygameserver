@@ -18,9 +18,10 @@ import org.springframework.stereotype.Component;
 
 import com.netease.pangu.distribution.proto.RpcResponse;
 import com.netease.pangu.game.distribution.handler.NodeServerInitializer;
-import com.netease.pangu.game.service.GameRoomManager;
-import com.netease.pangu.game.service.PlayerManager;
-import com.netease.pangu.game.service.PlayerSessionManager;
+import com.netease.pangu.game.distribution.service.SystemAttrService;
+import com.netease.pangu.game.service.RoomService;
+import com.netease.pangu.game.service.AvatarService;
+import com.netease.pangu.game.service.AvatarSessionService;
 
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
@@ -62,13 +63,13 @@ public class NodeBootstrap implements Bootstrap {
 	private MasterCallService appMasterCallService;
 
 	@Resource
-	private GameRoomManager gameRoomManager;
+	private RoomService gameRoomManager;
 
 	@Resource
-	private PlayerManager playerManager;
+	private SystemAttrService systemAttrService;
 	
 	@Resource
-	private PlayerSessionManager playerSessionManager;
+	private AvatarSessionService playerSessionManager;
 	
 	private Node node;
 
@@ -127,7 +128,7 @@ public class NodeBootstrap implements Bootstrap {
 				node.setHostName(InetAddress.getLocalHost().getHostName());
 				node.setName(name);
 				node.setPort(httpPort);
-				playerManager.setCurrentNode(node);
+				systemAttrService.setNode(node);
 				appMasterCallService.init(masterIp, masterPort);
 				logger.info("app worker init");
 				ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor();
@@ -135,7 +136,7 @@ public class NodeBootstrap implements Bootstrap {
 					@Override
 					public void run() {
 						try{
-							node.setCount(playerSessionManager.getPlayerSessions().size());
+							node.setCount(playerSessionManager.getSessions().size());
 							RpcResponse response = appMasterCallService.addOrUpdateNode(node);
 						logger.info(response.getMessage());
 						}catch(Exception e){

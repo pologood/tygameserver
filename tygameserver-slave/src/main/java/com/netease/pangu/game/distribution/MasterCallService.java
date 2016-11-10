@@ -10,7 +10,7 @@ import com.netease.pangu.distribution.proto.AppNode;
 import com.netease.pangu.distribution.proto.MasterServiceGrpc;
 import com.netease.pangu.distribution.proto.MasterServiceGrpc.MasterServiceBlockingStub;
 import com.netease.pangu.distribution.proto.RpcResponse;
-import com.netease.pangu.game.service.GameRoomManager;
+import com.netease.pangu.game.service.RoomService;
 
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
@@ -19,7 +19,7 @@ import io.grpc.StatusRuntimeException;
 @Service
 public class MasterCallService {
 	@Resource
-	private GameRoomManager gameRoomManager;
+	private RoomService gameRoomManager;
 	private MasterServiceBlockingStub stub;
 	private AtomicBoolean isInit = new AtomicBoolean(false);
 	public void init(String ip, int port) {

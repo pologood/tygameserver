@@ -12,26 +12,29 @@ import com.netease.pangu.game.distribution.Node;
 import com.netease.pangu.game.distribution.NodeManager;
 import com.netease.pangu.game.http.annotation.HttpController;
 import com.netease.pangu.game.http.annotation.HttpRequestMapping;
-import com.netease.pangu.game.meta.Player;
+import com.netease.pangu.game.meta.Avatar;
 import com.netease.pangu.game.rpc.annotation.WsRpcCall;
 import com.netease.pangu.game.rpc.annotation.WsRpcController;
-import com.netease.pangu.game.service.PlayerManager;
+import com.netease.pangu.game.service.AvatarService;
 import com.netease.pangu.game.util.JsonUtil;
 
 @WsRpcController("/master")
 @HttpController("/master")
 public class MasterController {
 	@Resource NodeScheduleService appWorkerScheduleService;
-	@Resource PlayerManager playerManager;
+	@Resource AvatarService avatarService;
 	@Resource NodeManager nodeManager;
 	
-	@WsRpcCall("/app")
-	@HttpRequestMapping("/app")
-	public String getNode(String uuid, String callback){
+	@WsRpcCall("/init")
+	@HttpRequestMapping("/init")
+	public String getNode(String uuid, String roleName, String avatarImg, long gameId, long roomId, String callback){
 		Node node = null;
-		Player player = playerManager.getPlayerByUUID(uuid);
-		if(player != null){
-			String server = player.getServer();
+		Avatar avatar = avatarService.getAvatarByUUID(gameId, uuid);
+		if(avatar != null){
+			avatar.setAvatarImg(avatarImg);
+			avatar.setName(roleName);
+			avatarService.saveAvatar(avatar);
+			String server = avatar.getServer();
 			if(StringUtils.isNotEmpty(server)){
 				node = nodeManager.getNode(server);
 			}else{
@@ -47,18 +50,20 @@ public class MasterController {
 			workerInfo.put("name", node.getName());
 			return callback + "(" + JsonUtil.toJson(workerInfo) + ")";
 		}
-		return  callback + "(" +null + ")";
+		return callback + "(" +null + ")";
 	}
 	
-	@WsRpcCall("/player")
-	@HttpRequestMapping("/player")
-	public Map<String, Object> getPlayerByUUID(String uuid){
-		Player player = playerManager.getPlayerByUUID(uuid);
+	@WsRpcCall("/avatar")
+	@HttpRequestMapping("/avatar")
+	public Map<String, Object> getPlayerByUUID(long gameId, String uuid){
+		Avatar avatar = avatarService.getAvatarByUUID(gameId, uuid);
 		Map<String, Object> playerObj = new HashMap<String, Object>();
-		playerObj.put("name", player.getName());
-		playerObj.put("uuid", player.getUuid());
-		playerObj.put("pId", player.getPid());
-		playerObj.put("server", player.getServer());
+		if(avatar != null){
+			playerObj.put("name", avatar.getName());
+			playerObj.put("uuid", avatar.getUuid());
+			playerObj.put("avatarId", avatar.getAvatarId());
+			playerObj.put("server", avatar.getServer());
+		}
 		return playerObj;
 	}
 }

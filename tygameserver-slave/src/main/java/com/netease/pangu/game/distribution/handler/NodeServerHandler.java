@@ -3,22 +3,20 @@ package com.netease.pangu.game.distribution.handler;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.charset.Charset;
-import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
 
-import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
-import com.google.common.base.Strings;
+import com.netease.pangu.game.common.meta.AvatarSession;
 import com.netease.pangu.game.common.meta.GameContext;
-import com.netease.pangu.game.common.meta.PlayerSession;
 import com.netease.pangu.game.http.HttpRequestInvoker;
-import com.netease.pangu.game.meta.Player;
+import com.netease.pangu.game.meta.Avatar;
 import com.netease.pangu.game.rpc.WsRpcCallInvoker;
-import com.netease.pangu.game.service.PlayerSessionManager;
+import com.netease.pangu.game.service.AvatarService;
+import com.netease.pangu.game.service.AvatarSessionService;
 import com.netease.pangu.game.util.JsonUtil;
 import com.netease.pangu.game.util.NettyHttpUtil;
 import com.netease.pangu.game.util.ReturnUtils;
@@ -46,11 +44,14 @@ public class NodeServerHandler extends ChannelInboundHandlerAdapter {
 	private static String WEB_SOCKET_PATH = "ws";
 	@Resource
 	private WsRpcCallInvoker wsRpcCallInvoker;
-	@Resource 
+	@Resource
 	private HttpRequestInvoker httpRequestInvoker;
 	@Resource
-	private PlayerSessionManager playerSessionManager;
-	
+	private AvatarSessionService avatarSessionService;
+
+	@Resource
+	private AvatarService avatarService;
+
 	@Override
 	public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
 	}
@@ -69,29 +70,26 @@ public class NodeServerHandler extends ChannelInboundHandlerAdapter {
 			String dataStr = ((TextWebSocketFrame) frame).text();
 			Map<String, Object> data = JsonUtil.fromJson(dataStr);
 			String rpcMethodName = (String) data.get("rpcMethod");
-			String sessionId = (String) data.get("sessionId");
+			String uuid = (String)data.get("uuid");
+			long gameId = (Long)data.get("gameId");
 			@SuppressWarnings("unchecked")
-			List<Object> args = (List<Object>) data.get("params");
-			GameContext<Player> context = null;
-			if (Strings.isNullOrEmpty(sessionId)) {
-				context = new GameContext<Player>(ctx, null, rpcMethodName, frame);
-			} else {
-				Double num = NumberUtils.toDouble(sessionId);
-				long playerSessionId = num.longValue();
-				PlayerSession<Player> playerSession = playerSessionManager.getSession(playerSessionId);
-				if (playerSession != null) {
-					context = new GameContext<Player>(ctx, playerSession, rpcMethodName, frame);
-				} else {
-					GameResult result = ReturnUtils.failed(rpcMethodName, "user hasn't registered");
-					NettyHttpUtil.sendWsResponse(rpcMethodName, ctx.channel(), result);
-					return;
-				}
+			Map<String, Object> args = (Map<String, Object>)data.get("params");
+			GameContext<AvatarSession<Avatar>> context = null;
+			Avatar avatar = avatarService.getAvatarByUUID(gameId, uuid);
+			AvatarSession<Avatar> session = avatarSessionService.getSession(avatar.getAvatarId());
+			if (session == null) {
+				session = avatarSessionService.createAvatarSession(avatar, ctx.channel());
 			}
+			if(session.getChannel() == null || !session.getChannel().isActive()){
+				session.setChannel(ctx.channel());
+			}
+			context = new GameContext<AvatarSession<Avatar>>(ctx, session, rpcMethodName, frame);
 			wsRpcCallInvoker.invoke(rpcMethodName, args, context);
 		}
 	}
 
-	private void handleHttpRequest(ChannelHandlerContext ctx, FullHttpRequest request, String webSocketPath) throws IOException {
+	private void handleHttpRequest(ChannelHandlerContext ctx, FullHttpRequest request, String webSocketPath)
+			throws IOException {
 		if (!request.decoderResult().isSuccess()) {
 			NettyHttpUtil.sendHttpResponse(ctx, request,
 					new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.BAD_REQUEST));
@@ -108,24 +106,25 @@ public class NodeServerHandler extends ChannelInboundHandlerAdapter {
 				} else {
 					handshaker.handshake(ctx.channel(), request);
 				}
-			}else{
+			} else {
 				Map<String, String> params = NettyHttpUtil.parseRequest(request);
-				URI uri = URI.create(request.uri());	
-				if(httpRequestInvoker.containsURIPath(uri.getPath())){
+				URI uri = URI.create(request.uri());
+				if (httpRequestInvoker.containsURIPath(uri.getPath())) {
 					FullHttpResponse result = httpRequestInvoker.invoke(uri.getPath(), params, request);
 					NettyHttpUtil.sendHttpResponse(ctx, request, result);
-				}else{
-					NettyHttpUtil.sendHttpResponse(ctx, request, new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.BAD_REQUEST, Unpooled.copiedBuffer("uri not exist!",Charset.forName("UTF-8"))));
+				} else {
+					NettyHttpUtil.sendHttpResponse(ctx, request,
+							new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.BAD_REQUEST,
+									Unpooled.copiedBuffer("uri not exist!", Charset.forName("UTF-8"))));
 				}
 			}
-			
-		}else{
+
+		} else {
 			NettyHttpUtil.sendHttpResponse(ctx, request,
 					new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.FORBIDDEN));
 			return;
 		}
-		
-		
+
 	}
 
 	@Override

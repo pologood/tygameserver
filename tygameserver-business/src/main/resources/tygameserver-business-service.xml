@@ -3,8 +3,7 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
 	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:context="http://www.springframework.org/schema/context"
 	xmlns:p="http://www.springframework.org/schema/p" xmlns:c="http://www.springframework.org/schema/c"
-	xmlns:cache="http://www.springframework.org/schema/cache"
-	xmlns:mongo="http://www.springframework.org/schema/data/mongo"
+	xmlns:cache="http://www.springframework.org/schema/cache" xmlns:mongo="http://www.springframework.org/schema/data/mongo"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans 
            http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
            http://www.springframework.org/schema/context
@@ -17,7 +16,7 @@
 		   http://www.springframework.org/schema/cache/spring-cache.xsd
 		   http://www.springframework.org/schema/data/mongo 
 		   http://www.springframework.org/schema/data/mongo/spring-mongo-1.0.xsd">
-	<import resource="classpath:/bean/tygameserver-beans.xml"/>
+	<import resource="classpath:/bean/tygameserver-beans.xml" />
 	<import resource="classpath*:tygameserver-config-service.xml" />
 	<context:annotation-config />
 	<mongo:mongo id="mongo" replica-set="${mongo.replicaSet}">
@@ -35,4 +34,25 @@
 	<bean id="mongoTemplate" class="org.springframework.data.mongodb.core.MongoTemplate">
 		<constructor-arg name="mongoDbFactory" ref="mongoDbFactory" />
 	</bean>
+
+	<bean id="jedisConnFactory"
+		class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory">
+		<property name="hostName" value="${redis.host}" />
+		<property name="port" value="${redis.port}" />
+		<property name="password" value="${redis.pass}" />
+		<property name="database" value="${redis.default.db}" />
+		<property name="poolConfig" ref="jedisPoolConfig" />
+	</bean>
+	<bean id="jedisPoolConfig" class="redis.clients.jedis.JedisPoolConfig">
+		<property
+			name="testOnBorrow"
+			value="${redis.pool.testOnBorrow}" />
+		<property
+			name="testOnReturn"
+			value="${redis.pool.testOnReturn}" />
+		<property
+			name="testWhileIdle"
+			value="${redis.pool.testWhileIdle}" />
+	</bean>
+	<bean id="redisTemplate" class="org.springframework.data.redis.core.StringRedisTemplate" p:connection-factory-ref="jedisConnFactory" />
 </beans>

@@ -32,12 +32,20 @@ public class AbstractMongoDao<T> {
 		return mongoTemplate.updateFirst(query, update, clazz);
 	}
 	
-	public void addObject(T object){
+	public void insert(T object){
 		mongoTemplate.insert(object);
 	}
 	
-	public void addAll(List<T> list){
+	public void save(T object){
+		mongoTemplate.save(object);
+	}
+	
+	public void insertAll(List<T> list){
 		mongoTemplate.insertAll(list);
+	}
+	
+	public WriteResult remove(T object){
+		return mongoTemplate.remove(object);
 	}
 
 	public MongoTemplate getMongoTemplate() {

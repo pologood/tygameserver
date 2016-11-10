@@ -4,7 +4,7 @@ import java.util.Set;
 
 public class GameRoom {
 	public static enum Status {
-		IDLE, GAMEING, CLOSING
+		IDLE, READY, GAMEING, CLOSING
 	}
 
 	public static enum RoomType {
@@ -12,7 +12,7 @@ public class GameRoom {
 	}
 
 	private long id;
-	private Set<Long> playerSessionIds;
+	private Set<Long> sessionIds;
 	private long gameId;
 	private Status status;
 	private long ownerId;
@@ -27,13 +27,6 @@ public class GameRoom {
 		this.id = id;
 	}
 
-	public Set<Long> getPlayerSessionIds() {
-		return playerSessionIds;
-	}
-
-	public void setPlayerSessionIds(Set<Long> playerSessionIds) {
-		this.playerSessionIds = playerSessionIds;
-	}
 
 	public long getGameId() {
 		return gameId;
@@ -73,6 +66,14 @@ public class GameRoom {
 
 	public void setType(RoomType type) {
 		this.type = type;
+	}
+
+	public Set<Long> getSessionIds() {
+		return sessionIds;
+	}
+
+	public void setSessionIds(Set<Long> sessionIds) {
+		this.sessionIds = sessionIds;
 	}
 
 }

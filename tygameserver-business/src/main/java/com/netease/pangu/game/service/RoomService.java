@@ -14,20 +14,22 @@ import javax.annotation.Resource;
 
 import org.springframework.stereotype.Component;
 
+import com.netease.pangu.game.common.meta.AvatarSession;
 import com.netease.pangu.game.common.meta.GameRoom;
 import com.netease.pangu.game.common.meta.GameRoom.RoomType;
 import com.netease.pangu.game.common.meta.GameRoom.Status;
-import com.netease.pangu.game.common.meta.PlayerSession;
-import com.netease.pangu.game.meta.Player;
-import com.netease.pangu.game.service.AbstractPlayerSessionManager.SessionCallable;
+import com.netease.pangu.game.meta.Avatar;
+import com.netease.pangu.game.service.AbstractAvatarSessionService.SessionCallable;
 
 @Component
-public class GameRoomManager {
+public class RoomService {
 	@Resource
-	private PlayerSessionManager playerSessionManager;
+	private AvatarSessionService avatarSessionService;
 	@Resource
 	private UniqueIDGeneratorService uniqueIdGeneratorService;
-
+	@Resource
+	private RoomAllocationService roomAllocationService;
+	
 	private final ConcurrentMap<Long, GameRoom> rooms = new ConcurrentHashMap<Long, GameRoom>();
 	private final ConcurrentMap<Long, Set<Long>> gameIdRefRoom = new ConcurrentHashMap<Long, Set<Long>>();
 
@@ -46,36 +48,40 @@ public class GameRoomManager {
 	public GameRoom getGameRoom(long roomId) {
 		return rooms.get(roomId);
 	}
-	
-	public Map<Long, GameRoom> getRooms(){
+
+	public Map<Long, GameRoom> getRooms() {
 		return Collections.unmodifiableMap(rooms);
+	}
+	
+	public long generateRoomId(long gameId){
+		return roomAllocationService.borrowRoom(gameId);
+		
 	}
 
 	/**
 	 * 
 	 * @param gameId
-	 * @param playerSessionId
+	 * @param avatarId
 	 * @param type
 	 * @return roomId
 	 */
-	public long createRoom(final long gameId, final long playerSessionId, final int maxSize) {
-		return playerSessionManager.updatePlayerSession(playerSessionId, new SessionCallable<Long, Player>() {
+	public long createRoom(final long gameId, final long avatarId, final int maxSize) {
+		return avatarSessionService.updateAvatarSession(avatarId, new SessionCallable<Long, Avatar>() {
 			@Override
-			public Long call(PlayerSession<Player> playerSession) {
+			public Long call(AvatarSession<Avatar> playerSession) {
 				if (playerSession.getRoomId() == 0) {
-					long roomId = uniqueIdGeneratorService.generateRoomId();
+					long roomId = generateRoomId(gameId);
 					GameRoom room = new GameRoom();
 					room.setId(roomId);
 					room.setGameId(gameId);
-					room.setOwnerId(playerSessionId);
-					room.setPlayerSessionIds(new HashSet<Long>());
+					room.setOwnerId(avatarId);
+					room.setSessionIds(new HashSet<Long>());
 					room.setStatus(Status.IDLE);
 					room.setMaxSize(maxSize);
-					
-					room.getPlayerSessionIds().add(playerSessionId);
-					
+					room.getSessionIds().add(avatarId);
+
 					playerSession.setRoomId(roomId);
-					
+
 					rooms.put(roomId, room);
 					gameIdRefRoom.putIfAbsent(gameId, new HashSet<Long>());
 					gameIdRefRoom.get(gameId).add(roomId);
@@ -88,25 +94,25 @@ public class GameRoomManager {
 
 	public boolean canJoin(long roomId) {
 		GameRoom room = getGameRoom(roomId);
-		return room != null && room.getStatus() == GameRoom.Status.IDLE 
-				&& room.getPlayerSessionIds().size() < room.getMaxSize() ? true : false;
+		return room != null && room.getStatus() == GameRoom.Status.IDLE
+				&& room.getSessionIds().size() < room.getMaxSize() ? true : false;
 	}
 
 	/**
 	 * 
-	 * @param playerSessionId
+	 * @param avatarId
 	 * @param roomId
 	 * @return
 	 */
-	public boolean joinRoom(final long playerSessionId, final long roomId) {
-		return playerSessionManager.updatePlayerSession(playerSessionId, new SessionCallable<Boolean, Player>() {
+	public boolean joinRoom(final long avatarId, final long roomId) {
+		return avatarSessionService.updateAvatarSession(avatarId, new SessionCallable<Boolean, Avatar>() {
 			@Override
-			public Boolean call(PlayerSession<Player> playerSession) {
+			public Boolean call(AvatarSession<Avatar> playerSession) {
 				if (playerSession.getRoomId() == 0) {
 					GameRoom room = getGameRoom(roomId);
 					if (canJoin(roomId)) {
 						playerSession.setRoomId(roomId);
-						room.getPlayerSessionIds().add(playerSessionId);
+						room.getSessionIds().add(avatarId);
 						return true;
 					}
 				}
@@ -114,17 +120,17 @@ public class GameRoomManager {
 			}
 		});
 	}
-	
-	public boolean joinRandomRoom(final long playerSessionId){
+
+	public boolean joinRandomRoom(final long avatarId) {
 		List<Long> gameRooms = new ArrayList<Long>();
-		for(GameRoom room : rooms.values()){
-			if(room.getType() == RoomType.PUBLIC && canJoin(room.getId())){
+		for (GameRoom room : rooms.values()) {
+			if (room.getType() == RoomType.PUBLIC && canJoin(room.getId())) {
 				gameRooms.add(room.getId());
 			}
 		}
-		Random random  = new Random(System.currentTimeMillis());
+		Random random = new Random(System.currentTimeMillis());
 		long roomId = gameRooms.get(random.nextInt(gameRooms.size()));
-		return joinRoom(playerSessionId, roomId);
+		return joinRoom(avatarId, roomId);
 	}
 
 	/**
@@ -132,16 +138,16 @@ public class GameRoomManager {
 	 * @param playerSessionId
 	 * @return
 	 */
-	public boolean exitRoom(final long playerSessionId) {
-		return playerSessionManager.updatePlayerSession(playerSessionId, new SessionCallable<Boolean, Player>() {
+	public boolean exitRoom(final long avatarId) {
+		return avatarSessionService.updateAvatarSession(avatarId, new SessionCallable<Boolean, Avatar>() {
 			@Override
-			public Boolean call(PlayerSession<Player> playerSession) {
+			public Boolean call(AvatarSession<Avatar> playerSession) {
 				if (playerSession.getRoomId() > 0) {
 					GameRoom room = getGameRoom(playerSession.getRoomId());
-					room.getPlayerSessionIds().remove(playerSessionId);
-					if (room.getPlayerSessionIds().size() > 0) {
-						if (room.getOwnerId() == playerSessionId) {
-							room.setOwnerId(room.getPlayerSessionIds().toArray(new Long[0])[0]);
+					room.getSessionIds().remove(avatarId);
+					if (room.getSessionIds().size() > 0) {
+						if (room.getOwnerId() == avatarId) {
+							room.setOwnerId(room.getSessionIds().toArray(new Long[0])[0]);
 						}
 					} else {
 						room.setOwnerId(0L);
