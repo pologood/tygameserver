@@ -16,6 +16,7 @@ import com.netease.pangu.game.meta.Avatar;
 import com.netease.pangu.game.rpc.annotation.WsRpcCall;
 import com.netease.pangu.game.rpc.annotation.WsRpcController;
 import com.netease.pangu.game.service.AvatarService;
+import com.netease.pangu.game.service.RoomAllocationService;
 import com.netease.pangu.game.util.JsonUtil;
 
 @WsRpcController("/master")
@@ -24,7 +25,7 @@ public class MasterController {
 	@Resource NodeScheduleService appWorkerScheduleService;
 	@Resource AvatarService avatarService;
 	@Resource NodeManager nodeManager;
-	
+	@Resource RoomAllocationService roomAllocationService;
 	@WsRpcCall("/init")
 	@HttpRequestMapping("/init")
 	public String getNode(String uuid, String roleName, String avatarImg, long gameId, long roomId, String callback){
@@ -35,13 +36,25 @@ public class MasterController {
 			avatar.setName(roleName);
 			avatarService.saveAvatar(avatar);
 			String server = avatar.getServer();
-			if(StringUtils.isNotEmpty(server)){
+			if(roomId > 0){
+				node = nodeManager.getNode(roomAllocationService.getRoomInfo(gameId, roomId));
+			}else if(StringUtils.isNotEmpty(server)){
 				node = nodeManager.getNode(server);
 			}else{
 				node = appWorkerScheduleService.getNodeByScheduled();
 			}
 		}else{
+			avatar = new Avatar();
+			avatar.setAvatarImg(avatarImg);
+			avatar.setGameId(gameId);
+			avatar.setLastLoginTime(System.currentTimeMillis());
+			avatar.setName(roleName);
 			node = appWorkerScheduleService.getNodeByScheduled();
+			avatar.setServer(node.getName());
+			avatar.setUuid(uuid);
+			avatar.setWriteToDbTime(System.currentTimeMillis());
+			avatar = avatarService.createAvatar(avatar);
+			avatarService.insertAvatar(avatar);
 		}
 		if(node != null){
 			Map<String, Object> workerInfo = new HashMap<String, Object>();

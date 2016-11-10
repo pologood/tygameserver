@@ -16,9 +16,9 @@ public abstract class AbstractAvatarService<A extends IAvatar> {
 	 * @return 如果角色已存在返回存在的角色
 	 */
 	public A createAvatar(A avatar){
-		long playerId = uniqueIdGeneratorService.generateAvatarId();
-		avatar.setAvatarId(playerId);
-		return put(playerId, avatar);
+		long avatarId = uniqueIdGeneratorService.generateAvatarId();
+		avatar.setAvatarId(avatarId);
+		return put(avatarId, avatar);
 	}
 	
 	protected abstract A put(long avatarId, A avatar); 

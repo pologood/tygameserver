@@ -40,6 +40,7 @@ public class RoomService {
 			if (refRooms != null) {
 				gameIdRefRoom.get(room.getGameId()).remove(roomId);
 			}
+			roomAllocationService.returnRoom(room.getGameId(), roomId);
 			return true;
 		}
 		return false;
@@ -53,8 +54,8 @@ public class RoomService {
 		return Collections.unmodifiableMap(rooms);
 	}
 	
-	public long generateRoomId(long gameId){
-		return roomAllocationService.borrowRoom(gameId);
+	public Long generateRoomId(long gameId, String server){
+		return roomAllocationService.borrowRoom(gameId, server);
 		
 	}
 
@@ -70,22 +71,24 @@ public class RoomService {
 			@Override
 			public Long call(AvatarSession<Avatar> playerSession) {
 				if (playerSession.getRoomId() == 0) {
-					long roomId = generateRoomId(gameId);
-					GameRoom room = new GameRoom();
-					room.setId(roomId);
-					room.setGameId(gameId);
-					room.setOwnerId(avatarId);
-					room.setSessionIds(new HashSet<Long>());
-					room.setStatus(Status.IDLE);
-					room.setMaxSize(maxSize);
-					room.getSessionIds().add(avatarId);
-
-					playerSession.setRoomId(roomId);
-
-					rooms.put(roomId, room);
-					gameIdRefRoom.putIfAbsent(gameId, new HashSet<Long>());
-					gameIdRefRoom.get(gameId).add(roomId);
-					return roomId;
+					Long roomId = generateRoomId(gameId, playerSession.getServer());
+					if(roomId != null){
+						GameRoom room = new GameRoom();
+						room.setId(roomId);
+						room.setGameId(gameId);
+						room.setOwnerId(avatarId);
+						room.setSessionIds(new HashSet<Long>());
+						room.setStatus(Status.IDLE);
+						room.setMaxSize(maxSize);
+						room.getSessionIds().add(avatarId);
+	
+						playerSession.setRoomId(roomId);
+	
+						rooms.put(roomId, room);
+						gameIdRefRoom.putIfAbsent(gameId, new HashSet<Long>());
+						gameIdRefRoom.get(gameId).add(roomId);
+						return roomId;
+					}
 				}
 				return -1L;
 			}
@@ -152,6 +155,7 @@ public class RoomService {
 					} else {
 						room.setOwnerId(0L);
 						room.setStatus(Status.CLOSING);
+						remove(room.getId());
 					}
 					playerSession.setRoomId(0L);
 					return true;
