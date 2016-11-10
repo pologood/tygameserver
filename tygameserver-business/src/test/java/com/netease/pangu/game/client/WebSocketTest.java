@@ -1,7 +1,6 @@
 package com.netease.pangu.game.client;
 
 import java.net.URI;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Future;
@@ -29,7 +28,6 @@ public class WebSocketTest {
 	    {
 	        super.onWebSocketText(message);
 	        System.out.println("Received TEXT message: " + message);
-	        logger.info(message);
 	    }
 	    
 	    @Override
