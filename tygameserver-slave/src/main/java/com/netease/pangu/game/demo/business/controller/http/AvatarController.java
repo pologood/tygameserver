@@ -41,7 +41,7 @@ public class AvatarController {
 		AvatarSession<Avatar> session = ctx.getSession();
 		if(session.getState() != AvatarSession.READY){
 			session.setState(AvatarSession.READY);
-			roomService.broadcast(session.getRoomId(), roomService.getRoomInfo(session.getRoomId()));
+			roomService.broadcast(RoomService.ROOM_INFO, session.getRoomId(), roomService.getRoomInfo(session.getRoomId()));
 		}
 		GameResult result = ReturnUtils.succ("ready go");
 		return result;	
