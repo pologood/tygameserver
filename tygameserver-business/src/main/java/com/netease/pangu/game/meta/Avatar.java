@@ -10,6 +10,8 @@ import com.netease.pangu.game.common.meta.IAvatar;
 @Document(collection="avatar")
 public class Avatar implements IAvatar, Serializable {
 	private static final long serialVersionUID = 1L;
+	public static final int READY = 1;
+	public static final int IDLE = 0;
 	private ObjectId id;
 	private String name;
 	private String uuid;
@@ -19,6 +21,8 @@ public class Avatar implements IAvatar, Serializable {
 	private long writeToDbTime;
 	private long lastLoginTime;
 	private String server;
+	private transient int state;
+	
 	@Override
 	public String getName() {
 		return this.name;
@@ -80,6 +84,12 @@ public class Avatar implements IAvatar, Serializable {
 	}
 	public void setAvatarImg(String avatarImg) {
 		this.avatarImg = avatarImg;
+	}
+	public int getState() {
+		return state;
+	}
+	public void setState(int state) {
+		this.state = state;
 	}
 
 }

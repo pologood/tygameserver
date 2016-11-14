@@ -128,7 +128,6 @@ public class WsRpcCallInvoker {
 					NettyHttpUtil.sendWsResponse(context, (WsRpcResponse) result);
 				}
 			}
-
 		} catch (IllegalAccessException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
