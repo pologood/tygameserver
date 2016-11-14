@@ -40,11 +40,12 @@ export default{
                 //     self.playerList=data.content.payload;
                 // }
 
-                // if(data.rpcMethodName.toLowerCase() == "/room/create"){
-                    // console.log(data.content.payload);
-                    // self.roomId=data.content.payload;								
-                    // alert("创建房间" + data.content.payload);
-                // }
+                if(data.rpcMethodName.toLowerCase() == "/room/create"){
+                    console.log(data.content.payload);
+                    self.roomId=data.content.payload;	
+                    self.router.push('room');							
+                    alert("创建房间" + data.content.payload);
+                }
 
                 // if(data.rpcMethodName.toLowerCase() == "/room/join"){
                 //     console.log(data.content.payload);
