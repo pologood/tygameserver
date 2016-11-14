@@ -1,4 +1,5 @@
 export default{
+    rootVue:null,
     connectData:null,
     socket:null,
     router:null,
@@ -51,10 +52,10 @@ export default{
                 //     alert("加入房间" + data.content.payload);
                 // }
 
-                // if(data.rpcMethodName.toLowerCase() == "/room/info"){
-                //     console.log(data.content.payload);					
-                //     self.members = data.content.payload.members;
-                // }
+                if(data.rpcMethodName.toLowerCase() == "/room/info"){
+                    console.log(data.content.payload);					
+                    self.members = data.content.payload.members;
+                }
 
                 // if(data.rpcMethodName.toLowerCase() == "/room/chat"){
                 //     console.log(data.content.payload);	
@@ -87,7 +88,7 @@ export default{
         var msg = {
             rpcMethod:"/room/create", 
             params:{
-                roomId:this.roomId,
+                gameId:this.player.gameId,
                 maxSize:10
             },
             uuid:this.player.uuid
