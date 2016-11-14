@@ -54,5 +54,5 @@
 			name="testWhileIdle"
 			value="${redis.pool.testWhileIdle}" />
 	</bean>
-	<bean id="redisTemplate" class="org.springframework.data.redis.core.StringRedisTemplate" p:connection-factory-ref="jedisConnFactory" />
+	<bean id="redisTemplate" class="org.springframework.data.redis.core.RedisTemplate" p:connection-factory-ref="jedisConnFactory" />
 </beans>

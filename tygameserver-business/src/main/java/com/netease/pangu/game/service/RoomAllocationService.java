@@ -11,7 +11,6 @@ import org.springframework.data.redis.core.SessionCallback;
 import org.springframework.stereotype.Service;
 
 import com.netease.pangu.game.dao.CommonRedisDao;
-import com.netease.pangu.game.distribution.Node;
 
 @Service
 public class RoomAllocationService {
