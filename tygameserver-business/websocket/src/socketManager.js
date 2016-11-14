@@ -91,6 +91,7 @@ export default{
                 gameId:this.player.gameId,
                 maxSize:10
             },
+            gameId:this.player.gameId,
             uuid:this.player.uuid
         };
         this.socket.send(window.JSON.stringify(msg));
