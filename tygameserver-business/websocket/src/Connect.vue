@@ -36,8 +36,7 @@
 <script>
     import $ from 'jquery'
     import s from './socketManager'
-    console.log(s.name)
-    s.name="aaa"
+
     export default {
         data(){
             return{
@@ -56,8 +55,11 @@
         methods:{
             connectServer(){
                 var player=this.playerList[this.selected];
+                var self = this;
                 $.getJSON("http://littlegame.tianyu.163.com/master/init?callback=?&uuid="+player.uuid+"&roleName="+player.roleName+"&avatarImg="+encodeURIComponent(player.avatarImg)+"&gameId="+player.gameId+"&roomId="+this.roomId, function(data){
-                    console.log(data);
+                    s.roomId = self.roomId;
+                    s.player = player;
+                    s.connectSocket(data);
                 })
             }
         }
