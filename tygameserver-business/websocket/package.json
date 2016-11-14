@@ -9,6 +9,7 @@
     "build": "node build/build.js"
   },
   "dependencies": {
+    "createjs-easeljs": "^0.8.2",
     "vue": "^2.0.1",
     "vue-router": "^2.0.1"
   },
