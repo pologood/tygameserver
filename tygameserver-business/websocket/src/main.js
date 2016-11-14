@@ -24,10 +24,11 @@ s.router=router;
 // console.log(s)
 
 /* eslint-disable no-new */
-new Vue({
+s.rootVue = new Vue({
   el: '#app',
   router:router,
   template: '<Root/>',
   components: { Root }
 })
+console.log(s.rootVue)
 
