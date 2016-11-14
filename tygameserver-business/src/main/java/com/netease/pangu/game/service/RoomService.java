@@ -168,15 +168,16 @@ public class RoomService {
 			}
 		});
 	}
-	public static final String ROOM_BROADCAST = "/room/broadcast";
-	public void broadcast(long roomId, Object msg) {
+	public static final String ROOM_BROADCAST = "/room/broadcast/";
+	public static final String ROOM_INFO = "roomInfo";
+	public void broadcast(String path, long roomId,Object msg) {
 		GameRoom room = getGameRoom(roomId);
 		if (room.getStatus() == Status.IDLE) {
 			Set<Long> sessionIds = room.getSessionIds();
 			Map<Long, AvatarSession<Avatar>> sessionMap = avatarSessionService.getAvatarSesssions(sessionIds);
 			for(AvatarSession<Avatar> session: sessionMap.values()){
 				if(session.getChannel() != null && session.getChannel().isActive()){
-					NettyHttpUtil.sendWsResponse(ROOM_BROADCAST, session.getChannel(), msg);
+					NettyHttpUtil.sendWsResponse(ROOM_BROADCAST + path , session.getChannel(), msg);
 				}
 			}
 		}

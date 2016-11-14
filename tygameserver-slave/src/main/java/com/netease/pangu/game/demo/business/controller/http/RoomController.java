@@ -21,51 +21,54 @@ import com.netease.pangu.game.util.ReturnUtils.GameResult;
 
 @WsRpcController("/room")
 public class RoomController {
-	@Resource private AvatarSessionService avatarSessionService;
-	@Resource private AvatarService avatarService;
-	@Resource private RoomService roomService;
-	
+	@Resource
+	private AvatarSessionService avatarSessionService;
+	@Resource
+	private AvatarService avatarService;
+	@Resource
+	private RoomService roomService;
+
 	@WsRpcCall("/list")
-	public GameResult listRoom(GameContext<Avatar> ctx){
+	public GameResult listRoom(GameContext<Avatar> ctx) {
 		GameResult result = ReturnUtils.succ(roomService.getRooms());
 		return result;
 	}
-	
+
 	@WsRpcCall("/create")
-	public GameResult createRoom(long gameId, int maxSize, GameContext<AvatarSession<Avatar>> ctx){
+	public GameResult createRoom(long gameId, int maxSize, GameContext<AvatarSession<Avatar>> ctx) {
 		AvatarSession<Avatar> session = ctx.getSession();
 		long roomId = roomService.createRoom(gameId, session.getAvatarId(), maxSize);
 		GameResult result;
-		if(roomId > 0){
+		if (roomId > 0) {
 			session.setState(AvatarSession.READY);
 			result = ReturnUtils.succ(roomId);
-		}else{
+		} else {
 			result = ReturnUtils.failed("create room failed");
 		}
 		return result;
 	}
-	
+
 	@WsRpcCall("/join")
-	public GameResult joinRoom(long roomId, GameContext<AvatarSession<Avatar>> ctx){
+	public GameResult joinRoom(long roomId, GameContext<AvatarSession<Avatar>> ctx) {
 		AvatarSession<Avatar> session = ctx.getSession();
 		boolean isOk = roomService.joinRoom(session.getAvatarId(), roomId);
 		GameResult result;
-		if(isOk){
-			roomService.broadcast(roomId, roomService.getRoomInfo(roomId));
+		if (isOk) {
+			roomService.broadcast(RoomService.ROOM_INFO, roomId, roomService.getRoomInfo(roomId));
 			result = ReturnUtils.succ(roomId);
-		}else{
+		} else {
 			result = ReturnUtils.failed(String.format("failed to join %d", roomId));
 		}
 		return result;
 	}
-	
+
 	@WsRpcCall("/info")
-	public GameResult getRoom(long roomId){
+	public GameResult getRoom(long roomId) {
 		return roomService.getRoomInfo(roomId);
 	}
-	
+
 	@WsRpcCall("/chat")
-	public void chat(long roomId, String msg, GameContext<AvatarSession<Avatar>> ctx){
+	public void chat(long roomId, String msg, GameContext<AvatarSession<Avatar>> ctx) {
 		AvatarSession<Avatar> pSession = ctx.getSession();
 		GameRoom room = roomService.getGameRoom(roomId);
 		Map<Long, AvatarSession<Avatar>> members = avatarSessionService.getAvatarSesssions(room.getSessionIds());
@@ -75,14 +78,14 @@ public class RoomController {
 		source.put("uuid", pSession.getUuid());
 		IAvatar avatar = pSession.getAvatar();
 		source.put("avatarName", avatar.getName());
-		GameResult result = ReturnUtils.succ(payload, source);		
-		for(AvatarSession<Avatar> member: members.values()){
-			if(member.getChannel()!= null && member.getChannel().isActive()){
+		GameResult result = ReturnUtils.succ(payload, source);
+		for (AvatarSession<Avatar> member : members.values()) {
+			if (member.getChannel() != null && member.getChannel().isActive()) {
 				WsRpcResponse response = WsRpcResponse.create(ctx.getRpcMethodName());
 				response.setContent(result);
 				member.sendJSONMessage(response);
 			}
 		}
 	}
-	
+
 }
