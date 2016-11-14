@@ -19,6 +19,7 @@ public class Avatar implements IAvatar, Serializable {
 	private long writeToDbTime;
 	private long lastLoginTime;
 	private String server;
+	
 	@Override
 	public String getName() {
 		return this.name;

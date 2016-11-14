@@ -43,7 +43,7 @@ public abstract class AbstractAvatarSessionService<A extends IAvatar> {
 		return Collections.unmodifiableMap(avatarMap);
 	}
 
-	public Map<Long, AvatarSession<A>> getPlayerSesssions(Set<Long> avatarIds){
+	public Map<Long, AvatarSession<A>> getAvatarSesssions(Set<Long> avatarIds){
 		Map<Long, AvatarSession<A>> avatarMap = new HashMap<Long, AvatarSession<A>>();
 		for(Long avatarId: avatarIds){
 			AvatarSession<A> session = sessions.get(avatarId);

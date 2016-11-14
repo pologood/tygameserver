@@ -2,6 +2,7 @@ package com.netease.pangu.game.service;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -20,6 +21,9 @@ import com.netease.pangu.game.common.meta.GameRoom.RoomType;
 import com.netease.pangu.game.common.meta.GameRoom.Status;
 import com.netease.pangu.game.meta.Avatar;
 import com.netease.pangu.game.service.AbstractAvatarSessionService.SessionCallable;
+import com.netease.pangu.game.util.NettyHttpUtil;
+import com.netease.pangu.game.util.ReturnUtils;
+import com.netease.pangu.game.util.ReturnUtils.GameResult;
 
 @Component
 public class RoomService {
@@ -29,7 +33,7 @@ public class RoomService {
 	private UniqueIDGeneratorService uniqueIdGeneratorService;
 	@Resource
 	private RoomAllocationService roomAllocationService;
-	
+
 	private final ConcurrentMap<Long, GameRoom> rooms = new ConcurrentHashMap<Long, GameRoom>();
 	private final ConcurrentMap<Long, Set<Long>> gameIdRefRoom = new ConcurrentHashMap<Long, Set<Long>>();
 
@@ -53,10 +57,10 @@ public class RoomService {
 	public Map<Long, GameRoom> getRooms() {
 		return Collections.unmodifiableMap(rooms);
 	}
-	
-	public Long generateRoomId(long gameId, String server){
+
+	public Long generateRoomId(long gameId, String server) {
 		return roomAllocationService.borrowRoom(gameId, server);
-		
+
 	}
 
 	/**
@@ -72,7 +76,7 @@ public class RoomService {
 			public Long call(AvatarSession<Avatar> playerSession) {
 				if (playerSession.getRoomId() == 0) {
 					Long roomId = generateRoomId(gameId, playerSession.getServer());
-					if(roomId != null){
+					if (roomId != null) {
 						GameRoom room = new GameRoom();
 						room.setId(roomId);
 						room.setGameId(gameId);
@@ -81,9 +85,9 @@ public class RoomService {
 						room.setStatus(Status.IDLE);
 						room.setMaxSize(maxSize);
 						room.getSessionIds().add(avatarId);
-	
+
 						playerSession.setRoomId(roomId);
-	
+
 						rooms.put(roomId, room);
 						gameIdRefRoom.putIfAbsent(gameId, new HashSet<Long>());
 						gameIdRefRoom.get(gameId).add(roomId);
@@ -163,6 +167,33 @@ public class RoomService {
 				return false;
 			}
 		});
+	}
+	public static final String ROOM_BROADCAST = "/room/broadcast";
+	public void broadcast(long roomId, Object msg) {
+		GameRoom room = getGameRoom(roomId);
+		if (room.getStatus() == Status.IDLE) {
+			Set<Long> sessionIds = room.getSessionIds();
+			Map<Long, AvatarSession<Avatar>> sessionMap = avatarSessionService.getAvatarSesssions(sessionIds);
+			for(AvatarSession<Avatar> session: sessionMap.values()){
+				if(session.getChannel() != null && session.getChannel().isActive()){
+					NettyHttpUtil.sendWsResponse(ROOM_BROADCAST, session.getChannel(), msg);
+				}
+			}
+		}
+	}
+	
+	public GameResult getRoomInfo(long roomId){
+		GameRoom room = getGameRoom(roomId);
+		Map<String, Object> payload = new HashMap<String, Object>();
+		Map<Long, Avatar>  players = avatarSessionService.getAvatars(room.getSessionIds());
+		payload.put("members", players);
+		payload.put("id", room.getId());
+		payload.put("state", room.getStatus().ordinal());
+		payload.put("maxSize", room.getMaxSize());
+		payload.put("count", room.getSessionIds().size());
+		payload.put("owner", avatarSessionService.getSession(room.getOwnerId()).getName());
+		GameResult result = ReturnUtils.succ(payload);
+		return result;
 	}
 
 }

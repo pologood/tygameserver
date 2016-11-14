@@ -9,12 +9,15 @@ import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 
 public class AvatarSession<A extends IAvatar> implements IAvatar{
 	private final static int WAIT_MILLIS = 5 * 1000;
-
+	public static final int READY = 1;
+	public static final int IDLE = 0;
+	
 	public static enum Status {
 		NOT_CONNECTED, CONNECTING, CONNECTED, CLOSED
 	}
 	private A avatar;
 	private long roomId;
+	private int state;
 	private Channel channel;
 	private Map<String, Object> attrs;
 	private long createTime;
@@ -122,6 +125,13 @@ public class AvatarSession<A extends IAvatar> implements IAvatar{
 	@Override
 	public long getGameId() {
 		return avatar.getGameId();
+	}
+	
+	public int getState() {
+		return state;
+	}
+	public void setState(int state) {
+		this.state = state;
 	}
 
 }
