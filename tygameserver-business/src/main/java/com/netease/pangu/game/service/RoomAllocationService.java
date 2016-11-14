@@ -3,6 +3,7 @@ package com.netease.pangu.game.service;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 
 import org.springframework.dao.DataAccessException;
@@ -59,7 +60,7 @@ public class RoomAllocationService {
 	public Long borrowRoom(long gameId, final String server){
 		final String availableKey = getKey(gameId, ROOMS_AVAILABLE);
 		final String roomInfoKey = getKey(gameId, ROOMS_INFO);
-		if(commonRedisDao.getListSize(availableKey) == 0){
+		if(commonRedisDao.getSetSize(availableKey) == 0){
 			allocateRooms(gameId, defaultCapacity);
 		}
 		return commonRedisDao.getRedisOperations().execute(new SessionCallback<Long>() {

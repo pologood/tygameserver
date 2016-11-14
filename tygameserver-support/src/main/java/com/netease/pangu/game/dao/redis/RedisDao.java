@@ -98,6 +98,10 @@ public abstract class RedisDao<K, V> {
 		return redisOperations.boundSetOps(boundedKey).members();
 	}
 	
+	public Long getSetSize(K boundedKey) {
+		return redisOperations.boundSetOps(boundedKey).size();
+	}
+	
 	public V popFromSet(K boudedKey){
 		return redisOperations.boundSetOps(boudedKey).pop();
 	}
