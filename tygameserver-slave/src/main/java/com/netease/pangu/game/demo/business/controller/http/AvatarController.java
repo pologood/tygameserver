@@ -23,7 +23,7 @@ import com.netease.pangu.game.util.ReturnUtils.GameResult;
 public class AvatarController {
 	@Resource private AvatarSessionService avatarSessionService;
 	@Resource private AvatarService avatarService;
-	@Resource private RoomService gameRoomManager;
+	@Resource private RoomService roomService;
 	@Resource private SystemAttrService systemAttrService;
 	
 	@WsRpcCall("/list")
@@ -33,6 +33,17 @@ public class AvatarController {
 			map.put(avatarId, avatarSessionService.getSessions().get(avatarId).getAvatar());
 		}
 		GameResult result = ReturnUtils.succ(map);
+		return result;	
+	}
+	
+	@WsRpcCall("/ready")
+	public GameResult ready(GameContext<AvatarSession<Avatar>> ctx){
+		AvatarSession<Avatar> session = ctx.getSession();
+		if(session.getState() != AvatarSession.READY){
+			session.setState(AvatarSession.READY);
+			roomService.broadcast(session.getRoomId(), roomService.getRoomInfo(session.getRoomId()));
+		}
+		GameResult result = ReturnUtils.succ("ready go");
 		return result;	
 	}
 	

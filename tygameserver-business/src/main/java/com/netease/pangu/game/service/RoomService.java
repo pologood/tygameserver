@@ -2,6 +2,7 @@ package com.netease.pangu.game.service;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -12,7 +13,6 @@ import java.util.concurrent.ConcurrentMap;
 
 import javax.annotation.Resource;
 
-import org.apache.log4j.nt.NTEventLogAppender;
 import org.springframework.stereotype.Component;
 
 import com.netease.pangu.game.common.meta.AvatarSession;
@@ -22,6 +22,8 @@ import com.netease.pangu.game.common.meta.GameRoom.Status;
 import com.netease.pangu.game.meta.Avatar;
 import com.netease.pangu.game.service.AbstractAvatarSessionService.SessionCallable;
 import com.netease.pangu.game.util.NettyHttpUtil;
+import com.netease.pangu.game.util.ReturnUtils;
+import com.netease.pangu.game.util.ReturnUtils.GameResult;
 
 @Component
 public class RoomService {
@@ -166,18 +168,32 @@ public class RoomService {
 			}
 		});
 	}
-
-	public void broadcast(long roomId, Object msg, String rpcMethodName) {
+	public static final String ROOM_BROADCAST = "/room/broadcast";
+	public void broadcast(long roomId, Object msg) {
 		GameRoom room = getGameRoom(roomId);
 		if (room.getStatus() == Status.IDLE) {
 			Set<Long> sessionIds = room.getSessionIds();
 			Map<Long, AvatarSession<Avatar>> sessionMap = avatarSessionService.getAvatarSesssions(sessionIds);
 			for(AvatarSession<Avatar> session: sessionMap.values()){
 				if(session.getChannel() != null && session.getChannel().isActive()){
-					NettyHttpUtil.sendWsResponse(rpcMethodName, session.getChannel(), msg);
+					NettyHttpUtil.sendWsResponse(ROOM_BROADCAST, session.getChannel(), msg);
 				}
 			}
 		}
+	}
+	
+	public GameResult getRoomInfo(long roomId){
+		GameRoom room = getGameRoom(roomId);
+		Map<String, Object> payload = new HashMap<String, Object>();
+		Map<Long, Avatar>  players = avatarSessionService.getAvatars(room.getSessionIds());
+		payload.put("members", players);
+		payload.put("id", room.getId());
+		payload.put("state", room.getStatus().ordinal());
+		payload.put("maxSize", room.getMaxSize());
+		payload.put("count", room.getSessionIds().size());
+		payload.put("owner", avatarSessionService.getSession(room.getOwnerId()).getName());
+		GameResult result = ReturnUtils.succ(payload);
+		return result;
 	}
 
 }

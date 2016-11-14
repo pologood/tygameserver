@@ -37,7 +37,7 @@ public class RoomController {
 		long roomId = roomService.createRoom(gameId, session.getAvatarId(), maxSize);
 		GameResult result;
 		if(roomId > 0){
-			session.getAvatar().setState(Avatar.READY);
+			session.setState(AvatarSession.READY);
 			result = ReturnUtils.succ(roomId);
 		}else{
 			result = ReturnUtils.failed("create room failed");
@@ -51,7 +51,7 @@ public class RoomController {
 		boolean isOk = roomService.joinRoom(session.getAvatarId(), roomId);
 		GameResult result;
 		if(isOk){
-			roomService.broadcast(roomId, getRoom(roomId), "/room/info");
+			roomService.broadcast(roomId, roomService.getRoomInfo(roomId));
 			result = ReturnUtils.succ(roomId);
 		}else{
 			result = ReturnUtils.failed(String.format("failed to join %d", roomId));
@@ -59,23 +59,9 @@ public class RoomController {
 		return result;
 	}
 	
-	private GameResult getRoomInfo(long roomId){
-		GameRoom room = roomService.getGameRoom(roomId);
-		Map<String, Object> payload = new HashMap<String, Object>();
-		Map<Long, Avatar>  players = avatarSessionService.getAvatars(room.getSessionIds());
-		payload.put("members", players);
-		payload.put("id", room.getId());
-		payload.put("state", room.getStatus().ordinal());
-		payload.put("maxSize", room.getMaxSize());
-		payload.put("count", room.getSessionIds().size());
-		payload.put("owner", avatarSessionService.getSession(room.getOwnerId()).getName());
-		GameResult result = ReturnUtils.succ(payload);
-		return result;
-	}
-	
 	@WsRpcCall("/info")
 	public GameResult getRoom(long roomId){
-		return getRoomInfo(roomId);
+		return roomService.getRoomInfo(roomId);
 	}
 	
 	@WsRpcCall("/chat")
