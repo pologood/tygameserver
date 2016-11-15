@@ -34,7 +34,7 @@ public class MasterController {
 		if(avatar != null){
 			avatar.setAvatarImg(avatarImg);
 			avatar.setName(roleName);
-			avatarService.saveAvatar(avatar);
+			avatarService.save(avatar);
 			String server = avatar.getServer();
 			if(roomId > 0){
 				node = nodeManager.getNode(roomAllocationService.getRoomInfo(gameId, roomId));
@@ -54,7 +54,7 @@ public class MasterController {
 			avatar.setUuid(uuid);
 			avatar.setWriteToDbTime(System.currentTimeMillis());
 			avatar = avatarService.createAvatar(avatar);
-			avatarService.insertAvatar(avatar);
+			avatarService.insert(avatar);
 		}
 		if(node != null){
 			Map<String, Object> workerInfo = new HashMap<String, Object>();

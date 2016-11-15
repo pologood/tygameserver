@@ -37,15 +37,15 @@ public class AvatarService extends AbstractAvatarService<Avatar> {
 		return avatarDao.getAvatarByUUID(gameId, uuid);
 	}
 
-	public boolean insertAvatar(Avatar avatar) {
+	public boolean insert(Avatar avatar) {
 		return avatarDao.insertAvatar(avatar);
 	}
 
-	public boolean saveAvatar(Avatar avatar) {
-		return avatarDao.saveAvatar(avatar);
+	public boolean save(Avatar avatar) {
+		return avatarDao.save(avatar);
 	}
 
-	public boolean removeAvatar(Avatar avatar) {
+	public boolean remove(Avatar avatar) {
 		return avatarDao.removeAvatar(avatar);
 	}
 
