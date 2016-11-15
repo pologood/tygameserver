@@ -25,8 +25,6 @@ import com.netease.pangu.game.util.NettyHttpUtil;
 import com.netease.pangu.game.util.ReturnUtils;
 import com.netease.pangu.game.util.ReturnUtils.GameResult;
 
-import javassist.compiler.ast.Pair;
-
 @Component
 public class RoomService {
 	@Resource
@@ -62,7 +60,6 @@ public class RoomService {
 
 	public Long generateRoomId(long gameId, String server) {
 		return roomAllocationService.borrowRoom(gameId, server);
-
 	}
 
 	/**
@@ -147,7 +144,7 @@ public class RoomService {
 	 * @param playerSessionId
 	 * @return
 	 */
-	public boolean exitRoom(final long avatarId) {
+	public boolean removeRoom(final long avatarId) {
 		return avatarSessionService.updateAvatarSession(avatarId, new SessionCallable<Boolean, Avatar>() {
 			@Override
 			public Boolean call(AvatarSession<Avatar> playerSession) {
