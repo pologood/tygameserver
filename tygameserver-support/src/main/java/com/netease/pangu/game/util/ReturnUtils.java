@@ -4,6 +4,9 @@ public class ReturnUtils {
 	public final static int SUCC = 1;
 	public final static int FAILED = 0;
 	
+	public static GameResult succ(){
+		return succ(null, null , null);
+	}
 	
 	public static GameResult succ(String message){
 		return succ(null, null , message);
@@ -45,6 +48,10 @@ public class ReturnUtils {
 	
 	public static GameResult failed(String message){
 		return failed(null, null, message);
+	}
+	
+	public static GameResult failed(){
+		return failed(null, null, null);
 	}
 	
 	public static class GameResult {

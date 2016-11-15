@@ -27,7 +27,6 @@ public class GameRoom {
 		this.id = id;
 	}
 
-
 	public long getGameId() {
 		return gameId;
 	}

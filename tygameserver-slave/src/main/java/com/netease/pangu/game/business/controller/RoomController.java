@@ -15,6 +15,7 @@ import com.netease.pangu.game.rpc.annotation.WsRpcCall;
 import com.netease.pangu.game.rpc.annotation.WsRpcController;
 import com.netease.pangu.game.service.AvatarService;
 import com.netease.pangu.game.service.AvatarSessionService;
+import com.netease.pangu.game.service.GuessGameService;
 import com.netease.pangu.game.service.RoomService;
 import com.netease.pangu.game.util.ReturnUtils;
 import com.netease.pangu.game.util.ReturnUtils.GameResult;
@@ -27,6 +28,8 @@ public class RoomController {
 	private AvatarService avatarService;
 	@Resource
 	private RoomService roomService;
+	@Resource
+	private GuessGameService guessGameService;
 
 	@WsRpcCall("/list")
 	public GameResult listRoom(GameContext<Avatar> ctx) {
@@ -52,7 +55,7 @@ public class RoomController {
 	@WsRpcCall("/join")
 	public GameResult joinRoom(long roomId, GameContext<AvatarSession<Avatar>> ctx) {
 		AvatarSession<Avatar> session = ctx.getSession();
-		if(session.getRoomId() > 0){
+		if (session.getRoomId() > 0) {
 			return ReturnUtils.succ(roomId);
 		}
 		boolean isOk = roomService.joinRoom(session.getAvatarId(), roomId);
