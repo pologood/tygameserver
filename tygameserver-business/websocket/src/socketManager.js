@@ -4,12 +4,16 @@ export default{
     socket:null,
     router:null,
     roomId:0,
-    player:null,
+    avatarId:0,
+    player:{
+        roleName:''
+    },
     count:0,
-    owner:'',
+    ownerName:'',
     state:0,
     maxSize:0,
     members:{},
+    groupmsgs:[],
     connectSocket(data){
         const self =this;
         // 创建一个Socket实例		
@@ -49,14 +53,14 @@ export default{
                     console.log(data.content.payload);
                     self.roomId=data.content.payload;	
                     self.router.push('room');							
-                    alert("创建房间" + data.content.payload);
+                    // alert("创建房间" + data.content.payload);
                 }
 
                 if(data.rpcMethodName.toLowerCase() == "/room/join"){
                     console.log(data.content.payload);
                     self.roomId=data.content.payload;
                     self.router.push('room');	
-                    alert("加入房间" + data.content.payload);
+                    // alert("加入房间" + data.content.payload);
                 }
 
                 if(data.rpcMethodName.toLowerCase() == "/room/info"){
@@ -66,19 +70,24 @@ export default{
 
                 if(data.rpcMethodName.toLowerCase() == "/room/broadcast/roominfo"){
                     console.log(data.content.payload);	
-                    self.owner = data.content.payload.owner;
+                    self.ownerName = data.content.payload.ownerName;
                     self.members = data.content.payload.members;
                 }
 
-                // if(data.rpcMethodName.toLowerCase() == "/room/chat"){
-                //     console.log(data.content.payload);	
-                //     self.groupmsgs.push(data.content.payload);
-                // }
+                if(data.rpcMethodName.toLowerCase() == "/avatar/ready"){
+                    self.state=1;
+                }
+
+                if(data.rpcMethodName.toLowerCase() == "/room/chat"){
+                    console.log(data.content.payload);	
+                    self.groupmsgs.push({msg:data.content.payload.msg,from:data.content.source.avatarName});
+                }
 
                 // if(data.rpcMethodName.toLowerCase() == "/room/list"){
                 //     console.log(data.content.payload);
                 //     self.roomList = data.content.payload;
                 // }
+                
             }else{
                 console.log(data.content.payload);
                 alert(data.message);
@@ -131,6 +140,19 @@ export default{
             uuid:this.player.uuid
         };
         this.socket.send(window.JSON.stringify(msg));
-    }  
+    },
+    sendMsg(msg){
+        console.log('sendMsg')
+        var msg = {
+            rpcMethod:"/room/chat", 
+            params:{
+                roomId:this.roomId,
+                msg:msg
+            },
+            gameId:this.player.gameId,
+            uuid:this.player.uuid
+        };
+        this.socket.send(window.JSON.stringify(msg));
+    }
 
 }

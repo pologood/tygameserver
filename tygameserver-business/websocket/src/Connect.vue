@@ -78,6 +78,7 @@
                 $.getJSON("http://littlegame.tianyu.163.com/master/init?callback=?&uuid="+player.uuid+"&roleName="+player.roleName+"&avatarImg="+encodeURIComponent(player.avatarImg)+"&gameId="+player.gameId+"&roomId="+this.roomId, function(data){
                     s.roomId = self.roomId;
                     s.player = player;
+                    s.avatarId=data.avatarId;
                     s.connectSocket(data);
                 })
             }
