@@ -1,6 +1,6 @@
 <template>
     <div>
-        <h1>天谕你画我猜</h1>
+        <h1>天谕你画我猜({{sData.roomId}})</h1>
         <div class="container">
             <div class="cnt row">
 

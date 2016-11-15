@@ -104,9 +104,10 @@ export default{
             params:{
                 roomId:this.roomId
             },
+            gameId:this.player.gameId,
             uuid:this.player.uuid
         };
         this.socket.send(window.JSON.stringify(msg));
-    }
-    
+    }    
+
 }
