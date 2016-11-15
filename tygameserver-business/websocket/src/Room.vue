@@ -15,7 +15,7 @@
 
             </div>
             <div class="btnCnt">
-                <button class="btn btn-default btn-lg" v-if="sData.avatarId==sData.ownerName">游戏开启</button>
+                <button class="btn btn-default btn-lg" v-if="sData.avatarId==sData.ownerName" v-on:click="startGame">游戏开启</button>
                 <button class="btn btn-default btn-lg" v-if="sData.avatarId!=sData.ownerName&&sData.state==0" v-on:click="ready">准备</button>
                 <button class="btn btn-default btn-lg" v-if="sData.avatarId!=sData.ownerName&&sData.state==1">已准备</button>
             </div>
@@ -30,7 +30,7 @@
                             <input type="text" class="form-control" placeholder="请输入文字" v-model="chatMsg">
                         </div> 
                         <div class="col-md-2">
-                            <button class="btn btn-default" v-on:click="sendMsg">发送</button> 
+                            <button class="btn btn-success" v-on:click="sendMsg">发送</button> 
                         </div>
                                                                       
                     </div>
@@ -58,7 +58,7 @@
         },
         created(){
             if(!s.socket){
-                // s.router.push("/");
+                s.router.push("/");
             }
         },
         methods:{
@@ -68,7 +68,11 @@
             sendMsg(){
                 s.sendMsg(this.chatMsg);
                 this.chatMsg='';
+            },
+            startGame(){
+                s.startGame();
             }
+
         }
     }
 </script>
@@ -83,5 +87,5 @@
     .chatCnt{margin-top: 40px;}
     .msgCnt{background: #eee;height: 400px;border: none;border-radius: 10px;margin-bottom: 20px;}
     .playerList{height: 400px;background: #eee;border-radius: 10px;}
-    .line{padding: 10px;margin: 0;}
+    .line{padding: 10px 20px;margin: 0;}
 </style>

@@ -83,11 +83,15 @@ export default{
                     self.groupmsgs.push({msg:data.content.payload.msg,from:data.content.source.avatarName});
                 }
 
+                if(data.rpcMethodName.toLowerCase() ==  "/guess/create"){
+                    self.router.push('draw');	
+                }
+
                 // if(data.rpcMethodName.toLowerCase() == "/room/list"){
                 //     console.log(data.content.payload);
                 //     self.roomList = data.content.payload;
                 // }
-                
+
             }else{
                 console.log(data.content.payload);
                 alert(data.message);
@@ -148,6 +152,18 @@ export default{
             params:{
                 roomId:this.roomId,
                 msg:msg
+            },
+            gameId:this.player.gameId,
+            uuid:this.player.uuid
+        };
+        this.socket.send(window.JSON.stringify(msg));
+    },
+    startGame(){
+        console.log('startGame')
+        var msg = {
+            rpcMethod:"/guess/create", 
+            params:{
+                roomId:this.roomId
             },
             gameId:this.player.gameId,
             uuid:this.player.uuid
