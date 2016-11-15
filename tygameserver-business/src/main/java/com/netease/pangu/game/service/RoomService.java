@@ -61,7 +61,7 @@ public class RoomService {
 	public Long generateRoomId(long gameId, String server) {
 		return roomAllocationService.borrowRoom(gameId, server);
 	}
-
+	
 	/**
 	 * 
 	 * @param gameId

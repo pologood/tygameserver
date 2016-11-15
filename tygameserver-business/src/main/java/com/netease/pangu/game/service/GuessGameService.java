@@ -16,13 +16,14 @@ import com.netease.pangu.game.util.ObjectUtil;
 public class GuessGameService {
 	private final ConcurrentMap<Long, GuessGame> gameMap = new ConcurrentHashMap<Long, GuessGame>();
 	public final static long gameId = 1;
-	public boolean createGuessGame(long roomId){
+	public boolean createGuessGame(long roomId, long avatarId){
 		if(!gameMap.containsKey(roomId)){
 			GuessGame game = new GuessGame();
 			game.setGameId(gameId);
 			game.setStartTime(GuessGame.UNREADY);
 			game.setDrawerId(0);
 			game.setRoomId(roomId);
+			game.setDrawerId(avatarId);
 			game.setStartTime(System.currentTimeMillis());
 			game.setAnswers(new HashMap<Long, Guess>());
 			return gameMap.putIfAbsent(roomId, game) == null;
@@ -55,6 +56,7 @@ public class GuessGameService {
 	public void setDrawer(long roomId, long avatarId){
 		GuessGame game = gameMap.get(roomId);
 		synchronized (game) {
+			game.setState(GuessGame.START);
 			game.setDrawerId(avatarId);
 		}
 	}

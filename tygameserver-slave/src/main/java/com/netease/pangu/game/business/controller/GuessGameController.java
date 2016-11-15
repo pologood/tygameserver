@@ -1,9 +1,8 @@
 package com.netease.pangu.game.business.controller;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import javax.annotation.Resource;
+
+import org.apache.commons.lang3.RandomUtils;
 
 import com.netease.pangu.game.common.meta.AvatarSession;
 import com.netease.pangu.game.common.meta.GameContext;
@@ -31,20 +30,34 @@ public class GuessGameController {
 	
 	@WsRpcCall("/create")
 	public GameResult createGuessGame(long roomId) {
-		if (guessGameService.createGuessGame(roomId)) {
+		long avatarId = generateDrawer(roomId);
+		if (guessGameService.createGuessGame(roomId, avatarId)) {
+			roomService.broadcast("generateDrawer", roomId, avatarId);
 			return ReturnUtils.succ("succ");
 		} else {
 			return ReturnUtils.failed("failed");
 		}
 	}
+	
+	@WsRpcCall("/generateDrawer")
+	public void generate(long roomId){
+		long avatarId = generateDrawer(roomId);
+		guessGameService.setDrawer(roomId, avatarId);
+		roomService.broadcast("generateDrawer", roomId, avatarId);
+	}
+	
+	public long generateDrawer(long roomId){
+		Long[] avatarIds = roomService.getGameRoom(roomId).getSessionIds().toArray(new Long[0]);
+		int random = RandomUtils.nextInt(0, avatarIds.length);
+		return avatarIds[random];
+	}
 
 	@WsRpcCall("/question")
-	public GameResult setQuestion(long roomId, long avatarId, String answer, String hint1, String hint2) {
+	public GameResult setQuestion(long roomId, String answer, String hint1, String hint2) {
 		Question question = new Question();
 		question.setAnswer(answer);
 		question.setHint1(hint1);
 		question.setHint2(hint2);
-		question.setAvatarId(avatarId);
 		guessGameService.setGuessGameQuestion(roomId, question);
 		return ReturnUtils.succ(question);
 	}
