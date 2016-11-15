@@ -56,6 +56,7 @@ public class WsRpcCallInvoker {
 		return controllerMap.get(nettyRpcCallAnnoValueMap.get(rpcMethodName));
 	}
 
+	@SuppressWarnings("unchecked")
 	public void invoke(String rpcMethodName, Map<String, Object> args, GameContext<?> context) {
 		Method method = getMethod(rpcMethodName);
 		Object controller = getController(rpcMethodName);
@@ -67,7 +68,7 @@ public class WsRpcCallInvoker {
 				if (Long.class.isAssignableFrom(parameterTypes[i]) || long.class.isAssignableFrom(parameterTypes[i])) {
 					Object arg = args.get(paramsIndex.get(i));
 					if (arg == null) {
-						String err = String.format("parameter %s is null", arg);
+						String err = String.format("parameter %s is null", paramsIndex.get(i));
 						logger.error(err);
 						NettyHttpUtil.sendWsResponse(context, err);
 						return;
@@ -78,7 +79,7 @@ public class WsRpcCallInvoker {
 						|| int.class.isAssignableFrom(parameterTypes[i])) {
 					Object arg = args.get(paramsIndex.get(i));
 					if (arg == null) {
-						String err = String.format("parameter %s is null", arg);
+						String err = String.format("parameter %s is null", paramsIndex.get(i));
 						logger.error(err);
 						NettyHttpUtil.sendWsResponse(context, err);
 						return;
@@ -89,7 +90,7 @@ public class WsRpcCallInvoker {
 						|| double.class.isAssignableFrom(parameterTypes[i])) {
 					Object arg = args.get(paramsIndex.get(i));
 					if (arg == null) {
-						String err = String.format("parameter %s is null", arg);
+						String err = String.format("parameter %s is null", paramsIndex.get(i));
 						logger.error(err);
 						NettyHttpUtil.sendWsResponse(context, err);
 						return;
@@ -100,7 +101,7 @@ public class WsRpcCallInvoker {
 						|| float.class.isAssignableFrom(parameterTypes[i])) {
 					Object arg = args.get(paramsIndex.get(i));
 					if (arg == null) {
-						String err = String.format("parameter %s is null", arg);
+						String err = String.format("parameter %s is null", paramsIndex.get(i));
 						logger.error(err);
 						NettyHttpUtil.sendWsResponse(context, err);
 						return;
@@ -110,13 +111,23 @@ public class WsRpcCallInvoker {
 				} else if (String.class.isAssignableFrom(parameterTypes[i])) {
 					Object arg = args.get(paramsIndex.get(i));
 					if (arg == null) {
-						String err = String.format("parameter %s is null", arg);
+						String err = String.format("parameter %s is null", paramsIndex.get(i));
 						logger.error(err);
 						NettyHttpUtil.sendWsResponse(context, err);
 						return;
 					}
 					convertedArgs.add(arg.toString());
-				} else if (GameContext.class.isAssignableFrom(parameterTypes[i])) {
+				} else if (Map.class.isAssignableFrom(parameterTypes[i])) {
+					Object arg = args.get(paramsIndex.get(i));
+					if (arg == null) {
+						String err = String.format("parameter %s is null",  paramsIndex.get(i));
+						logger.error(err);
+						NettyHttpUtil.sendWsResponse(context, err);
+						return;
+					}
+					convertedArgs.add((Map<String, Object>)arg);
+				} 
+				else if (GameContext.class.isAssignableFrom(parameterTypes[i])) {
 					convertedArgs.add(context);
 				}
 			}

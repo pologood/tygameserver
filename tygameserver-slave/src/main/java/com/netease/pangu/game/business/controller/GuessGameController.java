@@ -1,5 +1,7 @@
 package com.netease.pangu.game.business.controller;
 
+import java.util.Map;
+
 import javax.annotation.Resource;
 
 import org.apache.commons.lang3.RandomUtils;
@@ -22,6 +24,7 @@ public class GuessGameController {
 	@Resource
 	private GuessGameService guessGameService;
 	public static final String START_GAME = "startGame";
+	public static final String DRAW_GAME = "drawGame";
 	@Resource
 	private AvatarService avatarService;
 
@@ -46,6 +49,11 @@ public class GuessGameController {
 		roomService.broadcast(START_GAME, roomId,  ReturnUtils.succ(avatarId));
 	}
 	
+	@WsRpcCall("/draw")
+	public void draw(long roomId, Map<String, Object> content){
+		roomService.broadcast(DRAW_GAME, roomId, ReturnUtils.succ(content));		
+	}
+
 	public long generateDrawer(long roomId){
 		Long[] avatarIds = roomService.getGameRoom(roomId).getSessionIds().toArray(new Long[0]);
 		int random = RandomUtils.nextInt(0, avatarIds.length);
