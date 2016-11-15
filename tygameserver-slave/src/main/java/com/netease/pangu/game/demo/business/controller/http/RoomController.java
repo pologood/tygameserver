@@ -51,6 +51,9 @@ public class RoomController {
 	@WsRpcCall("/join")
 	public GameResult joinRoom(long roomId, GameContext<AvatarSession<Avatar>> ctx) {
 		AvatarSession<Avatar> session = ctx.getSession();
+		if(session.getRoomId() > 0){
+			return ReturnUtils.failed(roomId, "haved joined rooom ");
+		}
 		boolean isOk = roomService.joinRoom(session.getAvatarId(), roomId);
 		GameResult result;
 		if (isOk) {
