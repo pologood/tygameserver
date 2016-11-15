@@ -4,44 +4,24 @@
         <div class="container">
             <div class="cnt row">
 
-                <div class="item col-md-3">
+                <div class="item col-md-3" v-for="(item,key) in sData.members">
                     <img class="img-rounded" src="./assets/header.jpg">
-                    <button class="btn btn-default readyBtn">准备</button>
+                    <button class="btn btn-default readyBtn" v-on:click="ready">准备</button>
                     <div class="txtCnt">
-                        <label>昵称：xxx</label>
-                        <label>总积分：xxxx</label>
-                    </div>
-                </div>
-                <div class="item col-md-3">
-                    <img class="img-rounded" src="./assets/header.jpg">
-                    <button class="btn btn-default readyBtn">准备</button>
-                    <div class="txtCnt">
-                        <label>昵称：xxx</label>
-                        <label>总积分：xxxx</label>
-                    </div>
-                </div>
-                <div class="item col-md-3">
-                    <img class="img-rounded" src="./assets/header.jpg">
-                    <button class="btn btn-default readyBtn">准备</button>
-                    <div class="txtCnt">
-                        <label>昵称：xxx</label>
-                        <label>总积分：xxxx</label>
-                    </div>
-                </div>
-                <div class="item col-md-3">
-                    <img class="img-rounded" src="./assets/header.jpg">
-                    <button class="btn btn-default readyBtn">准备</button>
-                    <div class="txtCnt">
-                        <label>昵称：xxx</label>
+                        <label>昵称：{{item.name}}</label>
                         <label>总积分：xxxx</label>
                     </div>
                 </div>
 
             </div>
             <div class="btnCnt">
-                <button class="btn btn-default btn-lg">游戏开启</button>
+                <button class="btn btn-default btn-lg" v-if="sData.player.roleName==sData.owner">游戏开启</button>
+                <button class="btn btn-default btn-lg" v-if="sData.player.roleName!=sData.owner&&sData.state==0" v-on:click="ready">准备</button>
+                <button class="btn btn-default btn-lg" v-if="sData.player.roleName!=sData.owner&&sData.state==1">已准备</button>
             </div>
-        </div>        
+
+        </div>     
+
     </div>
 </template>
 <script>
@@ -51,6 +31,11 @@
         data(){
             return {
                 sData:s
+            }
+        },
+        methods:{
+            ready(){
+                s.ready();
             }
         }
     }

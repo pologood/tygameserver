@@ -5,6 +5,11 @@ export default{
     router:null,
     roomId:0,
     player:null,
+    count:0,
+    owner:'',
+    state:0,
+    maxSize:0,
+    members:{},
     connectSocket(data){
         const self =this;
         // 创建一个Socket实例		
@@ -56,6 +61,12 @@ export default{
 
                 if(data.rpcMethodName.toLowerCase() == "/room/info"){
                     console.log(data.content.payload);					
+                    // self.members = data.content.payload.members;
+                }
+
+                if(data.rpcMethodName.toLowerCase() == "/room/broadcast/roominfo"){
+                    console.log(data.content.payload);	
+                    self.owner = data.content.payload.owner;
                     self.members = data.content.payload.members;
                 }
 
@@ -109,6 +120,17 @@ export default{
             uuid:this.player.uuid
         };
         this.socket.send(window.JSON.stringify(msg));
-    }    
+    },
+    ready(){
+        console.log('ready')
+        var msg = {
+            rpcMethod:"/avatar/ready", 
+            params:{
+            },
+            gameId:this.player.gameId,
+            uuid:this.player.uuid
+        };
+        this.socket.send(window.JSON.stringify(msg));
+    }  
 
 }
