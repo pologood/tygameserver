@@ -32,18 +32,18 @@ public class GuessGameController {
 	public GameResult createGuessGame(long roomId) {
 		long avatarId = generateDrawer(roomId);
 		if (guessGameService.createGuessGame(roomId, avatarId)) {
-			roomService.broadcast("generateDrawer", roomId, avatarId);
+			roomService.broadcast("startGame", roomId, avatarId);
 			return ReturnUtils.succ("succ");
 		} else {
 			return ReturnUtils.failed("failed");
 		}
 	}
 	
-	@WsRpcCall("/generateDrawer")
+	@WsRpcCall("/replay")
 	public void generate(long roomId){
 		long avatarId = generateDrawer(roomId);
 		guessGameService.setDrawer(roomId, avatarId);
-		roomService.broadcast("generateDrawer", roomId, avatarId);
+		roomService.broadcast("startGame", roomId, avatarId);
 	}
 	
 	public long generateDrawer(long roomId){
