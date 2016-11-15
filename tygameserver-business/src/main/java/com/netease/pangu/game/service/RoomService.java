@@ -25,6 +25,8 @@ import com.netease.pangu.game.util.NettyHttpUtil;
 import com.netease.pangu.game.util.ReturnUtils;
 import com.netease.pangu.game.util.ReturnUtils.GameResult;
 
+import javassist.compiler.ast.Pair;
+
 @Component
 public class RoomService {
 	@Resource
@@ -182,17 +184,86 @@ public class RoomService {
 			}
 		}
 	}
+	public static class SimpleAvatar{
+		private String name;
+		private String uuid;
+		private long gameId;
+		private long avatarId;
+		private String avatarImg;
+		private long roomId;
+		private int state;
+		public String getName() {
+			return name;
+		}
+		public void setName(String name) {
+			this.name = name;
+		}
+		public String getUuid() {
+			return uuid;
+		}
+		public void setUuid(String uuid) {
+			this.uuid = uuid;
+		}
+		public long getGameId() {
+			return gameId;
+		}
+		public void setGameId(long gameId) {
+			this.gameId = gameId;
+		}
+		public long getAvatarId() {
+			return avatarId;
+		}
+		public void setAvatarId(long avatarId) {
+			this.avatarId = avatarId;
+		}
+		public String getAvatarImg() {
+			return avatarImg;
+		}
+		public void setAvatarImg(String avatarImg) {
+			this.avatarImg = avatarImg;
+		}
+		public long getRoomId() {
+			return roomId;
+		}
+		public void setRoomId(long roomId) {
+			this.roomId = roomId;
+		}
+		public int getState() {
+			return state;
+		}
+		public void setState(int state) {
+			this.state = state;
+		}
+		
+		public static SimpleAvatar create(AvatarSession<Avatar> session){
+			SimpleAvatar avatar = new SimpleAvatar();
+			avatar.setAvatarId(session.getAvatarId());
+			avatar.setName(session.getName());
+			avatar.setAvatarImg(session.getAvatar().getAvatarImg());
+			avatar.setRoomId(session.getRoomId());
+			avatar.setState(session.getState());
+			avatar.setUuid(session.getUuid());
+			avatar.setGameId(session.getGameId());
+			return avatar;
+		}
+	}
 	
 	public GameResult getRoomInfo(long roomId){
 		GameRoom room = getGameRoom(roomId);
 		Map<String, Object> payload = new HashMap<String, Object>();
-		Map<Long, Avatar>  players = avatarSessionService.getAvatars(room.getSessionIds());
-		payload.put("members", players);
+		Map<Long, AvatarSession<Avatar>> sessions = avatarSessionService.getAvatarSesssions(room.getSessionIds());
+		List<SimpleAvatar> simples = new ArrayList<SimpleAvatar>();
+		for(AvatarSession<Avatar> session:sessions.values()){
+			simples.add(SimpleAvatar.create(session));
+		}
+		payload.put("members", simples);
 		payload.put("id", room.getId());
 		payload.put("state", room.getStatus().ordinal());
 		payload.put("maxSize", room.getMaxSize());
 		payload.put("count", room.getSessionIds().size());
-		payload.put("owner", avatarSessionService.getSession(room.getOwnerId()).getName());
+		AvatarSession<Avatar> session = avatarSessionService.getSession(room.getOwnerId());
+		payload.put("ownerName", session.getName());
+		payload.put("ownerName", session.getAvatarId());
 		GameResult result = ReturnUtils.succ(payload);
 		return result;
 	}

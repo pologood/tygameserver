@@ -41,6 +41,7 @@ public class RoomController {
 		GameResult result;
 		if (roomId > 0) {
 			session.setState(AvatarSession.READY);
+			roomService.broadcast(RoomService.ROOM_INFO, roomId, roomService.getRoomInfo(roomId));
 			result = ReturnUtils.succ(roomId);
 		} else {
 			result = ReturnUtils.failed("create room failed");

@@ -7,6 +7,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document(collection="guessGameRound")
 public class GuessGameRound {
+	private long gameId;
 	private long roomId;
 	private long startTime;
 	private long endTime;
@@ -48,6 +49,12 @@ public class GuessGameRound {
 	}
 	public void setEndTime(long endTime) {
 		this.endTime = endTime;
+	}
+	public long getGameId() {
+		return gameId;
+	}
+	public void setGameId(long gameId) {
+		this.gameId = gameId;
 	}
 	
 }
