@@ -9,11 +9,23 @@
                 <div class="form-horizontal">
 
                      <div class="form-group">
-                        <label for="inputPassword3" class="col-sm-2 control-label">玩家</label>
-                        <div class="col-sm-10">
-                            <select class="form-control" v-model="selected">
-                                <option v-for="(item,key) in playerList" v-bind:value="key">{{item.roleName}}</option>
-                            </select> 
+                        <label class="col-md-2 control-label">玩家名字</label>
+                        <div class="col-md-10">
+                            <input type="text" class="form-control" v-model="player.roleName">
+                        </div>                      
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-md-2 control-label">uuid</label>
+                        <div class="col-md-10">
+                            <input type="text" class="form-control" v-model="player.uuid">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-md-2 control-label">头像</label>
+                        <div class="col-md-10">
+                            <input type="text" class="form-control" v-model="player.avatarImg">
                         </div>
                     </div>
 
@@ -49,12 +61,19 @@
                         avatarImg:'http://img1.360buyimg.com/cms/s244x244_jfs/t1024/361/1267066337/54518/1274eb9a/55973d01N0c07b1af.jpg',
                         gameId:1
                     }
-                ]
+                ],
+                player:{
+                    roleName:'',
+                    avatarImg:'',
+                    uuid:'',
+                    gameId:1
+                }
             }
         },
         methods:{
             connectServer(){
-                var player=this.playerList[this.selected];
+                // var player=this.playerList[this.selected];
+                var player = this.player;
                 var self = this;
                 $.getJSON("http://littlegame.tianyu.163.com/master/init?callback=?&uuid="+player.uuid+"&roleName="+player.roleName+"&avatarImg="+encodeURIComponent(player.avatarImg)+"&gameId="+player.gameId+"&roomId="+this.roomId, function(data){
                     s.roomId = self.roomId;
