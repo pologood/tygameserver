@@ -21,7 +21,7 @@ import com.netease.pangu.game.util.ReturnUtils.GameResult;
 public class GuessGameController {
 	@Resource
 	private GuessGameService guessGameService;
-
+	public static final String START_GAME = "startGame";
 	@Resource
 	private AvatarService avatarService;
 
@@ -32,7 +32,7 @@ public class GuessGameController {
 	public GameResult createGuessGame(long roomId) {
 		long avatarId = generateDrawer(roomId);
 		if (guessGameService.createGuessGame(roomId, avatarId)) {
-			roomService.broadcast("startGame", roomId, avatarId);
+			roomService.broadcast(START_GAME, roomId, ReturnUtils.succ(avatarId));
 			return ReturnUtils.succ("succ");
 		} else {
 			return ReturnUtils.failed("failed");
@@ -43,7 +43,7 @@ public class GuessGameController {
 	public void generate(long roomId){
 		long avatarId = generateDrawer(roomId);
 		guessGameService.setDrawer(roomId, avatarId);
-		roomService.broadcast("startGame", roomId, avatarId);
+		roomService.broadcast(START_GAME, roomId,  ReturnUtils.succ(avatarId));
 	}
 	
 	public long generateDrawer(long roomId){
