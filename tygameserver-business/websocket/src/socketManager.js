@@ -47,11 +47,12 @@ export default{
                     alert("创建房间" + data.content.payload);
                 }
 
-                // if(data.rpcMethodName.toLowerCase() == "/room/join"){
-                //     console.log(data.content.payload);
-                //     self.roomId=data.content.payload;
-                //     alert("加入房间" + data.content.payload);
-                // }
+                if(data.rpcMethodName.toLowerCase() == "/room/join"){
+                    console.log(data.content.payload);
+                    self.roomId=data.content.payload;
+                    self.router.push('room');	
+                    alert("加入房间" + data.content.payload);
+                }
 
                 if(data.rpcMethodName.toLowerCase() == "/room/info"){
                     console.log(data.content.payload);					
