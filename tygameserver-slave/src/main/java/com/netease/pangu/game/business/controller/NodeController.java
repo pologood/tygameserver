@@ -1,4 +1,4 @@
-package com.netease.pangu.game.business.controller.http;
+package com.netease.pangu.game.business.controller;
 
 import java.util.Map;
 
