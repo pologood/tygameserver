@@ -3,9 +3,11 @@ package com.netease.pangu.game.meta;
 import java.io.Serializable;
 
 import org.bson.types.ObjectId;
+import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.netease.pangu.game.common.meta.IAvatar;
+import com.netease.pangu.game.common.meta.IAvatarGame;
 
 @Document(collection="avatar")
 public class Avatar implements IAvatar, Serializable {
@@ -19,6 +21,8 @@ public class Avatar implements IAvatar, Serializable {
 	private long writeToDbTime;
 	private long lastLoginTime;
 	private String server;
+	@Transient
+	private IAvatarGame game;
 	
 	@Override
 	public String getName() {
@@ -81,6 +85,13 @@ public class Avatar implements IAvatar, Serializable {
 	}
 	public void setAvatarImg(String avatarImg) {
 		this.avatarImg = avatarImg;
+	}
+	
+	public IAvatarGame getGame() {
+		return game;
+	}
+	public void setGame(IAvatarGame game) {
+		this.game = game;
 	}
 
 }

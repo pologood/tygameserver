@@ -32,16 +32,32 @@ public class AbstractMongoDao<T> {
 		return mongoTemplate.updateFirst(query, update, clazz);
 	}
 	
-	public void insert(T object){
-		mongoTemplate.insert(object);
+	public boolean insert(T object){
+		try{
+			mongoTemplate.insert(object);
+		}catch(Exception e){
+			return false;
+		}
+		return true;
 	}
 	
-	public void save(T object){
-		mongoTemplate.save(object);
+	public boolean save(T object){
+		try{
+			mongoTemplate.save(object);
+		}catch(Exception e){
+			return false;
+		}
+		return true;
 	}
 	
-	public void insertAll(List<T> list){
-		mongoTemplate.insertAll(list);
+	public boolean insertAll(List<T> list){
+		try{
+			mongoTemplate.insertAll(list);
+		}catch(Exception e){
+			return false;
+		}
+		return true;
+		
 	}
 	
 	public WriteResult remove(T object){

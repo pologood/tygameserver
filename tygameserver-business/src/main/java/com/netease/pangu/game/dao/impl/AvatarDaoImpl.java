@@ -26,7 +26,6 @@ public class AvatarDaoImpl extends AbstractMongoDao<Avatar> implements AvatarDao
 	}
 	
 
-	@Override
 	public boolean insertAvatar(Avatar avatar) {
 		try{
 			this.insert(avatar);
@@ -46,16 +45,5 @@ public class AvatarDaoImpl extends AbstractMongoDao<Avatar> implements AvatarDao
 		Query query = new Query(Criteria.where("avatarId").is(avatar.getAvatarId()));
 		WriteResult result = this.getMongoTemplate().remove(query, Avatar.class);
 		return result.getN() > 0;
-	}
-
-	@Override
-	public boolean saveAvatar(Avatar avatar) {
-		try{
-			this.save(avatar);
-			
-		}catch(Exception e){
-			return false;
-		}
-		return true;
 	}
 }
