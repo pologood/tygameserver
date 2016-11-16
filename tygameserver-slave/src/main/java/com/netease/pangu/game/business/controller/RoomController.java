@@ -21,7 +21,7 @@ import com.netease.pangu.game.service.RoomService;
 import com.netease.pangu.game.util.ReturnUtils;
 import com.netease.pangu.game.util.ReturnUtils.GameResult;
 
-@WsRpcController(value = "/room", gameId=GameConst.SYSTEM)
+@WsRpcController(value = "/room", gameId=GameConst.GUESSS)
 public class RoomController {
 	@Resource
 	private AvatarSessionService avatarSessionService;
