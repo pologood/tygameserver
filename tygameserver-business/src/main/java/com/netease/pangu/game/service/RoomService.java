@@ -126,6 +126,11 @@ public class RoomService {
 			}
 		});
 	}
+	
+	public boolean isRoomOwner(long avatarId, long roomId){
+		GameRoom room = getGameRoom(roomId);
+		return room != null && room.getOwnerId() == avatarId;
+	}
 
 	public boolean joinRandomRoom(final long avatarId) {
 		List<Long> gameRooms = new ArrayList<Long>();
