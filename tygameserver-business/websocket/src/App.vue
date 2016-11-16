@@ -155,7 +155,7 @@ export default {
   methods:{
     connectSocket(){
       const self = this;
-      $.getJSON("http://littlegame.tianyu.163.com/master/app?callback=?&uuid="+self.uuid, function(data){
+      $.getJSON("http://littlegame.tianyu.163.com/master/app?gameId=1&callback=?&uuid="+self.uuid, function(data){
           // 创建一个Socket实例					
 					socket = new WebSocket('ws://' + data.ip + ':'+data.port+'/websocket'); 
           // 打开Socket 

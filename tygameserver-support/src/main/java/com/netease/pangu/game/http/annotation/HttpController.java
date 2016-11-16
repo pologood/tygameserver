@@ -12,4 +12,5 @@ import org.springframework.stereotype.Component;
 @Component
 public @interface HttpController {
 	String value() default "";
+	long gameId();
 }

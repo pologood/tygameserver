@@ -79,6 +79,7 @@ public class NodeServerHandler extends ChannelInboundHandlerAdapter {
 			@SuppressWarnings("unchecked")
 			Map<String, Object> args = (Map<String, Object>)data.get("params");
 			GameContext<AvatarSession<Avatar>> context = null;
+			//TODO need to optimize
 			Avatar avatar = avatarService.getAvatarByUUID(gameId, uuid);
 			if(avatar != null){
 				AvatarSession<Avatar> session = avatarSessionService.getSession(avatar.getAvatarId());
@@ -89,7 +90,7 @@ public class NodeServerHandler extends ChannelInboundHandlerAdapter {
 					session.setChannel(ctx.channel());
 				}
 				context = new GameContext<AvatarSession<Avatar>>(ctx, session, rpcMethodName, frame);
-				wsRpcCallInvoker.invoke(rpcMethodName, args, context);
+				wsRpcCallInvoker.invoke(gameId, rpcMethodName, args, context);
 			}else{
 				NettyHttpUtil.sendWsResponse(rpcMethodName, ctx.channel(), "avatar not init");
 			}
@@ -116,9 +117,16 @@ public class NodeServerHandler extends ChannelInboundHandlerAdapter {
 				}
 			} else {
 				Map<String, String> params = NettyHttpUtil.parseRequest(request);
+				if(!params.containsKey("gameId")){
+					NettyHttpUtil.sendHttpResponse(ctx, request,
+							new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.BAD_REQUEST,
+									Unpooled.copiedBuffer("parameter gameId not exist!", Charset.forName("UTF-8"))));
+				}
+				Double tmp = NumberUtils.toDouble(params.get("gameId").toString());
+				long gameId = tmp.longValue();
 				URI uri = URI.create(request.uri());
-				if (httpRequestInvoker.containsURIPath(uri.getPath())) {
-					FullHttpResponse result = httpRequestInvoker.invoke(uri.getPath(), params, request);
+				if (httpRequestInvoker.containsURIPath(gameId,uri.getPath())) {
+					FullHttpResponse result = httpRequestInvoker.invoke(gameId, uri.getPath(), params, request);
 					NettyHttpUtil.sendHttpResponse(ctx, request, result);
 				} else {
 					NettyHttpUtil.sendHttpResponse(ctx, request,

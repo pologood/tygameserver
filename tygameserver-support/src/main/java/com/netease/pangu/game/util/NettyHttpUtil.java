@@ -34,35 +34,45 @@ public class NettyHttpUtil {
 		if(res.status() ==  HttpResponseStatus.OK){
 			HttpUtil.setContentLength(res, res.content().readableBytes());
 		}
-		ChannelFuture f = ctx.channel().writeAndFlush(res);
-	
-		if(!HttpUtil.isKeepAlive(req) || res.status() == HttpResponseStatus.OK){
-			f.addListener(ChannelFutureListener.CLOSE);
+		if(ctx.channel().isActive()){
+			ChannelFuture f = ctx.channel().writeAndFlush(res);
+		
+			if(!HttpUtil.isKeepAlive(req) || res.status() == HttpResponseStatus.OK){
+				f.addListener(ChannelFutureListener.CLOSE);
+			}
 		}
 	}
 	
 	public static void sendWsResponse(String rpcMethodName, Channel channel, Object content){
 		WsRpcResponse response = WsRpcResponse.create(rpcMethodName);
 		response.setContent(content);
-		channel.writeAndFlush(new TextWebSocketFrame(JsonUtil.toJson(response)));
+		if(channel.isActive()){
+			channel.writeAndFlush(new TextWebSocketFrame(JsonUtil.toJson(response)));
+		}
 	}
 	
 	
 	public static void sendWsResponse(@SuppressWarnings("rawtypes") GameContext context, Channel channel, Object content){
 		WsRpcResponse response = WsRpcResponse.create(context.getRpcMethodName());
 		response.setContent(content);
-		channel.writeAndFlush(new TextWebSocketFrame(JsonUtil.toJson(response)));
+		if(channel.isActive()){
+			channel.writeAndFlush(new TextWebSocketFrame(JsonUtil.toJson(response)));
+		}
 	}
 	
 
 	public static void sendWsResponse(@SuppressWarnings("rawtypes") GameContext context, Object content){
 		WsRpcResponse response = WsRpcResponse.create(context.getRpcMethodName());
 		response.setContent(content);
-		context.getChannel().writeAndFlush(new TextWebSocketFrame(JsonUtil.toJson(response)));
+		if(context.getChannel().isActive()){
+			context.getChannel().writeAndFlush(new TextWebSocketFrame(JsonUtil.toJson(response)));
+		}
 	}
 	
 	public static void sendWsResponse(@SuppressWarnings("rawtypes") GameContext context, WsRpcResponse response){
-		context.getChannel().writeAndFlush(new TextWebSocketFrame(JsonUtil.toJson(response)));
+		if(context.getChannel().isActive()){
+			context.getChannel().writeAndFlush(new TextWebSocketFrame(JsonUtil.toJson(response)));
+		}
 	}
 	
 	public static String getWebSocketLocation(FullHttpRequest req, String webSocketPath) {

@@ -6,6 +6,7 @@ import java.util.Map;
 import javax.annotation.Resource;
 
 import com.netease.pangu.game.common.meta.AvatarSession;
+import com.netease.pangu.game.common.meta.GameConst;
 import com.netease.pangu.game.common.meta.GameContext;
 import com.netease.pangu.game.common.meta.GameRoom;
 import com.netease.pangu.game.common.meta.IAvatar;
@@ -20,7 +21,7 @@ import com.netease.pangu.game.service.RoomService;
 import com.netease.pangu.game.util.ReturnUtils;
 import com.netease.pangu.game.util.ReturnUtils.GameResult;
 
-@WsRpcController("/room")
+@WsRpcController(value = "/room", gameId=GameConst.SYSTEM)
 public class RoomController {
 	@Resource
 	private AvatarSessionService avatarSessionService;
@@ -75,8 +76,8 @@ public class RoomController {
 	}
 
 	@WsRpcCall("/chat")
-	public void chat(long roomId, String msg, GameContext<AvatarSession<Avatar>> ctx) {
-		AvatarSession<Avatar> pSession = ctx.getSession();
+	public void chat(long roomId, String msg, GameContext<AvatarSession<IAvatar>> ctx) {
+		AvatarSession<IAvatar> pSession = ctx.getSession();
 		GameRoom room = roomService.getGameRoom(roomId);
 		Map<Long, AvatarSession<Avatar>> members = avatarSessionService.getAvatarSesssions(room.getSessionIds());
 		Map<String, Object> payload = new HashMap<String, Object>();

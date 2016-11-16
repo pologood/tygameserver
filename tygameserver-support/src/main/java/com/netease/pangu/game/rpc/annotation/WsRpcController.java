@@ -12,4 +12,5 @@ import org.springframework.stereotype.Component;
 @Component
 public @interface WsRpcController {
 	String value() default "";
+	long gameId();
 }

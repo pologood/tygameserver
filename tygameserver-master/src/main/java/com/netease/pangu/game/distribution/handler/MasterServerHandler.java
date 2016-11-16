@@ -3,7 +3,6 @@ package com.netease.pangu.game.distribution.handler;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.charset.Charset;
-import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
@@ -12,17 +11,11 @@ import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
-import com.google.common.base.Strings;
 import com.netease.pangu.game.common.meta.GameContext;
-import com.netease.pangu.game.common.meta.AvatarSession;
 import com.netease.pangu.game.http.HttpRequestInvoker;
-import com.netease.pangu.game.meta.Avatar;
 import com.netease.pangu.game.rpc.WsRpcCallInvoker;
-import com.netease.pangu.game.service.AvatarSessionService;
 import com.netease.pangu.game.util.JsonUtil;
 import com.netease.pangu.game.util.NettyHttpUtil;
-import com.netease.pangu.game.util.ReturnUtils;
-import com.netease.pangu.game.util.ReturnUtils.GameResult;
 
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandler.Sharable;
@@ -69,8 +62,10 @@ public class MasterServerHandler extends ChannelInboundHandlerAdapter {
 			String rpcMethodName = (String) data.get("rpcMethod");
 			@SuppressWarnings("unchecked")
 			Map<String, Object> args = (Map<String, Object>)data.get("params");
+			Double tmp = NumberUtils.toDouble(data.get("gameId").toString());
+			long gameId = tmp.longValue();
 			GameContext<Void> context = new GameContext<Void>(ctx, null, rpcMethodName, frame);
-			wsRpcCallInvoker.invoke(rpcMethodName, args, context);
+			wsRpcCallInvoker.invoke(gameId, rpcMethodName, args, context);
 		}
 	}
 
@@ -93,9 +88,16 @@ public class MasterServerHandler extends ChannelInboundHandlerAdapter {
 				}
 			}else{
 				Map<String, String> params = NettyHttpUtil.parseRequest(request);
+				if(!params.containsKey("gameId")){
+					NettyHttpUtil.sendHttpResponse(ctx, request,
+							new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.BAD_REQUEST,
+									Unpooled.copiedBuffer("parameter gameId not exist!", Charset.forName("UTF-8"))));
+				}
 				URI uri = URI.create(request.uri());	
-				if(httpRequestInvoker.containsURIPath(uri.getPath())){
-					FullHttpResponse result = httpRequestInvoker.invoke(uri.getPath(), params, request);
+				Double tmp = NumberUtils.toDouble(params.get("gameId").toString());
+				long gameId = tmp.longValue();
+				if(httpRequestInvoker.containsURIPath(gameId, uri.getPath())){
+					FullHttpResponse result = httpRequestInvoker.invoke(gameId, uri.getPath(), params, request);
 					NettyHttpUtil.sendHttpResponse(ctx, request, result);
 				}else{
 					NettyHttpUtil.sendHttpResponse(ctx, request, new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.BAD_REQUEST, Unpooled.copiedBuffer("uri not exist!",Charset.forName("UTF-8"))));

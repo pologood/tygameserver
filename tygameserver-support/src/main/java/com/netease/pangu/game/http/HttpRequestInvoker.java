@@ -20,6 +20,7 @@ import org.springframework.stereotype.Component;
 import com.google.common.base.Strings;
 import com.netease.pangu.game.http.annotation.HttpController;
 import com.netease.pangu.game.http.annotation.HttpRequestMapping;
+import com.netease.pangu.game.rpc.annotation.WsRpcController;
 import com.netease.pangu.game.util.JsonUtil;
 import com.netease.pangu.game.util.MethodUtil;
 import com.netease.pangu.game.util.NettyHttpUtil;
@@ -33,10 +34,10 @@ import javassist.NotFoundException;
 @Component
 public class HttpRequestInvoker {
 	private final static Logger logger = Logger.getLogger(HttpRequestInvoker.class);
-	private Map<String, Object> controllerMap;
-	private Map<String, Method> methodMap;
-	private Map<String, Map<Integer, String>> methodParamIndexMap;
-	private Map<String, String> httpRequestMappingAnnoValueMap;
+	private Map<Long, Map<String, Object>> controllerMap;
+	private Map<Long, Map<String, Method>> methodMap;
+	private Map<Long, Map<String, Map<Integer, String>>> methodParamIndexMap;
+	private Map<Long, Map<String, String>> httpRequestMappingAnnoValueMap;
 	@Resource
 	private ConfigurableListableBeanFactory beanFactory;
 
@@ -52,20 +53,20 @@ public class HttpRequestInvoker {
 		}
 	}
 
-	private Method getMethod(String requestUri) {
-		return methodMap.get(requestUri);
+	private Method getMethod(long gameId, String requestUri) {
+		return methodMap.get(gameId).get(requestUri);
 	}
 
-	private Map<Integer, String> getParamsIndex(String requestUri) {
-		return methodParamIndexMap.get(requestUri);
+	private Map<Integer, String> getParamsIndex(long gameId, String requestUri) {
+		return methodParamIndexMap.get(gameId).get(requestUri);
 	}
 
-	public boolean containsURIPath(String requestUri) {
-		return methodMap.keySet().contains(requestUri);
+	public boolean containsURIPath(long gameId, String requestUri) {
+		return methodMap.get(gameId).keySet().contains(requestUri);
 	}
 
-	private Object getController(String requestUri) {
-		return controllerMap.get(httpRequestMappingAnnoValueMap.get(requestUri));
+	private Object getController(long gameId, String requestUri) {
+		return controllerMap.get(gameId).get(httpRequestMappingAnnoValueMap.get(gameId).get(requestUri));
 
 	}
 
@@ -77,12 +78,12 @@ public class HttpRequestInvoker {
 	 * @param request
 	 * @return
 	 */
-	public <Player> FullHttpResponse invoke(String requestUri, Map<String, String> args, FullHttpRequest request) {
-		Method method = getMethod(requestUri);
-		Object controller = getController(requestUri);
+	public <Player> FullHttpResponse invoke(long gameId, String requestUri, Map<String, String> args, FullHttpRequest request) {
+		Method method = getMethod(gameId, requestUri);
+		Object controller = getController(gameId, requestUri);
 		final Class<?>[] parameterTypes = method.getParameterTypes();
 		try {
-			Map<Integer, String> paramsIndex = getParamsIndex(requestUri);
+			Map<Integer, String> paramsIndex = getParamsIndex(gameId, requestUri);
 			List<Object> convertedArgs = new ArrayList<Object>();
 			for (Integer i = 0; i < parameterTypes.length; i++) {
 				if (Long.class.isAssignableFrom(parameterTypes[i])
@@ -150,18 +151,32 @@ public class HttpRequestInvoker {
 
 	@PostConstruct
 	public void init() {
-		methodMap = new HashMap<String, Method>();
-		httpRequestMappingAnnoValueMap = new HashMap<String, String>();
-		methodParamIndexMap = new HashMap<String, Map<Integer, String>>();
-		controllerMap = beanFactory.getBeansWithAnnotation(HttpController.class);
-		for (Entry<String, Object> entry : controllerMap.entrySet()) {
-			initAndCheckMethodsByHttpRequest(entry.getKey(), entry.getValue().getClass());
+		methodMap = new HashMap<Long, Map<String, Method>>();
+		httpRequestMappingAnnoValueMap = new HashMap<Long, Map<String, String>>();
+		methodParamIndexMap = new HashMap<Long, Map<String, Map<Integer, String>>>();
+		controllerMap = new HashMap<Long, Map<String,Object>>();
+		Map<String, Object> controllers = beanFactory.getBeansWithAnnotation(HttpController.class);
+		for (Entry<String, Object> entry : controllers.entrySet()) {
+			HttpController anno = entry.getValue().getClass().getAnnotation(HttpController.class);
+			if(!controllerMap.containsKey(anno.gameId())){
+				controllerMap.put(anno.gameId(), new HashMap<String, Object>());
+			}
+			controllerMap.get(anno.gameId()).put(entry.getKey(), entry.getValue());
+			initAndCheckMethodsByHttpRequest(anno.gameId(), entry.getValue(), entry.getKey());
 		}
 	}
 
-	public void initAndCheckMethodsByHttpRequest(String controllerName, Class<?> clazz) {
-		Class<?> currentClazz = clazz;
-		Object controller = controllerMap.get(controllerName);
+	public void initAndCheckMethodsByHttpRequest(long gameId, Object controller, String controllerName) {
+		if(!methodMap.containsKey(gameId)){
+			methodMap.put(gameId, new HashMap<String, Method>());
+		}
+		if(!httpRequestMappingAnnoValueMap.containsKey(gameId)){
+			httpRequestMappingAnnoValueMap.put(gameId, new HashMap<String, String>());
+		}
+		if(!methodParamIndexMap.containsKey(gameId)){
+			methodParamIndexMap.put(gameId, new HashMap<String, Map<Integer, String>>());
+		}
+		Class<?> currentClazz = controller.getClass();
 		HttpController httpAnno = controller.getClass().getAnnotation(HttpController.class);
 		while (currentClazz != Object.class) {
 			Method[] methods = currentClazz.getDeclaredMethods();
@@ -174,17 +189,17 @@ public class HttpRequestInvoker {
 					String requestPath = NettyHttpUtil
 							.resolveUrlPath(NettyHttpUtil.resolveStartWithEscape(httpAnno.value()))
 							+ NettyHttpUtil.resolveStartWithEscape(anno.value());
-					if (methodMap.containsKey(requestPath)) {
+					if (methodMap.get(gameId).containsKey(requestPath)) {
 						throw new HttpRequestException("HttpRequestMapping value must be unique");
 					}
-					methodMap.put(requestPath, method);
+					methodMap.get(gameId).put(requestPath, method);
 					try {
-						methodParamIndexMap.put(requestPath, MethodUtil.getParameterIndexMap(method));
+						methodParamIndexMap.get(gameId).put(requestPath, MethodUtil.getParameterIndexMap(method));
 					} catch (NotFoundException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
-					httpRequestMappingAnnoValueMap.put(requestPath, controllerName);
+					httpRequestMappingAnnoValueMap.get(gameId).put(requestPath, controllerName);
 				}
 			}
 			currentClazz = currentClazz.getSuperclass();

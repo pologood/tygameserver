@@ -29,10 +29,10 @@ import javassist.NotFoundException;
 @Component
 public class WsRpcCallInvoker {
 	private final static Logger logger = Logger.getLogger(WsRpcCallInvoker.class);
-	private Map<String, Object> controllerMap;
-	private Map<String, Method> methodMap;
-	private Map<String, Map<Integer, String>> methodParamIndexMap;
-	private Map<String, String> nettyRpcCallAnnoValueMap;
+	private Map<Long, Map<String, Object>> controllerMap;
+	private Map<Long, Map<String, Method>> methodMap;
+	private Map<Long, Map<String, Map<Integer, String>>> methodParamIndexMap;
+	private Map<Long, Map<String, String>> nettyRpcCallAnnoValueMap;
 	@Resource
 	private ConfigurableListableBeanFactory beanFactory;
 
@@ -48,21 +48,21 @@ public class WsRpcCallInvoker {
 		}
 	}
 
-	private Method getMethod(String rpcMethodName) {
-		return methodMap.get(rpcMethodName);
+	private Method getMethod(long gameId, String rpcMethodName) {
+		return methodMap.get(gameId).get(rpcMethodName);
 	}
 
-	private Object getController(String rpcMethodName) {
-		return controllerMap.get(nettyRpcCallAnnoValueMap.get(rpcMethodName));
+	private Object getController(long gameId, String rpcMethodName) {
+		return controllerMap.get(gameId).get(nettyRpcCallAnnoValueMap.get(gameId).get(rpcMethodName));
 	}
 
 	@SuppressWarnings("unchecked")
-	public void invoke(String rpcMethodName, Map<String, Object> args, GameContext<?> context) {
-		Method method = getMethod(rpcMethodName);
-		Object controller = getController(rpcMethodName);
+	public void invoke(long gameId, String rpcMethodName, Map<String, Object> args, GameContext<?> context) {
+		Method method = getMethod(gameId, rpcMethodName);
+		Object controller = getController(gameId, rpcMethodName);
 		final Class<?>[] parameterTypes = method.getParameterTypes();
 		List<Object> convertedArgs = new ArrayList<Object>();
-		Map<Integer, String> paramsIndex = getParamsIndex(rpcMethodName);
+		Map<Integer, String> paramsIndex = getParamsIndex(gameId, rpcMethodName);
 		try {
 			for (Integer i = 0; i < parameterTypes.length; i++) {
 				if (Long.class.isAssignableFrom(parameterTypes[i]) || long.class.isAssignableFrom(parameterTypes[i])) {
@@ -153,18 +153,32 @@ public class WsRpcCallInvoker {
 
 	@PostConstruct
 	public void init() {
-		methodMap = new HashMap<String, Method>();
-		nettyRpcCallAnnoValueMap = new HashMap<String, String>();
-		methodParamIndexMap = new HashMap<String, Map<Integer, String>>();
-		controllerMap = beanFactory.getBeansWithAnnotation(WsRpcController.class);
-		for (Entry<String, Object> entry : controllerMap.entrySet()) {
-			initAndCheckMethodsByNettyRpcCall(entry.getKey(), entry.getValue().getClass());
+		methodMap = new HashMap<Long, Map<String, Method>>();
+		nettyRpcCallAnnoValueMap = new HashMap<Long, Map<String, String>>();
+		methodParamIndexMap = new HashMap<Long, Map<String, Map<Integer, String>>>();
+		controllerMap = new HashMap<Long, Map<String,Object>>();
+		Map<String, Object> controllers = beanFactory.getBeansWithAnnotation(WsRpcController.class);
+		for (Entry<String, Object> entry : controllers.entrySet()) {
+			WsRpcController anno = entry.getValue().getClass().getAnnotation(WsRpcController.class);
+			if(!controllerMap.containsKey(anno.gameId())){
+				controllerMap.put(anno.gameId(), new HashMap<String, Object>());
+			}
+			controllerMap.get(anno.gameId()).put(entry.getKey(), entry.getValue());
+			initAndCheckMethodsByNettyRpcCall(anno.gameId(), entry.getValue(), entry.getKey());
 		}
 	}
 
-	public void initAndCheckMethodsByNettyRpcCall(String controllerName, Class<?> clazz) {
-		Class<?> currentClazz = clazz;
-		Object controller = controllerMap.get(controllerName);
+	public void initAndCheckMethodsByNettyRpcCall(long gameId, Object controller, String controllerName) {
+		if(!methodMap.containsKey(gameId)){
+			methodMap.put(gameId, new HashMap<String, Method>());
+		}
+		if(!nettyRpcCallAnnoValueMap.containsKey(gameId)){
+			nettyRpcCallAnnoValueMap.put(gameId, new HashMap<String, String>());
+		}
+		if(!methodParamIndexMap.containsKey(gameId)){
+			methodParamIndexMap.put(gameId, new HashMap<String, Map<Integer, String>>());
+		}
+		Class<?> currentClazz = controller.getClass();
 		WsRpcController nettyRpcAnno = controller.getClass().getAnnotation(WsRpcController.class);
 		while (currentClazz != Object.class) {
 			Method[] methods = currentClazz.getDeclaredMethods();
@@ -178,25 +192,25 @@ public class WsRpcCallInvoker {
 							.resolveUrlPath(NettyHttpUtil.resolveStartWithEscape(nettyRpcAnno.value()))
 							+ NettyHttpUtil.resolveStartWithEscape(anno.value());
 
-					if (methodMap.containsKey(requestPath)) {
+					if (methodMap.get(gameId).containsKey(requestPath)) {
 						throw new NettyRpcCallException("NettyRpcCall value must be unique");
 					}
 					try {
-						methodParamIndexMap.put(requestPath, MethodUtil.getParameterIndexMap(method));
+						methodParamIndexMap.get(gameId).put(requestPath, MethodUtil.getParameterIndexMap(method));
 					} catch (NotFoundException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
-					methodMap.put(requestPath, method);
-					nettyRpcCallAnnoValueMap.put(requestPath, controllerName);
+					methodMap.get(gameId).put(requestPath, method);
+					nettyRpcCallAnnoValueMap.get(gameId).put(requestPath, controllerName);
 				}
 			}
 			currentClazz = currentClazz.getSuperclass();
 		}
 	}
 
-	private Map<Integer, String> getParamsIndex(String requestUri) {
-		return methodParamIndexMap.get(requestUri);
+	private Map<Integer, String> getParamsIndex(long gameId, String requestUri) {
+		return methodParamIndexMap.get(gameId).get(requestUri);
 	}
 
 	public static void main(String[] args) {
