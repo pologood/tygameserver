@@ -127,7 +127,7 @@ public class RoomService {
 		});
 	}
 	
-	public boolean isRoomOwner(long avatarId, long roomId){
+	public boolean isRoomOwner(long roomId, long avatarId){
 		GameRoom room = getGameRoom(roomId);
 		return room != null && room.getOwnerId() == avatarId;
 	}
