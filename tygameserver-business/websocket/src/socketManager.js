@@ -147,7 +147,7 @@ export default{
                 gameId:this.player.gameId,
                 maxSize:10
             },
-            gameId:0,
+            gameId:this.player.gameId,
             uuid:this.player.uuid
         };
         this.socket.send(window.JSON.stringify(msg));
@@ -159,7 +159,7 @@ export default{
             params:{
                 roomId:this.roomId
             },
-            gameId:0,
+            gameId:this.player.gameId,
             uuid:this.player.uuid
         };
         this.socket.send(window.JSON.stringify(msg));
@@ -183,7 +183,7 @@ export default{
                 roomId:this.roomId,
                 msg:msg
             },
-            gameId:0,
+            gameId:this.player.gameId,
             uuid:this.player.uuid
         };
         this.socket.send(window.JSON.stringify(msg));
