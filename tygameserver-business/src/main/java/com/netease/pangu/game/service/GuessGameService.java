@@ -1,6 +1,7 @@
 package com.netease.pangu.game.service;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -25,24 +26,19 @@ public class GuessGameService {
 			game.setRoomId(roomId);
 			game.setDrawerId(avatarId);
 			game.setStartTime(System.currentTimeMillis());
-			game.setAnswers(new HashMap<Long, Guess>());
 			return gameMap.putIfAbsent(roomId, game) == null;
 		}
 		return false;
 	}
 	
-	public boolean addGuessGameAnswer(long roomId, Guess guess){
+	public void addGuessGameAnswer(long roomId, Guess guess){
 		GuessGame game = gameMap.get(roomId);
 		synchronized (game) {
-			if(!game.getAnswers().containsKey(guess.getAvatarId())){
-				game.getAnswers().put(guess.getAvatarId(), guess);
-				return true;
-			}
+			game.getAnswers().add(guess);
 		}
-		return false;
 	}
 	
-	public Map<Long, Guess> getAnswers(long roomId){
+	public List<Guess> getAnswers(long roomId){
 		return getGuessGame(roomId).getAnswers();
 	}
 	

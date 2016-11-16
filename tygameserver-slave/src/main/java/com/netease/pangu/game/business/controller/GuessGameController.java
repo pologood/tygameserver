@@ -131,9 +131,11 @@ public class GuessGameController {
 	public GameResult setAnswer(long roomId, String answer, GameContext<AvatarSession<Avatar>> ctx) {
 		Guess guess = new Guess();
 		guess.setAnswer(answer);
+		guess.setTime(System.currentTimeMillis());
 		guess.setAvatarId(ctx.getSession().getAvatarId());
-		if (!isDrawer(roomId, ctx) && guessGameService.addGuessGameAnswer(roomId, guess)) {
-			roomService.broadcast("answer", roomId, guessGameService.getAnswers(roomId));
+		if (!isDrawer(roomId, ctx)) {
+			guessGameService.addGuessGameAnswer(roomId, guess);
+			roomService.broadcast("answer", roomId, guess);
 			return ReturnUtils.succ();
 		} else {
 			return ReturnUtils.failed();

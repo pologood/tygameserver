@@ -1,5 +1,7 @@
 package com.netease.pangu.game.meta;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 public class GuessGame {
@@ -75,9 +77,12 @@ public class GuessGame {
 	private long endTime;
 	private long drawerId;
 	private Question question;	
-	private Map<Long, Guess> answers;
+	private List<Guess> answers;
 	private int state;
 
+	public GuessGame(){
+		this.answers = new ArrayList<Guess>();
+	}
 	public long getRoomId() {
 		return roomId;
 	}
@@ -114,12 +119,14 @@ public class GuessGame {
 	public void setQuestion(Question question) {
 		this.question = question;
 	}
-	public Map<Long, Guess> getAnswers() {
+	public List<Guess> getAnswers() {
 		return answers;
 	}
-	public void setAnswers(Map<Long, Guess> answers) {
-		this.answers = answers;
+	
+	public void addAnswer(Guess guess){
+		this.answers.add(guess);
 	}
+	
 	public int getState() {
 		return state;
 	}
