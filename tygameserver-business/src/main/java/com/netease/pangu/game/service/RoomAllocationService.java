@@ -3,7 +3,6 @@ package com.netease.pangu.game.service;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 
 import org.springframework.dao.DataAccessException;

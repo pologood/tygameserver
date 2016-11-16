@@ -8,6 +8,7 @@ import java.util.Map;
 import javax.annotation.Resource;
 
 import org.apache.commons.lang3.math.NumberUtils;
+import org.apache.log4j.Logger;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
@@ -40,6 +41,8 @@ import io.netty.handler.codec.http.websocketx.WebSocketServerHandshakerFactory;
 @Lazy
 @Component
 public class NodeServerHandler extends ChannelInboundHandlerAdapter {
+	private static final Logger logger = Logger.getLogger(NodeServerHandler.class);
+	
 	private static String WEB_SOCKET_PATH = "websocket";
 	@Resource
 	private WsRpcCallInvoker wsRpcCallInvoker;
@@ -57,6 +60,7 @@ public class NodeServerHandler extends ChannelInboundHandlerAdapter {
 
 	@Override
 	public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+		System.out.println("#1 " + ctx.channel().id().asLongText());
 		if (msg instanceof FullHttpRequest) {
 			handleHttpRequest(ctx, (FullHttpRequest) msg, WEB_SOCKET_PATH);
 		} else if (msg instanceof WebSocketFrame) {
@@ -133,6 +137,27 @@ public class NodeServerHandler extends ChannelInboundHandlerAdapter {
 
 	@Override
 	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+		System.out.println("#2 " + ctx.channel().id().asLongText());
 		cause.printStackTrace();
+	}
+	
+	@Override
+	public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
+		System.out.println("#3 " + ctx.channel().id().asLongText());
+	}
+	
+	@Override
+	public void channelActive(ChannelHandlerContext ctx) throws Exception{
+		System.out.println("#4 " + ctx.channel().id().asLongText());
+	}
+	
+	@Override
+	public void channelInactive(ChannelHandlerContext ctx) throws Exception{
+		System.out.println("#5 " + ctx.channel().id().asLongText());
+	}
+	
+	@Override
+	public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
+		System.out.println("#6 " + ctx.channel().id().asLongText());
 	}
 }
