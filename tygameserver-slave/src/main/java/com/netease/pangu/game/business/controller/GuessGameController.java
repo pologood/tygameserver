@@ -135,7 +135,11 @@ public class GuessGameController {
 		guess.setAvatarId(ctx.getSession().getAvatarId());
 		if (!isDrawer(roomId, ctx)) {
 			guessGameService.addGuessGameAnswer(roomId, guess);
-			roomService.broadcast("answer", roomId, ReturnUtils.succ(guess));
+			if(guessGameService.isCorrectAnswer(roomId, guess)){
+				roomService.broadcast("correct", roomId, ReturnUtils.succ(guess));
+			}else{
+				roomService.broadcast("answer", roomId, ReturnUtils.succ(guess));
+			}
 			return ReturnUtils.succ();
 		} else {
 			return ReturnUtils.failed();

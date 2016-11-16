@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import com.netease.pangu.game.meta.GuessGame;
@@ -36,6 +37,11 @@ public class GuessGameService {
 		synchronized (game) {
 			game.getAnswers().add(guess);
 		}
+	}
+	
+	public boolean isCorrectAnswer(long roomId, Guess guess){
+		GuessGame game = gameMap.get(roomId);
+		return StringUtils.equals(game.getQuestion().getAnswer().trim(), guess.getAnswer().trim());
 	}
 	
 	public List<Guess> getAnswers(long roomId){
