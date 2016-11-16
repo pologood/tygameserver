@@ -19,7 +19,7 @@ import com.netease.pangu.game.service.RoomService;
 import com.netease.pangu.game.util.ReturnUtils;
 import com.netease.pangu.game.util.ReturnUtils.GameResult;
 
-@WsRpcController("/avatar")
+@WsRpcController(value="/avatar", gameId=1)
 public class AvatarController {
 	@Resource private AvatarSessionService avatarSessionService;
 	@Resource private AvatarService avatarService;

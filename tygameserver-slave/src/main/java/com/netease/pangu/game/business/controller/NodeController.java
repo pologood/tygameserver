@@ -4,12 +4,13 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import com.netease.pangu.game.common.meta.GameConst;
 import com.netease.pangu.game.common.meta.GameRoom;
 import com.netease.pangu.game.http.annotation.HttpController;
 import com.netease.pangu.game.http.annotation.HttpRequestMapping;
 import com.netease.pangu.game.service.RoomService;
 
-@HttpController("/slave")
+@HttpController(value="/slave", gameId=GameConst.SYSTEM)
 public class NodeController {
 	@Resource private RoomService gameRoomManager;
 	

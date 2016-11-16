@@ -9,6 +9,7 @@ import javax.annotation.Resource;
 import org.apache.commons.lang3.RandomUtils;
 
 import com.netease.pangu.game.common.meta.AvatarSession;
+import com.netease.pangu.game.common.meta.GameConst;
 import com.netease.pangu.game.common.meta.GameContext;
 import com.netease.pangu.game.common.meta.GameRoom;
 import com.netease.pangu.game.meta.Avatar;
@@ -24,7 +25,7 @@ import com.netease.pangu.game.service.RoomService;
 import com.netease.pangu.game.util.ReturnUtils;
 import com.netease.pangu.game.util.ReturnUtils.GameResult;
 
-@WsRpcController("/guess")
+@WsRpcController(value="/guess", gameId= GameConst.GUESSS)
 public class GuessGameController {
 	@Resource
 	private GuessGameService guessGameService;

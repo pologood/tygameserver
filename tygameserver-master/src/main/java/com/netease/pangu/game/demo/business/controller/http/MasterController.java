@@ -7,6 +7,7 @@ import javax.annotation.Resource;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.netease.pangu.game.common.meta.GameConst;
 import com.netease.pangu.game.core.service.NodeScheduleService;
 import com.netease.pangu.game.distribution.Node;
 import com.netease.pangu.game.distribution.NodeManager;
@@ -19,8 +20,8 @@ import com.netease.pangu.game.service.AvatarService;
 import com.netease.pangu.game.service.RoomAllocationService;
 import com.netease.pangu.game.util.JsonUtil;
 
-@WsRpcController("/master")
-@HttpController("/master")
+@WsRpcController(value="/master", gameId=GameConst.GUESSS)
+@HttpController(value="/master", gameId=GameConst.GUESSS)
 public class MasterController {
 	@Resource NodeScheduleService appWorkerScheduleService;
 	@Resource AvatarService avatarService;

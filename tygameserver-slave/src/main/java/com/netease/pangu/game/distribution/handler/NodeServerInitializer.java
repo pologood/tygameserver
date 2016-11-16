@@ -1,5 +1,7 @@
 package com.netease.pangu.game.distribution.handler;
 
+import java.util.concurrent.TimeUnit;
+
 import javax.annotation.Resource;
 
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
@@ -13,6 +15,7 @@ import io.netty.handler.codec.http.HttpServerCodec;
 import io.netty.handler.codec.http.websocketx.WebSocketServerProtocolHandler;
 import io.netty.handler.codec.http.websocketx.extensions.compression.WebSocketServerCompressionHandler;
 import io.netty.handler.ssl.SslContext;
+import io.netty.handler.timeout.IdleStateHandler;
 
 @Component
 public class NodeServerInitializer extends ChannelInitializer<SocketChannel> {
@@ -29,6 +32,7 @@ private static final String WEBSOCKET_PATH = "/websocket";
         if (sslCtx != null) {
             pipeline.addLast(sslCtx.newHandler(ch.alloc()));
         }
+        pipeline.addLast("ping", new IdleStateHandler(60, 15, 13, TimeUnit.SECONDS));
         pipeline.addLast(new HttpServerCodec());
         pipeline.addLast(new HttpObjectAggregator(65536));
         pipeline.addLast(new WebSocketServerCompressionHandler());

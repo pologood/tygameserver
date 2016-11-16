@@ -5,6 +5,7 @@ import java.util.Map;
 import com.netease.pangu.game.util.JsonUtil;
 
 import io.netty.channel.Channel;
+import io.netty.channel.ChannelId;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 
 public class AvatarSession<A extends IAvatar> implements IAvatar{
@@ -26,13 +27,13 @@ public class AvatarSession<A extends IAvatar> implements IAvatar{
 		return attrs;
 	}
 	public void sendMessage(Object msg){
-		if (channel != null) {
-			channel.writeAndFlush(msg);
+		if (channel != null && channel.isActive()) {
+			channel.writeAndFlush(msg);			
 		}
 	}
 	
 	public void sendJSONMessage(Object msg){
-		if (channel != null) {
+		if (channel != null && channel.isActive()) {
 			channel.writeAndFlush(new TextWebSocketFrame(JsonUtil.toJson(msg)));
 		}
 	}
@@ -43,6 +44,14 @@ public class AvatarSession<A extends IAvatar> implements IAvatar{
 
 	public Channel getChannel() {
 		return channel;
+	}
+	
+	public ChannelId getChannelId(){
+		if(channel != null){
+			return channel.id();
+		}else{
+			return null;
+		}
 	}
 
 	public void setChannel(Channel channel) {
