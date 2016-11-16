@@ -6,8 +6,9 @@
 
                 <div class="item col-md-3" v-for="(item,key) in sData.members">
                     <img class="img-rounded" src="./assets/header.jpg">
-                    <button class="btn btn-default readyBtn">{{item.state==1?'已准备':'准备'}}</button>
+                    <button class="btn btn-default readyBtn">{{item.state==1?'已准备':'准备'}}</button>                    
                     <div class="txtCnt">
+                        <span v-if="item.avatarId==sData.ownerName" class="label label-info">房主</span>
                         <label>昵称：{{item.name}}</label>
                         <!--<label>总积分：xxxx</label>-->
                     </div>

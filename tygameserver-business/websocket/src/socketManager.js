@@ -14,6 +14,13 @@ export default{
     maxSize:0,
     members:{},
     groupmsgs:[],
+    painterId:0,
+    border:null,
+    hint:{
+        hint1:'',
+        hint2:''
+    },
+    answerList:[],
     connectSocket(data){
         const self =this;
         // 创建一个Socket实例		
@@ -84,7 +91,30 @@ export default{
                 }
 
                 if(data.rpcMethodName.toLowerCase() ==  "/guess/create"){
-                    self.router.push('draw');	
+                    
+                }
+
+                if(data.rpcMethodName.toLowerCase() == "/room/broadcast/startgame"){
+                    self.painterId = data.content.payload;
+                    self.router.push('draw');
+                }
+
+                if(data.rpcMethodName.toLowerCase() == "/room/broadcast/drawgame"){
+                    var info=data.content.payload;
+                    if(info.type==1){
+                        self.border.drawing(info.drawInfo);
+                    }else if(info.type==2){
+                        self.border.clear();
+                    }
+                    
+                }
+
+                if(data.rpcMethodName.toLowerCase() == "/room/broadcast/drawquestion"){
+                    self.hint=data.content.payload;
+                }
+
+                if(data.rpcMethodName.toLowerCase() == "/room/broadcast/answer"){
+                    self.answerList.push(data.content);
                 }
 
                 // if(data.rpcMethodName.toLowerCase() == "/room/list"){
@@ -94,7 +124,7 @@ export default{
 
             }else{
                 console.log(data.content.payload);
-                alert(data.message);
+                // alert(data.message);
             }
 
         };
@@ -117,7 +147,7 @@ export default{
                 gameId:this.player.gameId,
                 maxSize:10
             },
-            gameId:this.player.gameId,
+            gameId:0,
             uuid:this.player.uuid
         };
         this.socket.send(window.JSON.stringify(msg));
@@ -129,7 +159,7 @@ export default{
             params:{
                 roomId:this.roomId
             },
-            gameId:this.player.gameId,
+            gameId:0,
             uuid:this.player.uuid
         };
         this.socket.send(window.JSON.stringify(msg));
@@ -153,7 +183,7 @@ export default{
                 roomId:this.roomId,
                 msg:msg
             },
-            gameId:this.player.gameId,
+            gameId:0,
             uuid:this.player.uuid
         };
         this.socket.send(window.JSON.stringify(msg));
@@ -164,6 +194,44 @@ export default{
             rpcMethod:"/guess/create", 
             params:{
                 roomId:this.roomId
+            },
+            gameId:this.player.gameId,
+            uuid:this.player.uuid
+        };
+        this.socket.send(window.JSON.stringify(msg));
+    },
+    sendDrawingInfo(info){
+        var msg = {
+            rpcMethod:"/guess/draw", 
+            params:{
+                roomId:this.roomId,
+                content:info
+            },
+            gameId:this.player.gameId,
+            uuid:this.player.uuid
+        };
+        this.socket.send(window.JSON.stringify(msg));
+    },
+    sendQuestion(info){
+        var msg = {
+            rpcMethod:"/guess/question", 
+            params:{
+                roomId:this.roomId,
+                answer:info.word,
+                hint1:info.hint1,
+                hint2:info.hint2
+            },
+            gameId:this.player.gameId,
+            uuid:this.player.uuid
+        };
+        this.socket.send(window.JSON.stringify(msg));
+    },
+    sendAnswer(word){
+        var msg = {
+            rpcMethod:"/guess/answer", 
+            params:{
+                roomId:this.roomId,
+                answer:word
             },
             gameId:this.player.gameId,
             uuid:this.player.uuid
