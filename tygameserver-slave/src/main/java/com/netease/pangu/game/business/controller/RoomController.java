@@ -9,6 +9,7 @@ import com.netease.pangu.game.common.meta.AvatarSession;
 import com.netease.pangu.game.common.meta.GameConst;
 import com.netease.pangu.game.common.meta.GameContext;
 import com.netease.pangu.game.common.meta.GameRoom;
+import com.netease.pangu.game.common.meta.GameRoom.Status;
 import com.netease.pangu.game.common.meta.IAvatar;
 import com.netease.pangu.game.meta.Avatar;
 import com.netease.pangu.game.rpc.WsRpcResponse;
@@ -69,7 +70,32 @@ public class RoomController {
 		}
 		return result;
 	}
-
+	
+	@WsRpcCall("/remove")
+	public GameResult removeMember(long avatarId, GameContext<AvatarSession<Avatar>> ctx) {
+		AvatarSession<Avatar> session = ctx.getSession();
+		GameResult result = ReturnUtils.failed();
+		if (session.getRoomId() > 0) {
+			GameRoom room = roomService.getGameRoom(session.getRoomId());
+			if(session.getAvatarId() == room.getOwnerId()){
+				if(room.getStatus() == Status.IDLE){
+					boolean isOk = roomService.removeRoom(avatarId);
+					if (isOk) {
+						roomService.broadcast(RoomService.ROOM_REMOVE_MEMBER, room.getId(), ReturnUtils.succ(avatarId));
+						result = ReturnUtils.succ(avatarId);
+					} else {
+						result = ReturnUtils.failed(String.format("failed to remove member %d", avatarId));
+					}
+				}else{
+					result = ReturnUtils.failed(String.format("room is not idle %d", avatarId));
+				}
+			}
+		}else{
+			result = ReturnUtils.failed(String.format(" you(%d) are not a room owner", avatarId));
+		}
+		return result;
+	}
+	
 	@WsRpcCall("/info")
 	public GameResult getRoom(long roomId) {
 		return roomService.getRoomInfo(roomId);

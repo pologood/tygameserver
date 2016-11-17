@@ -24,11 +24,12 @@ import com.netease.pangu.game.util.ReturnUtils.GameResult;
 
 @WsRpcController(value="/guess", gameId= GameConst.GUESSS)
 public class GuessGameController {
-	@Resource
-	private GuessGameService guessGameService;
 	public static final String START_GAME = "startGame";
 	public static final String DRAW_GAME = "drawGame";
 	public static final String QUESTION_GAME = "drawQuestion";
+	
+	@Resource
+	private GuessGameService guessGameService;
 	@Resource
 	private AvatarService avatarService;
 	@Resource

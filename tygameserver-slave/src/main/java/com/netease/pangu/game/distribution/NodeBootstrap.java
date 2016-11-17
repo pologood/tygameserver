@@ -19,9 +19,8 @@ import org.springframework.stereotype.Component;
 import com.netease.pangu.distribution.proto.RpcResponse;
 import com.netease.pangu.game.distribution.handler.NodeServerInitializer;
 import com.netease.pangu.game.distribution.service.SystemAttrService;
-import com.netease.pangu.game.service.RoomService;
-import com.netease.pangu.game.service.AvatarService;
 import com.netease.pangu.game.service.AvatarSessionService;
+import com.netease.pangu.game.service.RoomService;
 
 import io.grpc.Server;
 import io.grpc.ServerBuilder;

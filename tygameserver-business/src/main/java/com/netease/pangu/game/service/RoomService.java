@@ -167,7 +167,7 @@ public class RoomService {
 
 	/**
 	 * 
-	 * @param playerSessionId
+	 * @param avatarId
 	 * @return
 	 */
 	public boolean removeRoom(final long avatarId) {
@@ -195,7 +195,9 @@ public class RoomService {
 	}
 	public static final String ROOM_BROADCAST = "/room/broadcast/";
 	public static final String ROOM_INFO = "roomInfo";
-	public void broadcast(String path, long roomId,Object msg) {
+	public static final String ROOM_REMOVE_MEMBER = "removeMember";
+	
+	public void broadcast(String path, long roomId, Object msg) {
 		GameRoom room = getGameRoom(roomId);
 		if (room.getStatus() == Status.IDLE) {
 			Set<Long> sessionIds = room.getSessionIds();
