@@ -8,7 +8,7 @@
                 <label>提示一：</label>
                 <label>{{sData.hint.hint1}}</label>
                 <label>提示二:</label>
-                <label>{{sData.hint.hint1}}</label>
+                <label>{{sData.hint.hint2}}</label>
             </div>
             <div class="form-inline hint" v-if="sData.painterId==sData.avatarId">
                 <label>名称：</label>
@@ -47,8 +47,8 @@
         </div>
         
         <div class="answerCnt">
-            <p v-for="item in sData.answerList">
-                {{item}}
+            <p v-for="item in sData.answerList" class="answer">
+                {{item.answer}}
             </p>
         </div>
         <div class="sendAnswerCnt">
@@ -96,7 +96,9 @@
             }
         },
         created(){
-            
+            if(!s.socket){
+                s.router.push("/");
+            }
         },
         mounted(){            
             this.stage = new createjs.Stage("board");
@@ -227,9 +229,10 @@
     .brush span.brush-5{width: 30px;height: 30px;border-radius: 30px;}
     .typeCnt{float: left;padding-top: 4px;}
     .questionCnt{width: 200px;height: 50px;background: #eee;position: absolute;padding: 8px;position: absolute;margin-left: 460px;left: 50%;top: 80px;}
-    .answerCnt{width: 200px;height: 560px;background: #eee;position: absolute;margin-left: 460px;left: 50%;top:50px;border-radius: 10px;}
+    .answerCnt{width: 200px;height: 560px;background: #eee;position: absolute;margin-left: 460px;left: 50%;top:50px;border-radius: 10px;overflow-y: auto;}
     .sendAnswerCnt{width: 200px;position: absolute;top: 618px;left: 50%;margin-left: 460px;}
     .hint{margin-bottom: 20px;}
     .members{width: 200px;height: 600px;background: #eee;position: absolute;top: 50px;margin-left: -660px;left: 50%;border-radius: 10px;}
     .member{padding: 10px;}
+    .answer{padding: 10px;}
 </style>

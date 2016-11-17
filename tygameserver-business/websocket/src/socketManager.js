@@ -114,7 +114,7 @@ export default{
                 }
 
                 if(data.rpcMethodName.toLowerCase() == "/room/broadcast/answer"){
-                    self.answerList.push(data.content);
+                    self.answerList.push(data.content.payload);
                 }
 
                 // if(data.rpcMethodName.toLowerCase() == "/room/list"){
