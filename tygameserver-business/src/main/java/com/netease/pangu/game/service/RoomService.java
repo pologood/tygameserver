@@ -62,6 +62,22 @@ public class RoomService {
 		return roomAllocationService.borrowRoom(gameId, server);
 	}
 	
+	public boolean isReady(long roomId){
+		GameRoom room = getGameRoom(roomId);
+		Set<Long> avatarIds = room.getSessionIds();
+		Map<Long, AvatarSession<Avatar>> sessionsMap = avatarSessionService.getAvatarSesssions(avatarIds);
+		if(sessionsMap.values().size() < 2){
+			return false;
+		}
+		for(AvatarSession<Avatar> session: sessionsMap.values()){
+			if(session.getState() != AvatarSession.READY){
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	
 	/**
 	 * 
 	 * @param gameId
@@ -102,6 +118,11 @@ public class RoomService {
 		GameRoom room = getGameRoom(roomId);
 		return room != null && room.getStatus() == GameRoom.Status.IDLE
 				&& room.getSessionIds().size() < room.getMaxSize() ? true : false;
+	}
+	
+	public void setRoomState(long roomId, Status status) {
+		GameRoom room = getGameRoom(roomId);
+		room.setStatus(status);
 	}
 
 	/**
