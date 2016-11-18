@@ -2,13 +2,11 @@ package com.netease.pangu.game.distribution;
 
 import java.io.IOException;
 import java.net.InetAddress;
-import java.security.cert.CertificateException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Resource;
-import javax.net.ssl.SSLException;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
@@ -32,14 +30,10 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
-import io.netty.handler.ssl.SslContext;
-import io.netty.handler.ssl.SslContextBuilder;
-import io.netty.handler.ssl.util.SelfSignedCertificate;
 
 @Component
 public class NodeBootstrap implements Bootstrap {
 	private final static Logger logger = Logger.getLogger(NodeBootstrap.class);
-	private static final boolean SSL = System.getProperty("ssl") != null;
 	private Server server;
 	private ConfigurableApplicationContext context;
 	@Value("${server.rpcPort}")
@@ -147,29 +141,12 @@ public class NodeBootstrap implements Bootstrap {
 				e.printStackTrace();
 			}
 		}
-		SslContext sslCtx;
-		if (SSL) {
-			try {
-				SelfSignedCertificate ssc = new SelfSignedCertificate();
-				sslCtx = SslContextBuilder.forServer(ssc.certificate(), ssc.privateKey()).build();
-
-			} catch (SSLException | CertificateException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} finally {
-				sslCtx = null;
-			}
-
-		} else {
-			sslCtx = null;
-		}
 
 		EventLoopGroup bossGroup = new NioEventLoopGroup(1);
 		EventLoopGroup workerGroup = new NioEventLoopGroup();
 		try {
 			ServerBootstrap b = new ServerBootstrap();
 			NodeServerInitializer initializer = context.getBean(NodeServerInitializer.class);
-			initializer.setSslCtx(sslCtx);
 			b.group(bossGroup, workerGroup).channel(NioServerSocketChannel.class)
 					.handler(new LoggingHandler(LogLevel.INFO)).childHandler(initializer);
 

@@ -1,10 +1,8 @@
 package com.netease.pangu.game.distribution;
 
 import java.io.IOException;
-import java.security.cert.CertificateException;
 
 import javax.annotation.Resource;
-import javax.net.ssl.SSLException;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,18 +22,16 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
-import io.netty.handler.ssl.SslContext;
-import io.netty.handler.ssl.SslContextBuilder;
-import io.netty.handler.ssl.util.SelfSignedCertificate;
 
 @Component
 public class MasterBootstrap implements Bootstrap {
 	private final static Logger logger = Logger.getLogger(MasterBootstrap.class);
-	private static final boolean SSL = System.getProperty("ssl") != null;
-	private static final int PORT = Integer.parseInt(System.getProperty("port", SSL ? "8180" : "8080"));
 	private Server server;
 	@Value("${server.port}")
 	private int port = 9001;
+	@Value("${server.httpPort}")
+	private int httpPort = 8080;
+
 	@Resource
 	private MasterServiceImpl appMasterServiceImpl;
 
@@ -52,33 +48,16 @@ public class MasterBootstrap implements Bootstrap {
 			}
 		}
 		logger.info("Server started, listening on " + port);
-		SslContext sslCtx;
-		if (SSL) {
-			try {
-				SelfSignedCertificate ssc = new SelfSignedCertificate();
-				sslCtx = SslContextBuilder.forServer(ssc.certificate(), ssc.privateKey()).build();
-				
-			} catch (SSLException | CertificateException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} finally{
-				sslCtx = null;
-			}
-			
-		} else {
-			sslCtx = null;
-		}
 		
 		EventLoopGroup bossGroup = new NioEventLoopGroup(1);
 		EventLoopGroup workerGroup = new NioEventLoopGroup();
 		try {
 			ServerBootstrap b = new ServerBootstrap();
 			MasterServerInitializer initializer = context.getBean(MasterServerInitializer.class);
-			initializer.setSslCtx(sslCtx);
 			b.group(bossGroup, workerGroup).channel(NioServerSocketChannel.class)
 					.handler(new LoggingHandler(LogLevel.INFO)).childHandler(initializer);
 
-			Channel ch = b.bind(PORT).sync().channel();
+			Channel ch = b.bind(httpPort).sync().channel();
 			ch.closeFuture().sync();
 		} catch (InterruptedException e) {
 			e.printStackTrace();
@@ -118,6 +97,14 @@ public class MasterBootstrap implements Bootstrap {
 		}
 	}
 	
+	public int getHttpPort() {
+		return httpPort;
+	}
+
+	public void setHttpPort(int httpPort) {
+		this.httpPort = httpPort;
+	}
+	
 	public int getPort() {
 		return port;
 	}
@@ -129,9 +116,11 @@ public class MasterBootstrap implements Bootstrap {
 	public static void main(String[] args) {
 		ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("tygameserver-master-service.xml");
 		MasterBootstrap bootstrap = context.getBean(MasterBootstrap.class);
-		if(args.length == 1){
+		if(args.length == 2){
 			int port = Integer.parseInt(args[0]);
 			bootstrap.setPort(port);
+			int httpPort = Integer.parseInt(args[1]);
+			bootstrap.setHttpPort(httpPort);
 		}
 		bootstrap.init(context);
 		bootstrap.start();
