@@ -196,12 +196,14 @@ public class NodeBootstrap implements Bootstrap {
 	public static void main(String[] args) {
 		ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("tygameserver-slave-service.xml");
 		NodeBootstrap bootstrap = context.getBean(NodeBootstrap.class);
-		int httpPort = Integer.parseInt(args[0]);
-		int rpcPort = Integer.parseInt(args[1]);
-		String name = args[2];
-		bootstrap.setHttpPort(httpPort);
-		bootstrap.setRpcPort(rpcPort);
-		bootstrap.setName(name);
+		if(args.length == 3){
+			int httpPort = Integer.parseInt(args[0]);
+			int rpcPort = Integer.parseInt(args[1]);
+			String name = args[2];
+			bootstrap.setHttpPort(httpPort);
+			bootstrap.setRpcPort(rpcPort);
+			bootstrap.setName(name);
+		}
 		bootstrap.init(context);
 		bootstrap.start();
 		try {
