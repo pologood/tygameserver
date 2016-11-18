@@ -16,7 +16,7 @@
 		   http://www.springframework.org/schema/cache/spring-cache.xsd
 		   http://www.springframework.org/schema/data/mongo 
 		   http://www.springframework.org/schema/data/mongo/spring-mongo-1.0.xsd">
-	<import resource="classpath:/bean/tygameserver-beans.xml" />
+	<import resource="classpath*:/bean/tygameserver-beans.xml" />
 	<import resource="classpath*:tygameserver-config-service.xml" />
 	<context:annotation-config />
 	<mongo:mongo id="mongo" replica-set="${mongo.replicaSet}">
