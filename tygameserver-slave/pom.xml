@@ -22,25 +22,21 @@
 	<build>
 		<sourceDirectory>src/main/java</sourceDirectory>
         <resources>
-            <!-- 控制资源文件的拷贝 -->
             <resource>
                 <directory>src/main/resources</directory>
                 <includes>
                     <include>**/*.properties</include>
-                    <include>**/*.xml</include>
                 </includes>
-                <filtering>false</filtering>
-                <!-- 配置文件外置（在打包时取消注释）
-                    	资源文件拷贝到编译输出路径target的子文件夹config目录下，最终结构如下:
-                    target
-                       ...config
-                           ...spring
-                           ...mapper
-                           ...env
-                       ...lib
-                       ...generateImportCarSql.jar
-                 -->
-                 <targetPath>${project.build.directory}/config</targetPath>
+                <filtering>true</filtering>
+                <targetPath>${project.build.directory}/config</targetPath>
+            </resource>
+            <resource>
+                <directory>src/main/resources</directory>
+                <includes>
+                    <include>**/*.xml</include>
+                    <include>**/*.properties</include>
+                </includes>
+                <filtering>true</filtering>
             </resource>
         </resources>
 
