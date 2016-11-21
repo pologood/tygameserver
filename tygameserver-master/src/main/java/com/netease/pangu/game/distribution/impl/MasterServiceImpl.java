@@ -46,8 +46,9 @@ public class MasterServiceImpl extends MasterServiceGrpc.MasterServiceImplBase {
 				builder.setMessage("add failed");
 			}
 		}
+	
 		RpcResponse result = builder.build();
-		logger.info(JsonUtil.toJson(result));
+		logger.info(JsonUtil.toJson(node));
 		responseObserver.onNext(result);
 		responseObserver.onCompleted();
 	
