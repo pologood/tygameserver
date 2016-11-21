@@ -27,6 +27,7 @@ public class MasterController {
 	@Resource AvatarService avatarService;
 	@Resource NodeManager nodeManager;
 	@Resource RoomAllocationService roomAllocationService;
+	
 	@WsRpcCall("/init")
 	@HttpRequestMapping("/init")
 	public String getNode(String uuid, String roleName, String avatarImg, long gameId, long roomId, String callback){
