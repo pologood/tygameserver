@@ -83,6 +83,7 @@ public class HttpRequestInvoker {
 		Object controller = getController(gameId, requestUri);
 		final Class<?>[] parameterTypes = method.getParameterTypes();
 		try {
+			logger.info(JsonUtil.toJson(args));
 			Map<Integer, String> paramsIndex = getParamsIndex(gameId, requestUri);
 			List<Object> convertedArgs = new ArrayList<Object>();
 			for (Integer i = 0; i < parameterTypes.length; i++) {
