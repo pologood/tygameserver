@@ -91,7 +91,7 @@ public class HttpRequestInvoker {
 						|| long.class.isAssignableFrom(parameterTypes[i])) {
 					String arg = args.get(paramsIndex.get(i));
 					if (arg == null) {
-						logger.info(String.format("parameter %s is null", arg));
+						logger.info(String.format("parameter %s is null", paramsIndex.get(i)));
 						return NettyHttpUtil.createBadRequestResponse();
 					}
 					Double num = NumberUtils.toDouble(arg);
@@ -100,7 +100,7 @@ public class HttpRequestInvoker {
 						|| int.class.isAssignableFrom(parameterTypes[i])) {
 					String arg = args.get(paramsIndex.get(i));
 					if (arg == null) {
-						logger.info(String.format("parameter %s is null", arg));
+						logger.info(String.format("parameter %s is null", paramsIndex.get(i)));
 						return NettyHttpUtil.createBadRequestResponse();
 					}
 					Double num = NumberUtils.toDouble(arg);
@@ -109,7 +109,7 @@ public class HttpRequestInvoker {
 						|| double.class.isAssignableFrom(parameterTypes[i])) {
 					String arg = args.get(paramsIndex.get(i));
 					if (arg == null) {
-						logger.info(String.format("parameter %s is null", arg));
+						logger.info(String.format("parameter %s is null", paramsIndex.get(i)));
 						return NettyHttpUtil.createBadRequestResponse();
 					}
 					Double num = NumberUtils.toDouble(arg);
@@ -118,7 +118,7 @@ public class HttpRequestInvoker {
 						|| float.class.isAssignableFrom(parameterTypes[i])) {
 					String arg = args.get(paramsIndex.get(i));
 					if (arg == null) {
-						logger.info(String.format("parameter %s is null", arg));
+						logger.info(String.format("parameter %s is null", paramsIndex.get(i)));
 						return NettyHttpUtil.createBadRequestResponse();
 					}
 					Double num = NumberUtils.toDouble(arg);
@@ -126,7 +126,7 @@ public class HttpRequestInvoker {
 				} else if (String.class.isAssignableFrom(parameterTypes[i])) {
 					String arg = args.get(paramsIndex.get(i));
 					if (arg == null) {
-						logger.info(String.format("parameter %s is null", arg));
+						logger.info(String.format("parameter %s is null", paramsIndex.get(i)));
 						return NettyHttpUtil.createBadRequestResponse();
 					}
 					convertedArgs.add(arg);
