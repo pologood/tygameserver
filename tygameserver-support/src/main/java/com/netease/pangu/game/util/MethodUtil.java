@@ -4,6 +4,8 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
+
 import javassist.ClassPool;
 import javassist.CtClass;
 import javassist.CtMethod;
@@ -26,15 +28,12 @@ public class MethodUtil {
 		MethodInfo methodInfo = cm.getMethodInfo();
 		CodeAttribute codeAttribute = methodInfo.getCodeAttribute();
 		LocalVariableAttribute attr = (LocalVariableAttribute) codeAttribute.getAttribute(LocalVariableAttribute.tag);
-		int pos = Modifier.isStatic(cm.getModifiers()) ? 0 : 1;
-		
+		int pos = 0;
+		while(!StringUtils.equals(attr.variableName(pos++), "this")){			
+		}
 		Map<Integer, String> paramIndexMap = new HashMap<Integer, String>();
 		for (int i = 0; i < cm.getParameterTypes().length; i++) {
-			paramIndexMap.put(i, attr.variableName(attr.index(i)));
-		}
-		int length = attr.tableLength();
-		for(int i = 0; i < length; i++){
-			System.out.println(attr.variableName(i));
+			paramIndexMap.put(i, attr.variableName(i+pos));
 		}
 		return paramIndexMap;
 	}
