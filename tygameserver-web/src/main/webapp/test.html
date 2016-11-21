@@ -1,0 +1,234 @@
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<script type="text/javascript" src="jquery-1.10.2.min.js"></script>
+	<style>
+		span{margin:5px;}
+	</style>
+<head>
+<body>
+	<div>
+		<input id="uuid" type="text" />
+		<button id="loadBtn">UUID</button>
+	</div>	
+	<div id="headBar">
+		<label>用户名:</label>
+		<span id="name2">未知</span>
+		<label>sessionId:</label>
+		<span id="sId">未知</span>
+		<label>房号:</label>
+		<span id="roomId">未知</span>
+		<input id="name" type="text" />
+		<button id="registerBtn">注册</button>
+		<button id="loginBtn">登陆</button>
+		<button id="cBtn">创建房间</button>						
+	</div>
+	
+	<div>		
+		<h3><span>房间列表</span>&nbsp;<button id="roomListBtn">房间列表</button></h3>
+		<div><select id="roomList"></select><button id="addRoomBtn">加入</button></div>
+		<div id="info">
+			<h4>成员列表</h4>
+			<ul id="members"></ul>
+			<h4>群聊</h4>
+			<ul id="groupmsgs"></ul>
+			<div>
+				<input id="groupMsg" type="text" />
+				<button id="gBtn">发送消息</button>
+			</div>	
+		</div>
+	</div>
+	<div>
+	<h3>消息列表</h3>
+		<ul id="msgList">
+		</ul>	
+		<div>
+			<label>SessionId: </label>
+			<select id="playerList"></select>
+			<button id="refresh">刷新</button>
+			<input id="msg" type="text" />
+			<button id="sendMsg">发送消息</button>
+		</div>
+	</div>	
+
+	<script type="text/javascript">
+		
+		$(function(){
+			$("#loadBtn").click(function(){
+				$.getJSON("http://littlegame.tianyu.163.com/master/app?uuid="+$("#uuid").val() + "&callback=?", function(data){
+						// 创建一个Socket实例					
+					var socket = new WebSocket('ws://' + data.ip + ':'+data.port+'/websocket'); 
+
+					// 打开Socket 
+					socket.onopen = function(event) { 
+						console.log('Client open a message',event.data); 
+					};
+					  // 监听消息
+					socket.onmessage = function(event) { 
+						console.log('Client received a message', event.data);
+						data = JSON.parse(event.data);
+						if(data.content.code == 1){
+							if(data.rpcMethodName.toLowerCase() == "/player/reg") {
+								$("#name2").text(data.content.payload.roleName);
+								$("#sId").text(data.content.payload.sessionId);
+							}
+
+							if(data.rpcMethodName.toLowerCase() == "/player/login") {
+								$("#name2").text(data.content.payload.roleName);
+								$("#sId").text(data.content.payload.sessionId);
+							}
+
+
+							if(data.rpcMethodName.toLowerCase() == "/player/chat") {
+								$("#msgList").append($("<li><label>"+ data.content.source.playerName + "</label>:&nbsp;<span>"+ data.content.payload.msg +"</span></li>"));
+							}
+
+							if(data.rpcMethodName.toLowerCase() == "/player/list") {
+								console.log(data.content.payload);
+								var html = "";
+								for(var id in data.content.payload){
+									html += "<option value="+ id +">"+ data.content.payload[id].name + " - "+ id +"</option>";
+								}
+								$("#playerList").html(html);
+							}
+
+							if(data.rpcMethodName.toLowerCase() == "/room/create"){
+								console.log(data.content.payload);
+								$("#roomId").text(data.content.payload);
+								alert("创建房间" + data.content.payload);
+							}
+
+							if(data.rpcMethodName.toLowerCase() == "/room/join"){
+								console.log(data.content.payload);
+								$("#roomId").text(data.content.payload);
+								alert("加入房间" + data.content.payload);
+							}
+
+							if(data.rpcMethodName.toLowerCase() == "/room/info"){
+								console.log(data.content.payload);						
+								
+								var html = "";
+								for(var id in data.content.payload.members){
+									html += "<li>"+ data.content.payload.members[id].name + " - "+ id +"</li>";
+								}
+								$("#members").html(html);
+							}
+
+							if(data.rpcMethodName.toLowerCase() == "/room/chat"){
+								console.log(data.content.payload);						
+								$("#groupmsgs").append($("<li><label>"+ data.source.playerName + "</label>:&nbsp;<span>"+ data.content.payload.msg +"</span></li>"));
+							}
+
+
+							if(data.rpcMethodName.toLowerCase() == "/room/list"){
+								console.log(data.content.payload);
+								var html = "<option value=''>请选择</option>";
+								for(var id in data.content.payload){
+									html += "<option value="+ id +">房间ID " + id + " 游戏ID "+ data.content.payload[id].gameId + " 房主 "+ data.content.payload[id].ownerId +"</option>";
+								}
+								$("#roomList").html(html);
+							}
+						}else{
+							console.log(data.content.payload);
+							alert(data.message);
+						}
+
+					}; 			
+					 // 监听Socket的关闭
+					socket.onerror = function(event) { 
+						console.log('Client notified socket has error',event.data); 
+					}; 
+					// 监听Socket的关闭
+					socket.onclose = function(event) { 
+						console.log('Client notified socket has closed',event.data); 
+					}; 
+					$("#registerBtn").click(function(){
+						var msg = {rpcMethod:"/player/reg", 
+							params:[$("#name").val().trim(),]
+						};
+						socket.send(JSON.stringify(msg));
+					});
+
+					$("#loginBtn").click(function(){
+						var msg = {rpcMethod:"/player/login", 
+							params:[$("#name").val().trim(),],
+							sessionId:$("#name").val().trim()
+						};
+						socket.send(JSON.stringify(msg));		
+					});
+
+					$("#refresh").click(function(){
+						var msg = {rpcMethod:"/player/list", 
+							sessionId:$("#sId").text()
+						};
+						socket.send(JSON.stringify(msg));
+					});
+
+					$("#sendMsg").click(function(){
+						var msg = {
+							rpcMethod:"/player/chat", 
+							params:[parseInt($("#playerList").val()), $("#msg").val()],
+							sessionId:$("#sId").text()
+						};
+						socket.send(JSON.stringify(msg));
+			   		});
+
+			   		$("#roomList").change(function(){
+			   			if($("#roomList").val() != "请选择"){
+			   				var msg = {
+								rpcMethod:"/room/info", 
+								params:[parseInt($("#roomList").val()),],
+								sessionId:$("#sId").text()
+							};
+							socket.send(JSON.stringify(msg));	
+						}
+			   		});
+
+			   		$("#cBtn").click(function(){
+			   			var msg = {
+							rpcMethod:"/room/create", 
+							params:[1, 10],
+							sessionId:$("#sId").text()
+						};
+						socket.send(JSON.stringify(msg));
+			   		});
+
+			   		$("#addRoomBtn").click(function(){
+			   			if($("#roomList").val() != "请选择"){
+				   			var msg = {
+								rpcMethod:"/room/join", 
+								params:[parseInt($("#roomList").val())],
+								sessionId:$("#sId").text()
+							};
+							socket.send(JSON.stringify(msg));
+						}
+			   		});
+
+					$("#gBtn").click(function(){
+						if($("#roomList").val() != "请选择"){
+			   				var msg = {
+								rpcMethod:"/room/chat", 
+								params:[parseInt($("#roomList").val().trim()),$("#groupMsg").val().trim()],
+								sessionId:$("#sId").text()
+							};
+							socket.send(JSON.stringify(msg));
+						}
+			   		});
+
+
+			   		$("#roomListBtn").click(function(){
+			   			var msg = {
+							rpcMethod:"/room/list", 
+							sessionId:$("#sId").text()
+						};
+						socket.send(JSON.stringify(msg));
+			   		});
+
+				})
+			})			
+		
+		});
+	</script>
+	
+</body>
+</html
