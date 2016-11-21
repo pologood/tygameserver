@@ -199,13 +199,11 @@ public class RoomService {
 	
 	public void broadcast(String path, long roomId, Object msg) {
 		GameRoom room = getGameRoom(roomId);
-		if (room.getStatus() == Status.IDLE) {
-			Set<Long> sessionIds = room.getSessionIds();
-			Map<Long, AvatarSession<Avatar>> sessionMap = avatarSessionService.getAvatarSesssions(sessionIds);
-			for(AvatarSession<Avatar> session: sessionMap.values()){
-				if(session.getChannel() != null && session.getChannel().isActive()){
-					NettyHttpUtil.sendWsResponse(ROOM_BROADCAST + path , session.getChannel(), msg);
-				}
+		Set<Long> sessionIds = room.getSessionIds();
+		Map<Long, AvatarSession<Avatar>> sessionMap = avatarSessionService.getAvatarSesssions(sessionIds);
+		for(AvatarSession<Avatar> session: sessionMap.values()){
+			if(session.getChannel() != null && session.getChannel().isActive()){
+				NettyHttpUtil.sendWsResponse(ROOM_BROADCAST + path , session.getChannel(), msg);
 			}
 		}
 	}
