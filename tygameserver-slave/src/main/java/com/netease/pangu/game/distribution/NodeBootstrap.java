@@ -131,7 +131,7 @@ public class NodeBootstrap implements Bootstrap {
 						try{
 							node.setCount(playerSessionManager.getSessions().size());
 							RpcResponse response = appMasterCallService.addOrUpdateNode(node);
-						logger.info(response.getMessage());
+							logger.info(response.getMessage());
 						}catch(Exception e){
 							e.printStackTrace();
 						}

@@ -59,7 +59,6 @@ public class MasterController {
 			avatarService.insert(avatar);
 		}
 		if(node != null){
-			
 			Map<String, Object> workerInfo = new HashMap<String, Object>();
 			workerInfo.put("ip", node.getIp());
 			workerInfo.put("port", node.getPort());
