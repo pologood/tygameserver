@@ -7,6 +7,7 @@ import java.util.Map;
 import javassist.ClassPool;
 import javassist.CtClass;
 import javassist.CtMethod;
+import javassist.Modifier;
 import javassist.NotFoundException;
 import javassist.bytecode.CodeAttribute;
 import javassist.bytecode.LocalVariableAttribute;
@@ -25,10 +26,14 @@ public class MethodUtil {
 		MethodInfo methodInfo = cm.getMethodInfo();
 		CodeAttribute codeAttribute = methodInfo.getCodeAttribute();
 		LocalVariableAttribute attr = (LocalVariableAttribute) codeAttribute.getAttribute(LocalVariableAttribute.tag);
-		int pos = cm.getModifiers();
+		int pos = Modifier.isStatic(cm.getModifiers()) ? 0 : 1;
 		Map<Integer, String> paramIndexMap = new HashMap<Integer, String>();
 		for (int i = 0; i < cm.getParameterTypes().length; i++) {
 			paramIndexMap.put(i, attr.variableName(i + pos));
+		}
+		int length = attr.tableLength();
+		for(int i = 0; i < length; i++){
+			System.out.println(attr.variableName(i));
 		}
 		return paramIndexMap;
 	}
