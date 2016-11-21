@@ -13,9 +13,8 @@ import javassist.bytecode.LocalVariableAttribute;
 import javassist.bytecode.MethodInfo;
 
 public class MethodUtil {
-	private static final ClassPool pool = new ClassPool(true);
-
 	public static Map<Integer, String> getParameterIndexMap(Method method) throws NotFoundException {
+		ClassPool pool = ClassPool.getDefault();
 		Class<?> clazz = method.getDeclaringClass();
 		CtClass clz = pool.getCtClass(clazz.getName());
 		CtClass[] params = new CtClass[method.getParameterTypes().length];
