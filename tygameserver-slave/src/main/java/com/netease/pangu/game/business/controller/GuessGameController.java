@@ -1,6 +1,7 @@
 package com.netease.pangu.game.business.controller;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
@@ -9,8 +10,10 @@ import com.netease.pangu.game.common.meta.AvatarSession;
 import com.netease.pangu.game.common.meta.GameConst;
 import com.netease.pangu.game.common.meta.GameContext;
 import com.netease.pangu.game.common.meta.GameRoom.Status;
+import com.netease.pangu.game.http.annotation.HttpRequestMapping;
 import com.netease.pangu.game.meta.Avatar;
 import com.netease.pangu.game.meta.GuessGame;
+import com.netease.pangu.game.meta.GuessQuestion;
 import com.netease.pangu.game.meta.GuessGame.Guess;
 import com.netease.pangu.game.meta.GuessGame.Question;
 import com.netease.pangu.game.rpc.annotation.WsRpcCall;
@@ -97,6 +100,11 @@ public class GuessGameController {
 			return ReturnUtils.failed();
 		}
 	
+	}
+	
+	@WsRpcCall("/questions")
+	public List<GuessQuestion> getQuestions(){
+		return guessGameService.getQuestions();
 	}
 
 	@WsRpcCall("/answer")

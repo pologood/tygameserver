@@ -1,6 +1,7 @@
 package com.netease.pangu.game.demo.business.controller.http;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
@@ -14,9 +15,11 @@ import com.netease.pangu.game.distribution.NodeManager;
 import com.netease.pangu.game.http.annotation.HttpController;
 import com.netease.pangu.game.http.annotation.HttpRequestMapping;
 import com.netease.pangu.game.meta.Avatar;
+import com.netease.pangu.game.meta.GuessQuestion;
 import com.netease.pangu.game.rpc.annotation.WsRpcCall;
 import com.netease.pangu.game.rpc.annotation.WsRpcController;
 import com.netease.pangu.game.service.AvatarService;
+import com.netease.pangu.game.service.GuessGameService;
 import com.netease.pangu.game.service.RoomAllocationService;
 import com.netease.pangu.game.util.JsonUtil;
 
@@ -27,7 +30,7 @@ public class MasterController {
 	@Resource AvatarService avatarService;
 	@Resource NodeManager nodeManager;
 	@Resource RoomAllocationService roomAllocationService;
-	
+	@Resource GuessGameService guessGameService;
 	@WsRpcCall("/init")
 	@HttpRequestMapping("/init")
 	public String getNode(String uuid, String roleName, String avatarImg, long gameId, long roomId, String callback){
@@ -81,5 +84,11 @@ public class MasterController {
 			playerObj.put("server", avatar.getServer());
 		}
 		return playerObj;
+	}
+	
+	@WsRpcCall("/questions")
+	@HttpRequestMapping("/questions")
+	public List<GuessQuestion> getQuestions(){
+		return guessGameService.getQuestions();
 	}
 }

@@ -1,11 +1,15 @@
 package com.netease.pangu.game.service;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -17,6 +21,7 @@ import com.netease.pangu.game.meta.Avatar;
 import com.netease.pangu.game.meta.GuessGame;
 import com.netease.pangu.game.meta.GuessGame.Guess;
 import com.netease.pangu.game.meta.GuessGame.Question;
+import com.netease.pangu.game.meta.GuessQuestion;
 import com.netease.pangu.game.util.ObjectUtil;
 
 @Service
@@ -24,6 +29,31 @@ public class GuessGameService {
 	private final ConcurrentMap<Long, GuessGame> gameMap = new ConcurrentHashMap<Long, GuessGame>();
 	
 	@Resource private RoomService roomService;
+	
+	public final List<GuessQuestion> questions = new ArrayList<GuessQuestion>();
+	
+	@PostConstruct
+	public void init(){
+		try {
+			List<String> questionsStrList = IOUtils.readLines(this.getClass().getClassLoader().getResourceAsStream("guess_question.csv"), "gbk");
+			for(int i = 0; i < questionsStrList.size(); i++){
+				if(i == 0){
+					continue;
+				}
+				GuessQuestion question = new GuessQuestion();
+				String[] items = questionsStrList.get(i).split(",");
+				if(items.length == 3){
+					question.setAnswer(items[0].trim());
+					question.setHint1(items[1].trim());
+					question.setHint2(items[2].trim());
+					questions.add(question);
+				}
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 	
 	public final static long gameId = 1;
 	public boolean createGuessGame(long roomId, long avatarId){
@@ -89,6 +119,10 @@ public class GuessGameService {
 		int random = RandomUtils.nextInt(0, avatarIds.length);
 		return avatarIds[random];
 		
+	}
+	
+	public List<GuessQuestion> getQuestions() {
+		return questions;
 	}
 	
 }

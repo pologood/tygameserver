@@ -87,6 +87,10 @@
 		<dependency>
 			<groupId>org.jetlang</groupId>
 			<artifactId>jetlang</artifactId>
-		</dependency>		
+		</dependency>
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+		</dependency>
 	</dependencies>
 </project>

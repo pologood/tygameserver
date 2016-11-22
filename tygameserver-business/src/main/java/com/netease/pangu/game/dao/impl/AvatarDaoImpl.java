@@ -24,7 +24,6 @@ public class AvatarDaoImpl extends AbstractMongoDao<Avatar> implements AvatarDao
 		Query query = new Query(criteria);
 		return this.findOne(query, Avatar.class);
 	}
-	
 
 	public boolean insertAvatar(Avatar avatar) {
 		try{
