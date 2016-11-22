@@ -1,5 +1,6 @@
 package com.netease.pangu.game.service;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -21,9 +22,12 @@ import com.netease.pangu.game.common.meta.GameRoom.RoomType;
 import com.netease.pangu.game.common.meta.GameRoom.Status;
 import com.netease.pangu.game.meta.Avatar;
 import com.netease.pangu.game.service.AbstractAvatarSessionService.SessionCallable;
+import com.netease.pangu.game.util.MethodUtil;
 import com.netease.pangu.game.util.NettyHttpUtil;
 import com.netease.pangu.game.util.ReturnUtils;
 import com.netease.pangu.game.util.ReturnUtils.GameResult;
+
+import javassist.NotFoundException;
 
 @Component
 public class RoomService {
@@ -290,5 +294,4 @@ public class RoomService {
 		GameResult result = ReturnUtils.succ(payload);
 		return result;
 	}
-
 }

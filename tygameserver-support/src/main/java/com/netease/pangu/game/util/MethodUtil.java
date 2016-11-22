@@ -29,7 +29,7 @@ public class MethodUtil {
 		CodeAttribute codeAttribute = methodInfo.getCodeAttribute();
 		LocalVariableAttribute attr = (LocalVariableAttribute) codeAttribute.getAttribute(LocalVariableAttribute.tag);
 		int pos = 0;
-		while(!StringUtils.equals(attr.variableName(pos++), "this")){			
+		while(!Modifier.isStatic(cm.getModifiers()) && !StringUtils.equals(attr.variableName(pos++), "this")){			
 		}
 		Map<Integer, String> paramIndexMap = new HashMap<Integer, String>();
 		for (int i = 0; i < cm.getParameterTypes().length; i++) {
