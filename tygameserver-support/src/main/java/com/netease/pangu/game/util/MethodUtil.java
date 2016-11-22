@@ -27,7 +27,7 @@ public class MethodUtil {
 		CtMethod cm = clz.getDeclaredMethod(method.getName(), params);
 		MethodInfo methodInfo = cm.getMethodInfo();
 		CodeAttribute codeAttribute = methodInfo.getCodeAttribute();
-		LocalVariableAttribute attr = (LocalVariableAttribute) codeAttribute.getAttribute(LocalVariableAttribute.tag);
+		LocalVariableAttribute attr = (LocalVariableAttribute) codeAttribute.getAttribute(LocalVariableAttribute.tag);		
 		int pos = 0;
 		while(!Modifier.isStatic(cm.getModifiers()) && !StringUtils.equals(attr.variableName(pos++), "this")){			
 		}
