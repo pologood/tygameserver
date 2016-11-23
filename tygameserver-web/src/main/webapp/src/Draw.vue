@@ -11,13 +11,20 @@
                 <label>{{sData.hint.hint2}}</label>
             </div>
             <div class="form-inline hint" v-if="sData.painterId==sData.avatarId">
-                <label>名称：</label>
+                <!--<label>名称：</label>
                 <input type="text" class="form-control" placeholder="请输入名称" v-model="question.word">
                 <label>提示一：</label>
                 <input type="text" class="form-control" placeholder="提示一" v-model="question.hint1">
                 <label>提示二</label>
                 <input type="text" class="form-control" placeholder="提示二" v-model="question.hint2">
+                <button class="btn btn-default" v-on:click="sendQuestion">提交</button>-->
+
+                <label>选择题目：</label>
+                <select v-model="questionSelected">
+                    <option v-for="(item,key) in sData.questions" v-bind:value="key">{{item.answer}}</option>
+                </select>
                 <button class="btn btn-default" v-on:click="sendQuestion">提交</button>
+
             </div>
             <div class="panel panel-default" v-if="sData.painterId==sData.avatarId">
                 <div class="panel-heading">
@@ -48,10 +55,10 @@
         
         <div class="answerCnt">
             <p v-for="item in sData.answerList" class="answer">
-                {{item.answer}}
+                {{item.answer}}<span class="glyphicon glyphicon-ok" v-if="item.correct"></span>
             </p>
         </div>
-        <div class="sendAnswerCnt">
+        <div class="sendAnswerCnt" v-if="sData.painterId!=sData.avatarId">
             <div class="row">
                 <div class="col-md-8">
                     <input type="text" class="form-control" placeholder="输入名称" v-model="answer">
@@ -92,7 +99,8 @@
                     word:'',
                     hint1:'',
                     hint2:''
-                }
+                },
+                questionSelected:0
             }
         },
         created(){
@@ -194,7 +202,8 @@
                 this.stage.update();
             },
             sendQuestion(){
-                s.sendQuestion(this.question);
+                var question = this.sData.questions[this.questionSelected];
+                s.sendQuestion(question);
             },
             sendAnswer(){
                 s.sendAnswer(this.answer);
@@ -235,4 +244,5 @@
     .members{width: 200px;height: 600px;background: #eee;position: absolute;top: 50px;margin-left: -660px;left: 50%;border-radius: 10px;}
     .member{padding: 10px;}
     .answer{padding: 10px;}
+    .glyphicon-ok{color:#057e1f;}
 </style>

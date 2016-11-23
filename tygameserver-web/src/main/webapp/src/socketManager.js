@@ -20,6 +20,7 @@ export default{
         hint1:'',
         hint2:''
     },
+    questions:[],
     answerList:[],
     connectSocket(data){
         const self =this;
@@ -95,7 +96,8 @@ export default{
                 }
 
                 if(data.rpcMethodName.toLowerCase() == "/room/broadcast/startgame"){
-                    self.painterId = data.content.payload;
+                    self.painterId = data.content.payload.avatarId;
+                    self.questions = data.content.payload.questions;
                     self.router.push('draw');
                 }
 
@@ -115,6 +117,13 @@ export default{
 
                 if(data.rpcMethodName.toLowerCase() == "/room/broadcast/answer"){
                     self.answerList.push(data.content.payload);
+                }
+
+                if(data.rpcMethodName.toLowerCase() == "/room/broadcast/correct"){
+                    var answer = data.content.payload;
+                    answer.correct = true;
+                    self.answerList.push(answer);
+                    alert(answer.avatarId+"回答正确！");
                 }
 
                 // if(data.rpcMethodName.toLowerCase() == "/room/list"){
@@ -217,7 +226,7 @@ export default{
             rpcMethod:"/guess/question", 
             params:{
                 roomId:this.roomId,
-                answer:info.word,
+                answer:info.answer,
                 hint1:info.hint1,
                 hint2:info.hint2
             },
