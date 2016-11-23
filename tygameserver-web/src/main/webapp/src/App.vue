@@ -124,8 +124,6 @@
 import Hello from './components/Hello'
 import $ from 'jquery'
 
-require('bootstrap/dist/css/bootstrap.css')
-
 export default {
   name: 'app',
   data(){

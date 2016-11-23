@@ -11,21 +11,21 @@
                      <div class="form-group">
                         <label class="col-md-2 control-label">玩家名字</label>
                         <div class="col-md-10">
-                            <input type="text" class="form-control" v-model="player.roleName">
+                            <input type="text" class="form-control" v-model="player.roleName" placeholder="请填写您的昵称">
                         </div>                      
                     </div>
 
                     <div class="form-group">
                         <label class="col-md-2 control-label">uuid</label>
                         <div class="col-md-10">
-                            <input type="text" class="form-control" v-model="player.uuid">
+                            <input type="text" class="form-control" v-model="player.uuid" placeholder="请填写数字">
                         </div>
                     </div>
 
                     <div class="form-group">
                         <label class="col-md-2 control-label">头像</label>
                         <div class="col-md-10">
-                            <input type="text" class="form-control" v-model="player.avatarImg">
+                            <input type="text" class="form-control" v-model="player.avatarImg" placeholder="可以不填写">
                         </div>
                     </div>
 

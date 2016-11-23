@@ -6,18 +6,11 @@
         <div class="toolsCnt">
             <div class="form-inline hint" v-if="sData.painterId!=sData.avatarId">
                 <label>提示一：</label>
-                <label>{{sData.hint.hint1}}</label>
+                <label class="label label-success">{{sData.hint.hint1}}</label>
                 <label>提示二:</label>
-                <label>{{sData.hint.hint2}}</label>
+                <label class="label label-success">{{sData.hint.hint2}}</label>
             </div>
             <div class="form-inline hint" v-if="sData.painterId==sData.avatarId">
-                <!--<label>名称：</label>
-                <input type="text" class="form-control" placeholder="请输入名称" v-model="question.word">
-                <label>提示一：</label>
-                <input type="text" class="form-control" placeholder="提示一" v-model="question.hint1">
-                <label>提示二</label>
-                <input type="text" class="form-control" placeholder="提示二" v-model="question.hint2">
-                <button class="btn btn-default" v-on:click="sendQuestion">提交</button>-->
 
                 <label>选择题目：</label>
                 <select v-model="questionSelected">
@@ -55,7 +48,7 @@
         
         <div class="answerCnt">
             <p v-for="item in sData.answerList" class="answer">
-                {{item.answer}}<span class="glyphicon glyphicon-ok" v-if="item.correct"></span>
+               <span class="label label-success">{{item.name}}</span>： {{item.answer}}<span class="glyphicon glyphicon-ok" v-if="item.correct"></span>
             </p>
         </div>
         <div class="sendAnswerCnt" v-if="sData.painterId!=sData.avatarId">
@@ -123,6 +116,14 @@
             s.border = this;
         },
         methods:{
+            replay(){
+                this.stage.removeEventListener("stagemousedown", this.handleMouseDown);
+                this.stage.removeEventListener("stagemouseup", this.handleMouseUp);
+                if(s.painterId == s.avatarId){
+                    this.stage.addEventListener("stagemousedown", this.handleMouseDown);
+                    this.stage.addEventListener("stagemouseup", this.handleMouseUp);
+                }
+            },
             handleMouseDown(){
                 this.oldPt = new createjs.Point(this.stage.mouseX, this.stage.mouseY);
                 this.oldMidPt = this.oldPt;
@@ -191,7 +192,6 @@
                 }
             },
             drawing(info){
-                console.log(info);
                 if(s.painterId == s.avatarId) return;
                 this.drawingCanvas.graphics.setStrokeStyle(info.brush, "round", "round")
                         .beginStroke(info.color)
@@ -216,7 +216,7 @@
     .cnt{border: 1px solid #000;width: 900px;height: 600px;border-radius: 10px;position: absolute;margin-left: -450px;left: 50%;top:50px;}
     .toolsCnt{position: absolute;width: 900px;margin-left: -450px;left: 50%;top:670px;}
     .color span{display: inline-block;width: 40px;height: 40px;border-radius: 40px;margin-right: 4px;cursor: pointer;}
-    .color span.active{border: 4px solid #fa7243;}
+    .color span.active{border: 4px solid #fff;}
     .color span.color-1{background: #000;}
     .color span.color-2{background: #b91428;}
     .color span.color-3{background: #1361c1;}
@@ -230,7 +230,7 @@
     .brushCnt .txt{float: left;margin-right: 10px;padding-top: 10px;font-weight: bold;}
     .brush{float: left;line-height: 40px;}
     .brush span{display: inline-block;background: #000;vertical-align: middle;margin-right: 10px;cursor: pointer;}
-    .brush span.active{border: 4px solid #fa7243;}
+    .brush span.active{border: 4px solid #fff;}
     .brush span.brush-1{width: 10px;height: 10px;border-radius: 10px;}
     .brush span.brush-2{width: 15px;height: 15px;border-radius: 15px;}
     .brush span.brush-3{width: 20px;height: 20px;border-radius: 20px;}
@@ -245,4 +245,7 @@
     .member{padding: 10px;}
     .answer{padding: 10px;}
     .glyphicon-ok{color:#057e1f;}
+    .cnt{background: #fff;}
+    select{color: #000;}
+    p{color: #333;}
 </style>
