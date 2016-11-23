@@ -1,3 +1,4 @@
 target/*
-tygameapp-business/target/*
+.settings/*
+.project
 .classpath
