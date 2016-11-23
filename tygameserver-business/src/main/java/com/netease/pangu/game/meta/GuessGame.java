@@ -4,6 +4,78 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class GuessGame {
+	private long gameId;
+	private long roomId;
+	private long startTime;
+	private long endTime;
+	private long drawerId;
+	private Question question;	
+	private List<Guess> answers;
+	private int state;
+	private int round;
+	public final static int QUESTION_CHOOSING = 0;
+	public final static int QUESTION_OK = 1;
+	public GuessGame(){
+		this.answers = new ArrayList<Guess>();
+	}
+	public long getRoomId() {
+		return roomId;
+	}
+	public void setRoomId(long roomId) {
+		this.roomId = roomId;
+	}
+	public long getStartTime() {
+		return startTime;
+	}
+	public void setStartTime(long startTime) {
+		this.startTime = startTime;
+	}
+	public long getDrawerId() {
+		return drawerId;
+	}
+	public void setDrawerId(long drawerId) {
+		this.drawerId = drawerId;
+	}
+	public long getEndTime() {
+		return endTime;
+	}
+	public void setEndTime(long endTime) {
+		this.endTime = endTime;
+	}
+	public long getGameId() {
+		return gameId;
+	}
+	public void setGameId(long gameId) {
+		this.gameId = gameId;
+	}
+	public Question getQuestion() {
+		return question;
+	}
+	public void setQuestion(Question question) {
+		this.question = question;
+	}
+	public List<Guess> getAnswers() {
+		return answers;
+	}
+	
+	public void addAnswer(Guess guess){
+		this.answers.add(guess);
+	}
+	
+	public int getState() {
+		return state;
+	}
+	public void setState(int state) {
+		this.state = state;
+	}
+
+	public int getRound() {
+		return round;
+	}
+	public void setRound(int round) {
+		this.round = round;
+	}
+
 	public static class Question{
 		private long avatarId;
 		private String hint1;
@@ -65,59 +137,4 @@ public class GuessGame {
 			this.time = time;
 		}
 	}
-	private long gameId;
-	private long roomId;
-	private long startTime;
-	private long endTime;
-	private long drawerId;
-	private Question question;	
-	private List<Guess> answers;
-
-	public GuessGame(){
-		this.answers = new ArrayList<Guess>();
-	}
-	public long getRoomId() {
-		return roomId;
-	}
-	public void setRoomId(long roomId) {
-		this.roomId = roomId;
-	}
-	public long getStartTime() {
-		return startTime;
-	}
-	public void setStartTime(long startTime) {
-		this.startTime = startTime;
-	}
-	public long getDrawerId() {
-		return drawerId;
-	}
-	public void setDrawerId(long drawerId) {
-		this.drawerId = drawerId;
-	}
-	public long getEndTime() {
-		return endTime;
-	}
-	public void setEndTime(long endTime) {
-		this.endTime = endTime;
-	}
-	public long getGameId() {
-		return gameId;
-	}
-	public void setGameId(long gameId) {
-		this.gameId = gameId;
-	}
-	public Question getQuestion() {
-		return question;
-	}
-	public void setQuestion(Question question) {
-		this.question = question;
-	}
-	public List<Guess> getAnswers() {
-		return answers;
-	}
-	
-	public void addAnswer(Guess guess){
-		this.answers.add(guess);
-	}
-	
 }

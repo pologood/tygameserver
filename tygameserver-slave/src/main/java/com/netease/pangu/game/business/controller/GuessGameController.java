@@ -43,9 +43,7 @@ public class GuessGameController {
 			long avatarId = guessGameService.generateDrawer(roomId);
 			roomService.setRoomState(roomId, Status.GAMEING);
 			if (guessGameService.createGuessGame(roomId, avatarId)) {
-				Map<String, Object> ret = new HashMap<String, Object>();
-				ret.put("avatarId", avatarId);
-				ret.put("questions", guessGameService.getQuestions());
+				Map<String, Object> ret = genStartGameBroadCastInfo(roomId, avatarId);
 				roomService.broadcast(START_GAME, roomId, ReturnUtils.succ(ret));
 				return ReturnUtils.succ("succ");
 			} else {
@@ -55,15 +53,20 @@ public class GuessGameController {
 			return ReturnUtils.failed("room is not ready");
 		}
 	}
+	private Map<String, Object> genStartGameBroadCastInfo(long roomId, long avatarId){
+		Map<String, Object> ret = new HashMap<String, Object>();
+		ret.put("avatarId", avatarId);
+		ret.put("gameState", guessGameService.getGuessGameState(roomId));
+		ret.put("questions", guessGameService.getQuestions());
+		return ret;
+	}
 
 	private void generateNext(long roomId, GameContext<AvatarSession<Avatar>> ctx){
 		if(roomService.isReady(roomId)){
 			long avatarId = guessGameService.generateDrawer(roomId);
 			roomService.setRoomState(roomId, Status.GAMEING);
 			guessGameService.setDrawer(roomId, avatarId);
-			Map<String, Object> ret = new HashMap<String, Object>();
-			ret.put("avatarId", avatarId);
-			ret.put("questions", guessGameService.getQuestions());
+			Map<String, Object> ret = genStartGameBroadCastInfo(roomId, avatarId);
 			roomService.broadcast(START_GAME, roomId,  ReturnUtils.succ(ret));
 		}else{
 			roomService.broadcast(START_GAME, roomId,  ReturnUtils.failed("room is not ready"));
@@ -92,16 +95,20 @@ public class GuessGameController {
 		question.setHint1(hint1);
 		question.setHint2(hint2);
 		if(roomService.isReady(roomId) && guessGameService.isDrawer(roomId, ctx)){
-			guessGameService.setGuessGameQuestion(roomId, question);
-			Map<String, Object> questionMap = new HashMap<String, Object>();
-			questionMap.put("hint1", hint1);
-			questionMap.put("hint2", hint2);
-			roomService.broadcast(QUESTION_GAME, roomId, ReturnUtils.succ(questionMap));
-			return ReturnUtils.succ(question);
+			if(guessGameService.getGuessGameState(roomId) == GuessGame.QUESTION_CHOOSING){
+				guessGameService.setGuessGameQuestion(roomId, question);
+				Map<String, Object> questionMap = new HashMap<String, Object>();
+				questionMap.put("hint1", hint1);
+				questionMap.put("hint2", hint2);
+				questionMap.put("gameState", guessGameService.getGuessGameState(roomId));
+				roomService.broadcast(QUESTION_GAME, roomId, ReturnUtils.succ(questionMap));
+				return ReturnUtils.succ(question);
+			}else{
+				return ReturnUtils.failed("not int choosing state");
+			}
 		}else{
 			return ReturnUtils.failed();
 		}
-	
 	}
 	
 	@WsRpcCall("/answer")
@@ -110,18 +117,22 @@ public class GuessGameController {
 		guess.setAnswer(answer);
 		guess.setTime(System.currentTimeMillis());
 		guess.setAvatarId(ctx.getSession().getAvatarId());
-		if (!guessGameService.isDrawer(roomId, ctx)) {
-			guessGameService.addGuessGameAnswer(roomId, guess);
-			if(guessGameService.isCorrectAnswer(roomId, guess)){
-				roomService.setRoomState(roomId, Status.IDLE);
-				roomService.broadcast("correct", roomId, ReturnUtils.succ(guess));
-				generateNext(roomId, ctx);
-			}else{
-				roomService.broadcast("answer", roomId, ReturnUtils.succ(guess));
+		if(guessGameService.getGuessGameState(roomId) == GuessGame.QUESTION_OK){
+			if (!guessGameService.isDrawer(roomId, ctx)) {
+				guessGameService.addGuessGameAnswer(roomId, guess);
+				if(guessGameService.isCorrectAnswer(roomId, guess)){
+					roomService.setRoomState(roomId, Status.IDLE);
+					roomService.broadcast("correct", roomId, ReturnUtils.succ(guess));
+					generateNext(roomId, ctx);
+				}else{
+					roomService.broadcast("answer", roomId, ReturnUtils.succ(guess));
+				}
+				return ReturnUtils.succ();
+			} else {
+				return ReturnUtils.failed("you are drawer");
 			}
-			return ReturnUtils.succ();
-		} else {
-			return ReturnUtils.failed();
+		}else{
+			return ReturnUtils.failed("not in answer time");
 		}
 	}
 }

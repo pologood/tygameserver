@@ -63,6 +63,7 @@ public class GuessGameService {
 			game.setDrawerId(0);
 			game.setRoomId(roomId);
 			game.setDrawerId(avatarId);
+			game.setState(GuessGame.QUESTION_CHOOSING);
 			game.setStartTime(System.currentTimeMillis());
 			return gameMap.putIfAbsent(roomId, game) == null;
 		}
@@ -91,10 +92,18 @@ public class GuessGameService {
 		return getGuessGame(roomId).getAnswers();
 	}
 	
+	public int getGuessGameState(long roomId){
+		GuessGame game = gameMap.get(roomId);
+		return game.getState();
+	}
+	
 	public void setGuessGameQuestion(long roomId, Question question){
 		GuessGame game = gameMap.get(roomId);
 		synchronized (game) {
-			game.setQuestion(question);
+			if(game.getState() == GuessGame.QUESTION_CHOOSING){
+				game.setQuestion(question);
+				game.setState(GuessGame.QUESTION_OK);
+			}
 		}
 	}
 	
@@ -102,6 +111,7 @@ public class GuessGameService {
 		GuessGame game = gameMap.get(roomId);
 		synchronized (game) {
 			game.setDrawerId(avatarId);
+			game.setState(GuessGame.QUESTION_CHOOSING);
 		}
 	}
 	
@@ -117,8 +127,7 @@ public class GuessGameService {
 		GameRoom room =  roomService.getGameRoom(roomId);
 		Long[] avatarIds = room.getSessionIds().toArray(new Long[0]);
 		int random = RandomUtils.nextInt(0, avatarIds.length);
-		return avatarIds[random];
-		
+		return avatarIds[random];		
 	}
 	
 	public List<GuessQuestion> getQuestions() {
