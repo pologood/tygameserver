@@ -1,5 +1,6 @@
 package com.netease.pangu.game.business.controller;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -57,7 +58,6 @@ public class GuessGameController {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		ret.put("avatarId", avatarId);
 		ret.put("gameState", guessGameService.getGuessGameState(roomId));
-		ret.put("questions", guessGameService.getQuestions());
 		return ret;
 	}
 
@@ -68,6 +68,7 @@ public class GuessGameController {
 			guessGameService.setDrawer(roomId, avatarId);
 			Map<String, Object> ret = genStartGameBroadCastInfo(roomId, avatarId);
 			roomService.broadcast(START_GAME, roomId,  ReturnUtils.succ(ret));
+			roomService.chatTo(START_GAME, roomId, Arrays.asList(avatarId), guessGameService.getQuestions());
 		}else{
 			roomService.broadcast(START_GAME, roomId,  ReturnUtils.failed("room is not ready"));
 		}

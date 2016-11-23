@@ -1,6 +1,5 @@
 package com.netease.pangu.game.service;
 
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -22,12 +21,9 @@ import com.netease.pangu.game.common.meta.GameRoom.RoomType;
 import com.netease.pangu.game.common.meta.GameRoom.Status;
 import com.netease.pangu.game.meta.Avatar;
 import com.netease.pangu.game.service.AbstractAvatarSessionService.SessionCallable;
-import com.netease.pangu.game.util.MethodUtil;
 import com.netease.pangu.game.util.NettyHttpUtil;
 import com.netease.pangu.game.util.ReturnUtils;
 import com.netease.pangu.game.util.ReturnUtils.GameResult;
-
-import javassist.NotFoundException;
 
 @Component
 public class RoomService {
@@ -198,6 +194,8 @@ public class RoomService {
 		});
 	}
 	public static final String ROOM_BROADCAST = "/room/broadcast/";
+	public static final String ROOM_PRIVATE = "/room/private/";
+	
 	public static final String ROOM_INFO = "roomInfo";
 	public static final String ROOM_REMOVE_MEMBER = "removeMember";
 	
@@ -208,6 +206,19 @@ public class RoomService {
 		for(AvatarSession<Avatar> session: sessionMap.values()){
 			if(session.getChannel() != null && session.getChannel().isActive()){
 				NettyHttpUtil.sendWsResponse(ROOM_BROADCAST + path , session.getChannel(), msg);
+			}
+			
+		}
+	}
+	
+	public void chatTo(String path, long roomId, List<Long> avatarIds, Object msg) {
+		GameRoom room = getGameRoom(roomId);
+		Set<Long> sessionIds = room.getSessionIds();
+		Map<Long, AvatarSession<Avatar>> sessionMap = avatarSessionService.getAvatarSesssions(sessionIds);
+		for(Long avatarId: avatarIds){
+			AvatarSession<Avatar> session = sessionMap.get(avatarId);
+			if(session != null && session.getChannel() != null && session.getChannel().isActive()){
+				NettyHttpUtil.sendWsResponse(ROOM_PRIVATE + path , session.getChannel(), msg);
 			}
 		}
 	}
