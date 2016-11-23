@@ -56,8 +56,8 @@ public class GuessGameController {
 		}
 	}
 
-	private void generate(long roomId, GameContext<AvatarSession<Avatar>> ctx){
-		if(roomService.isReady(roomId) && guessGameService.isDrawer(roomId, ctx)){
+	private void generateNext(long roomId, GameContext<AvatarSession<Avatar>> ctx){
+		if(roomService.isReady(roomId)){
 			long avatarId = guessGameService.generateDrawer(roomId);
 			roomService.setRoomState(roomId, Status.GAMEING);
 			guessGameService.setDrawer(roomId, avatarId);
@@ -115,7 +115,7 @@ public class GuessGameController {
 			if(guessGameService.isCorrectAnswer(roomId, guess)){
 				roomService.setRoomState(roomId, Status.IDLE);
 				roomService.broadcast("correct", roomId, ReturnUtils.succ(guess));
-				generate(roomId, ctx);
+				generateNext(roomId, ctx);
 			}else{
 				roomService.broadcast("answer", roomId, ReturnUtils.succ(guess));
 			}
