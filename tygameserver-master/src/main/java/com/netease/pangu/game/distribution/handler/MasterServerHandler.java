@@ -92,6 +92,7 @@ public class MasterServerHandler extends ChannelInboundHandlerAdapter {
 					NettyHttpUtil.sendHttpResponse(ctx, request,
 							new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.BAD_REQUEST,
 									Unpooled.copiedBuffer("parameter gameId not exist!", Charset.forName("UTF-8"))));
+					return;
 				}
 				URI uri = URI.create(request.uri());	
 				Double tmp = NumberUtils.toDouble(params.get("gameId").toString());
