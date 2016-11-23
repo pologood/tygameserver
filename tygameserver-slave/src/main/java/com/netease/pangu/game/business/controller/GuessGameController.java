@@ -46,6 +46,7 @@ public class GuessGameController {
 			if (guessGameService.createGuessGame(roomId, avatarId)) {
 				Map<String, Object> ret = genStartGameBroadCastInfo(roomId, avatarId);
 				roomService.broadcast(START_GAME, roomId, ReturnUtils.succ(ret));
+				roomService.chatTo(START_GAME, roomId, Arrays.asList(avatarId), guessGameService.getQuestions());
 				return ReturnUtils.succ("succ");
 			} else {
 				return ReturnUtils.failed("failed");
