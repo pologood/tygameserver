@@ -46,7 +46,10 @@ public class GuessGameController {
 			long avatarId = guessGameService.generateDrawer(roomId);
 			roomService.setRoomState(roomId, Status.GAMEING);
 			if (guessGameService.createGuessGame(roomId, avatarId)) {
-				roomService.broadcast(START_GAME, roomId, ReturnUtils.succ(avatarId));
+				Map<String, Object> ret = new HashMap<String, Object>();
+				ret.put("avatarId", avatarId);
+				ret.put("questions", guessGameService.getQuestions());
+				roomService.broadcast(START_GAME, roomId, ReturnUtils.succ(ret));
 				return ReturnUtils.succ("succ");
 			} else {
 				return ReturnUtils.failed("failed");
@@ -62,7 +65,10 @@ public class GuessGameController {
 			long avatarId = guessGameService.generateDrawer(roomId);
 			roomService.setRoomState(roomId, Status.GAMEING);
 			guessGameService.setDrawer(roomId, avatarId);
-			roomService.broadcast(START_GAME, roomId,  ReturnUtils.succ(avatarId));
+			Map<String, Object> ret = new HashMap<String, Object>();
+			ret.put("avatarId", avatarId);
+			ret.put("questions", guessGameService.getQuestions());
+			roomService.broadcast(START_GAME, roomId,  ReturnUtils.succ(ret));
 		}else{
 			roomService.broadcast(START_GAME, roomId,  ReturnUtils.failed("room is not ready"));
 		}
@@ -102,11 +108,6 @@ public class GuessGameController {
 	
 	}
 	
-	@WsRpcCall("/questions")
-	public List<GuessQuestion> getQuestions(){
-		return guessGameService.getQuestions();
-	}
-
 	@WsRpcCall("/answer")
 	public GameResult setAnswer(long roomId, String answer, GameContext<AvatarSession<Avatar>> ctx) {
 		Guess guess = new Guess();
