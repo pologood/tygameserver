@@ -41,7 +41,6 @@ public class NettyHttpUtil {
 				f.addListener(ChannelFutureListener.CLOSE);
 			}
 		}
-		res.release();
 	}
 	
 	public static void sendWsResponse(String rpcMethodName, Channel channel, Object content){
