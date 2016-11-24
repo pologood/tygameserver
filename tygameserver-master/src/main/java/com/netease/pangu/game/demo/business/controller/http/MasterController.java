@@ -36,13 +36,17 @@ public class MasterController {
 	public String getNode(String uuid, String roleName, String avatarImg, long gameId, long roomId, String callback){
 		Node node = null;
 		Avatar avatar = avatarService.getAvatarByUUID(gameId, uuid);
-		if(avatar != null){
+		
+		if(avatar != null){			
 			avatar.setAvatarImg(avatarImg);
 			avatar.setName(roleName);
 			avatarService.save(avatar);
 			String server = avatar.getServer();
-			if(roomId > 0){
-				node = nodeManager.getNode(roomAllocationService.getRoomInfo(gameId, roomId));
+			long roomIdInGame =  roomAllocationService.getRoomByAvatarId(gameId, avatar.getAvatarId());
+			if(roomIdInGame > 0){
+				node = nodeManager.getNode(roomAllocationService.getServerByRoomId(gameId, roomId));
+			}else if(roomId > 0){
+				node = nodeManager.getNode(roomAllocationService.getServerByRoomId(gameId, roomId));
 			}else if(StringUtils.isNotEmpty(server)){
 				node = nodeManager.getNode(server);
 			}else{

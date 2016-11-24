@@ -36,7 +36,7 @@ public class RoomService {
 
 	private final ConcurrentMap<Long, GameRoom> rooms = new ConcurrentHashMap<Long, GameRoom>();
 	private final ConcurrentMap<Long, Set<Long>> gameIdRefRoom = new ConcurrentHashMap<Long, Set<Long>>();
-
+	
 	public boolean remove(long roomId) {
 		GameRoom room = rooms.remove(roomId);
 		if (room != null) {
@@ -140,6 +140,7 @@ public class RoomService {
 					if (canJoin(roomId)) {
 						playerSession.setRoomId(roomId);
 						room.getSessionIds().add(avatarId);
+						roomAllocationService.setRoomWithAvatarId(room.getGameId(), avatarId, roomId);
 						return true;
 					}
 				}
@@ -170,13 +171,14 @@ public class RoomService {
 	 * @param avatarId
 	 * @return
 	 */
-	public boolean removeRoom(final long avatarId) {
+	public boolean exitRoom(final long avatarId) {
 		return avatarSessionService.updateAvatarSession(avatarId, new SessionCallable<Boolean, Avatar>() {
 			@Override
 			public Boolean call(AvatarSession<Avatar> playerSession) {
 				if (playerSession.getRoomId() > 0) {
 					GameRoom room = getGameRoom(playerSession.getRoomId());
 					room.getSessionIds().remove(avatarId);
+					roomAllocationService.deleteRoomByAvatarId(room.getGameId(), avatarId);
 					if (room.getSessionIds().size() > 0) {
 						if (room.getOwnerId() == avatarId) {
 							room.setOwnerId(room.getSessionIds().toArray(new Long[0])[0]);
