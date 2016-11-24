@@ -169,6 +169,10 @@ public abstract class RedisDao<K, V> {
 		return redisOperations.<HK, HV> boundHashOps(boundedKey).get(keyInHash);
 	}
 	
+	public <HK, HV> Map<HK, HV> getAll(K boundedKey) {
+		return redisOperations.<HK, HV> boundHashOps(boundedKey).entries();
+	}
+	
 	public <HK, HV> boolean putIfAbsent(K boundedKey, HK keyInHash, HV value) {
 		return redisOperations.<HK, HV> boundHashOps(boundedKey).putIfAbsent(keyInHash, value);
 	}
