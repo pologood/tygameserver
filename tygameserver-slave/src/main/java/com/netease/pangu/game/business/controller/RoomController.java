@@ -58,7 +58,11 @@ public class RoomController {
 	public GameResult joinRoom(long roomId, GameContext<AvatarSession<Avatar>> ctx) {
 		AvatarSession<Avatar> session = ctx.getSession();
 		if (session.getRoomId() > 0) {
-			return ReturnUtils.succ(roomId);
+			if(session.getRoomId() == roomId){
+				return ReturnUtils.succ(roomId);
+			}else{
+				return ReturnUtils.failed(String.format("you have in room %d",session.getRoomId()));
+			}
 		}
 		boolean isOk = roomService.joinRoom(session.getAvatarId(), roomId);
 		GameResult result;
@@ -79,7 +83,7 @@ public class RoomController {
 			GameRoom room = roomService.getGameRoom(session.getRoomId());
 			if(session.getAvatarId() == room.getOwnerId()){
 				if(room.getStatus() == Status.IDLE){
-					boolean isOk = roomService.removeRoom(avatarId);
+					boolean isOk = roomService.exitRoom(avatarId);
 					if (isOk) {
 						roomService.broadcast(RoomService.ROOM_REMOVE_MEMBER, room.getId(), ReturnUtils.succ(avatarId));
 						result = ReturnUtils.succ(avatarId);

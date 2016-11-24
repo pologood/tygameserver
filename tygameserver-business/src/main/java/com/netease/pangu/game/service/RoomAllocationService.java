@@ -17,12 +17,14 @@ public class RoomAllocationService {
 	@Resource private CommonRedisDao commonRedisDao;
 	private final static String ROOMS_AVAILABLE = "rooms_available";
 	private final static String ROOMS_CAPACITY = "rooms_capacity";
-	private final static String ROOMS_INFO = "rooms_info";
+	private final static String ROOMS_INFO = "rooms_info";	
+	private final static String ROOMS_AVATAR_INFO = "rooms_avatar_info";
+	
 	public static String getKey(long gameId, String key){
 		return String.format("%d-%s", gameId, key);
 	}
 	
-	private final static int defaultCapacity = 1000;
+	private final static int defaultCapacity = 20;
 	
 	public long getRoomCapacity(long gameId){
 		Long capacity = (Long)commonRedisDao.get(getKey(gameId, ROOMS_CAPACITY));
@@ -32,10 +34,23 @@ public class RoomAllocationService {
 		return capacity;
 	}
 	
-	public String getRoomInfo(long gameId, long roomId){
+	public String getServerByRoomId(long gameId, long roomId){
 		return commonRedisDao.get(getKey(gameId, ROOMS_INFO), roomId);
 	}
 	
+	public long getRoomByAvatarId(long gameId, long avatarId){
+		Long roomId = commonRedisDao.get(getKey(gameId, ROOMS_AVATAR_INFO), avatarId);
+		return roomId == null ? 0 : roomId;
+	}
+	
+	public boolean setRoomWithAvatarId(long gameId, long avatarId, long roomId){
+		return commonRedisDao.putIfAbsent(getKey(gameId, ROOMS_AVATAR_INFO), avatarId, roomId);
+	}
+	
+	public void deleteRoomByAvatarId(long gameId, long avatarId){
+		commonRedisDao.delete(getKey(gameId, ROOMS_AVATAR_INFO), avatarId);
+	}
+
 	public void allocateRooms(long gameId, int num){
 		long capacity = getRoomCapacity(gameId);
 		final List<Long> roomIds = new ArrayList<Long>();

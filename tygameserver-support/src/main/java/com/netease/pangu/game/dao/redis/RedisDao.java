@@ -181,6 +181,11 @@ public abstract class RedisDao<K, V> {
 		redisOperations.<HK, HV> boundHashOps(boundedKey).delete(keyInHash);
 	}
 	
+	@SuppressWarnings("unchecked")
+	public <HK, HV> void deleteBatch(K boundedKey, HK... keyInHash) {
+		redisOperations.<HK, HV> boundHashOps(boundedKey).delete(keyInHash);
+	}
+	
 	public long getHashSize(K boundedKey) {
 		return redisOperations.boundHashOps(boundedKey).size();
 	}

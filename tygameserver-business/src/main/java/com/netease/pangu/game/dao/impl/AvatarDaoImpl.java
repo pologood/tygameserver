@@ -1,5 +1,7 @@
 package com.netease.pangu.game.dao.impl;
 
+import java.util.List;
+
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
@@ -23,6 +25,12 @@ public class AvatarDaoImpl extends AbstractMongoDao<Avatar> implements AvatarDao
 		criteria.andOperator(Criteria.where("gameId").is(gameId));
 		Query query = new Query(criteria);
 		return this.findOne(query, Avatar.class);
+	}
+	
+	public List<Avatar> getListByGameId(long gameId){
+		Criteria criteria = Criteria.where("gameId").is(gameId);
+		Query query = new Query(criteria);
+		return this.find(query, Avatar.class);
 	}
 
 	public boolean insertAvatar(Avatar avatar) {
