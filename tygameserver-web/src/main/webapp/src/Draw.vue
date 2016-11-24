@@ -34,7 +34,7 @@
                     </div>
                     <div class="brushCnt">
                         <span class="txt">笔刷：</span>
-                        <div class="brush">
+                        <div class="brush" :class="'b-'+selectedColor">
                             <span :class="'brush-'+n+' '+(n==selectedBrush?'active':'')" v-on:click="selectBrush(n)" v-for="n in 5"></span>
                         </div>
                     </div>  
@@ -269,6 +269,12 @@
     .brushCnt .txt{float: left;margin-right: 10px;padding-top: 10px;font-weight: bold;}
     .brush{float: left;line-height: 40px;}
     .brush span{display: inline-block;background: #000;vertical-align: middle;margin-right: 10px;cursor: pointer;}
+    .brush.b-1 span{background: #000;}
+    .brush.b-2 span{background: #b91428;}
+    .brush.b-3 span{background: #1361c1;}
+    .brush.b-4 span{background: #057e1f;}
+    .brush.b-5 span{background: #c36909;}
+    .brush.b-6 span{background: #f3de2f;}
     .brush span.active{border: 4px solid #fff;}
     .brush span.brush-1{width: 10px;height: 10px;border-radius: 10px;}
     .brush span.brush-2{width: 15px;height: 15px;border-radius: 15px;}
@@ -281,8 +287,7 @@
     .sendAnswerCnt{width: 200px;position: absolute;top: 635px;left: 50%;margin-left: 463px;}
     .hint{margin-bottom: 20px;}
     .members{width: 200px;height: 600px;position: absolute;top: 80px;margin-left: -660px;left: 50%;border-radius: 10px;}
-    .member{padding: 10px;}
-    .answer{padding: 10px;}
+    .member{padding-bottom: 10px;}
     .glyphicon-ok{color:#057e1f;}
     .cnt{background: #fff;}
     select{color: #000;}
