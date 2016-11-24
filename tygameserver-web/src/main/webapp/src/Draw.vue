@@ -90,6 +90,7 @@
         <div class="tips">
             重新开始新的一轮！
         </div>
+        <h1>昵称：{{sData.selfName}}，房间号：{{sData.roomId}}</h1>
 
     </div>    
 </template>
@@ -313,5 +314,5 @@
     }
 
     .alert{display: none;}
-
+    h1{text-align: center;}
 </style>

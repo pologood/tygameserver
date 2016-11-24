@@ -23,6 +23,7 @@ export default{
     questions:[],
     answerList:[],
     gameState:0,
+    selfName:'',
     connectSocket(data){
         const self =this;
         // 创建一个Socket实例		
@@ -81,6 +82,7 @@ export default{
                     console.log(data.content.payload);	
                     self.ownerName = data.content.payload.ownerName;
                     self.members = data.content.payload.members;
+                    self.selfName = getName(self.avatarId);
                 }
 
                 if(data.rpcMethodName.toLowerCase() == "/avatar/ready"){
