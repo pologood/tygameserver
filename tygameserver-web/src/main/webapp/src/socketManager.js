@@ -23,6 +23,7 @@ export default{
     questions:[],
     answerList:[],
     gameState:0,
+    selfName:'',
     connectSocket(data){
         const self =this;
         // 创建一个Socket实例		
@@ -81,6 +82,7 @@ export default{
                     console.log(data.content.payload);	
                     self.ownerName = data.content.payload.ownerName;
                     self.members = data.content.payload.members;
+                    self.selfName = getName(self.avatarId);
                 }
 
                 if(data.rpcMethodName.toLowerCase() == "/avatar/ready"){
@@ -146,10 +148,14 @@ export default{
 
             }else{
                 console.log(data.content.payload);
-                // alert(data.message);
+                $(".errerAlert").show().find("strong").html(data.content.message);
             }
 
         };
+
+        $(".errerAlert .close").click(function(){
+            $(".errerAlert").hide();
+        })
 
         function getName(avatarId){
             for(var i=0;i<self.members.length;i++){
