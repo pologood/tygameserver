@@ -7,8 +7,8 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
 
 import com.mongodb.WriteResult;
-import com.netease.pangu.game.dao.AbstractMongoDao;
 import com.netease.pangu.game.dao.AvatarDao;
+import com.netease.pangu.game.dao.mongo.AbstractMongoDao;
 import com.netease.pangu.game.meta.Avatar;
 
 @Component
