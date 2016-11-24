@@ -153,6 +153,8 @@
                     this.stage.addEventListener("stagemousedown", this.handleMouseDown);
                     this.stage.addEventListener("stagemouseup", this.handleMouseUp);
                 }
+                this.stage.clear();
+                this.drawingCanvas.cache(0,0,900,600);
             },
             handleMouseDown(){
                 this.oldPt = new createjs.Point(this.stage.mouseX, this.stage.mouseY);
