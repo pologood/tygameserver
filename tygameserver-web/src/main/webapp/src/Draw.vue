@@ -4,13 +4,15 @@
             <canvas id="board" width="900" height="600"></canvas>
         </div>
         <div class="toolsCnt">
-            <div class="form-inline hint" v-if="sData.painterId!=sData.avatarId">
+            <div class="form-inline hint" v-if="sData.hint.hint1&&sData.gameState==1">
                 <label>提示一：</label>
                 <label class="label label-success">{{sData.hint.hint1}}</label>
                 <label>提示二:</label>
                 <label class="label label-success">{{sData.hint.hint2}}</label>
+                <label v-if="sData.painterId==sData.avatarId">答案:</label>
+                <label class="label label-danger" v-if="sData.painterId==sData.avatarId">{{this.sData.questions[this.questionSelected].answer}}</label>
             </div>
-            <div class="form-inline hint" v-if="sData.painterId==sData.avatarId">
+            <div class="form-inline hint" v-if="sData.painterId==sData.avatarId&&sData.gameState==0">
 
                 <label>选择题目：</label>
                 <select v-model="questionSelected">
@@ -46,12 +48,18 @@
 
         </div>
         
-        <div class="answerCnt">
-            <p v-for="item in sData.answerList" class="answer">
-               <span class="label label-success">{{item.name}}</span>： {{item.answer}}<span class="glyphicon glyphicon-ok" v-if="item.correct"></span>
-            </p>
+        <div class="panel panel-default answerCnt">
+            <div class="panel-heading">
+                <h3 class="panel-title">回答记录</h3>
+            </div>
+            <div class="panel-body">
+                <p v-for="item in sData.answerList" class="answer">
+                    <span class="label label-success">{{item.name}}</span>： {{item.answer}}<span class="glyphicon glyphicon-ok" v-if="item.correct"></span>
+                </p>          
+            </div>
         </div>
-        <div class="sendAnswerCnt" v-if="sData.painterId!=sData.avatarId">
+
+        <div class="sendAnswerCnt" v-if="sData.painterId!=sData.avatarId&&sData.gameState==1">
             <div class="row">
                 <div class="col-md-8">
                     <input type="text" class="form-control" placeholder="输入名称" v-model="answer">
@@ -59,12 +67,28 @@
                 <button class="btn btn-default" v-on:click="sendAnswer">回答</button>
             </div> 
         </div>
-        <div class="members">
-            <div class="member" v-for="item in sData.members">
-                <img width="40" heigth="40" src="./assets/header.jpg" class="headImg">
-                <span class="label label-success">{{item.name}}</span>
-                <span class="label label-danger" v-if="item.avatarId==sData.ownerName">房主</span>
+
+        <div class="panel panel-default members">
+            <div class="panel-heading">
+                <h3 class="panel-title">玩家列表</h3>
             </div>
+            <div class="panel-body">
+                <div class="member" v-for="item in sData.members">
+                    <img width="40" heigth="40" src="./assets/header.jpg" class="headImg">
+                    <span class="label label-success">{{item.name}}</span>
+                    <span class="label label-danger" v-if="item.avatarId==sData.painterId">画</span>
+                    <span class="label label-danger" v-if="item.avatarId==sData.ownerName">主</span>
+                </div>            
+            </div>
+        </div>
+
+        <div class="alert alert-warning alert-dismissible" role="alert">
+            <button type="button" class="close" data-dismiss="alert" v-on:click="hideWinner"><span aria-hidden="true">&times;</span></button>
+            <strong>{{winner}}答对了题目！</strong>
+        </div>
+
+        <div class="tips">
+            重新开始新的一轮！
         </div>
 
     </div>    
@@ -93,7 +117,9 @@
                     hint1:'',
                     hint2:''
                 },
-                questionSelected:0
+                questionSelected:0,
+                winner:'',
+                isShowWinner:false
             }
         },
         created(){
@@ -117,6 +143,9 @@
         },
         methods:{
             replay(){
+                $(".tips").fadeIn(1500,function(){
+                    $(".tips").fadeOut();
+                });
                 this.stage.removeEventListener("stagemousedown", this.handleMouseDown);
                 this.stage.removeEventListener("stagemouseup", this.handleMouseUp);
                 if(s.painterId == s.avatarId){
@@ -207,14 +236,24 @@
             },
             sendAnswer(){
                 s.sendAnswer(this.answer);
+            },
+            showWinner(name){
+                this.winner=name;
+                // this.isShowWinner=true;
+                $(".alert").fadeIn(1000,function(){
+                    $(".alert").fadeOut();
+                })
+            },
+            hideWinner(){
+                this.isShowWinner=false;
             }
         }
     }    
 </script>
 <style scoped>
     #board{width: 900px;height: 600px;}
-    .cnt{border: 1px solid #000;width: 900px;height: 600px;border-radius: 10px;position: absolute;margin-left: -450px;left: 50%;top:50px;}
-    .toolsCnt{position: absolute;width: 900px;margin-left: -450px;left: 50%;top:670px;}
+    .cnt{border: 1px solid #000;width: 900px;height: 600px;border-radius: 10px;position: absolute;margin-left: -450px;left: 50%;top:80px;}
+    .toolsCnt{position: absolute;width: 900px;margin-left: -450px;left: 50%;top:700px;}
     .color span{display: inline-block;width: 40px;height: 40px;border-radius: 40px;margin-right: 4px;cursor: pointer;}
     .color span.active{border: 4px solid #fff;}
     .color span.color-1{background: #000;}
@@ -238,14 +277,36 @@
     .brush span.brush-5{width: 30px;height: 30px;border-radius: 30px;}
     .typeCnt{float: left;padding-top: 4px;}
     .questionCnt{width: 200px;height: 50px;background: #eee;position: absolute;padding: 8px;position: absolute;margin-left: 460px;left: 50%;top: 80px;}
-    .answerCnt{width: 200px;height: 560px;background: #eee;position: absolute;margin-left: 460px;left: 50%;top:50px;border-radius: 10px;overflow-y: auto;}
-    .sendAnswerCnt{width: 200px;position: absolute;top: 618px;left: 50%;margin-left: 460px;}
+    .answerCnt{width: 200px;height: 600px;position: absolute;margin-left: 460px;left: 50%;top:80px;border-radius: 10px;overflow-y: auto;}
+    .sendAnswerCnt{width: 200px;position: absolute;top: 635px;left: 50%;margin-left: 463px;}
     .hint{margin-bottom: 20px;}
-    .members{width: 200px;height: 600px;background: #eee;position: absolute;top: 50px;margin-left: -660px;left: 50%;border-radius: 10px;}
+    .members{width: 200px;height: 600px;position: absolute;top: 80px;margin-left: -660px;left: 50%;border-radius: 10px;}
     .member{padding: 10px;}
     .answer{padding: 10px;}
     .glyphicon-ok{color:#057e1f;}
     .cnt{background: #fff;}
     select{color: #000;}
-    p{color: #333;}
+    p{color: #fff;}
+    .tips{font-size: 80px;position: absolute;width: 100%;text-align: center;color: #f89406;font-weight: bold;font-family: "微软雅黑";display: none;
+        top: 400px;
+    }
+    .tips.animation{animation: 2s opacity2 0s; -webkit-animation: 2s opacity2 0s;-moz-animation: 2s opacity2 0s;}
+    @keyframes opacity2{
+        0%{opacity:0}
+        50%{opacity:1;}
+        100%{opacity:0;}
+    }
+    @-webkit-keyframes opacity2{
+        0%{opacity:0}
+        50%{opacity:1;}
+        100%{opacity:0;}
+    }
+    @-moz-keyframes opacity2{
+        0%{opacity:0}
+        50%{opacity:1;}
+        100%{opacity:0;}
+    }
+
+    .alert{display: none;}
+
 </style>

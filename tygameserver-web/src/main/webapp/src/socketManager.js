@@ -22,6 +22,7 @@ export default{
     },
     questions:[],
     answerList:[],
+    gameState:0,
     connectSocket(data){
         const self =this;
         // 创建一个Socket实例		
@@ -95,10 +96,18 @@ export default{
                     
                 }
 
+                if(data.rpcMethodName.toLowerCase() == "/room/private/startgame"){
+                    self.questions = data.content.payload;
+                }
+
                 if(data.rpcMethodName.toLowerCase() == "/room/broadcast/startgame"){
                     self.painterId = data.content.payload.avatarId;
-                    self.questions = data.content.payload.questions;
+                    self.gameState = data.content.payload.gameState;
                     self.router.push('draw');
+                    if(self.border){
+                        self.border.replay();
+                    }
+                    
                 }
 
                 if(data.rpcMethodName.toLowerCase() == "/room/broadcast/drawgame"){
@@ -113,6 +122,7 @@ export default{
 
                 if(data.rpcMethodName.toLowerCase() == "/room/broadcast/drawquestion"){
                     self.hint=data.content.payload;
+                    self.gameState=data.content.payload.gameState;
                 }
 
                 if(data.rpcMethodName.toLowerCase() == "/room/broadcast/answer"){
@@ -125,7 +135,8 @@ export default{
                     answer.name = getName(answer.avatarId);
                     answer.correct = true;
                     self.answerList.push(answer);
-                    alert(answer.avatarId+"回答正确！");
+                    self.border.showWinner(answer.name);
+                    // alert(answer.avatarId+"回答正确！");
                 }
 
                 // if(data.rpcMethodName.toLowerCase() == "/room/list"){
