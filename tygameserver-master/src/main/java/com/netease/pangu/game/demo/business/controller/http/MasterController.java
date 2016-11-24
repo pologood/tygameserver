@@ -95,6 +95,7 @@ public class MasterController {
 	@HttpRequestMapping("/avatar/list")
 	public List<Map<String, Object>> getAvatarList(long gameId){
 		List<Avatar> list = avatarService.getListByGameId(gameId);
+		Map<Long, Long> roomInfoMap = roomAllocationService.getAvatarIdsByRoom(gameId);
 		List<Map<String, Object>> avatarObjList = new ArrayList<Map<String, Object>> ();
 		for(Avatar avatar: list){
 			Map<String, Object> avatarObj = new HashMap<String, Object>();
@@ -102,6 +103,7 @@ public class MasterController {
 			avatarObj.put("uuid", avatar.getUuid());
 			avatarObj.put("avatarId", avatar.getAvatarId());
 			avatarObj.put("server", avatar.getServer());
+			avatarObj.put("roomId", roomInfoMap.get(avatar.getAvatarId()));
 			avatarObjList.add(avatarObj);
 		}
 		return avatarObjList;

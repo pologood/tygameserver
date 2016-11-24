@@ -2,6 +2,7 @@ package com.netease.pangu.game.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 
@@ -41,6 +42,10 @@ public class RoomAllocationService {
 	public long getRoomByAvatarId(long gameId, long avatarId){
 		Long roomId = commonRedisDao.get(getKey(gameId, ROOMS_AVATAR_INFO), avatarId);
 		return roomId == null ? 0 : roomId;
+	}
+	
+	public Map<Long,Long> getAvatarIdsByRoom(long gameId){
+		return commonRedisDao.getAll(getKey(gameId, ROOMS_AVATAR_INFO));
 	}
 	
 	public boolean setRoomWithAvatarId(long gameId, long avatarId, long roomId){
