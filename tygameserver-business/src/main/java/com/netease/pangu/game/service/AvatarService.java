@@ -1,5 +1,7 @@
 package com.netease.pangu.game.service;
 
+import java.util.List;
+
 import javax.annotation.Resource;
 
 import org.springframework.stereotype.Component;
@@ -28,7 +30,10 @@ public class AvatarService extends AbstractAvatarService<Avatar> {
 		avatarDao.save(avatar);
 	}
 	
-
+	public List<Avatar> getListByGameId(long gameId){
+		return avatarDao.getListByGameId(gameId);
+	}
+	
 	public Avatar getAvatarByAvatarId(long avatarId) {
 		return avatarDao.getAvatarByAvatarId(avatarId);
 	}

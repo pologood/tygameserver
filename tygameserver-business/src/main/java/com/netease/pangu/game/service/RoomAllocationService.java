@@ -39,7 +39,8 @@ public class RoomAllocationService {
 	}
 	
 	public long getRoomByAvatarId(long gameId, long avatarId){
-		return commonRedisDao.get(getKey(gameId, ROOMS_AVATAR_INFO), avatarId);
+		Long roomId = commonRedisDao.get(getKey(gameId, ROOMS_AVATAR_INFO), avatarId);
+		return roomId == null ? 0 : roomId;
 	}
 	
 	public boolean setRoomWithAvatarId(long gameId, long avatarId, long roomId){

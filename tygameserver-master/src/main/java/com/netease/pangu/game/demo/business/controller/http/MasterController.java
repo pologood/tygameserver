@@ -1,5 +1,6 @@
 package com.netease.pangu.game.demo.business.controller.http;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -44,7 +45,7 @@ public class MasterController {
 			String server = avatar.getServer();
 			long roomIdInGame =  roomAllocationService.getRoomByAvatarId(gameId, avatar.getAvatarId());
 			if(roomIdInGame > 0){
-				node = nodeManager.getNode(roomAllocationService.getServerByRoomId(gameId, roomId));
+				node = nodeManager.getNode(roomAllocationService.getServerByRoomId(gameId, roomIdInGame));
 			}else if(roomId > 0){
 				node = nodeManager.getNode(roomAllocationService.getServerByRoomId(gameId, roomId));
 			}else if(StringUtils.isNotEmpty(server)){
@@ -78,7 +79,7 @@ public class MasterController {
 	
 	@WsRpcCall("/avatar")
 	@HttpRequestMapping("/avatar")
-	public Map<String, Object> getPlayerByUUID(long gameId, String uuid){
+	public Map<String, Object> getAvatarByUUID(long gameId, String uuid){
 		Avatar avatar = avatarService.getAvatarByUUID(gameId, uuid);
 		Map<String, Object> playerObj = new HashMap<String, Object>();
 		if(avatar != null){
@@ -88,6 +89,22 @@ public class MasterController {
 			playerObj.put("server", avatar.getServer());
 		}
 		return playerObj;
+	}
+	
+	@WsRpcCall("/avatar/list")
+	@HttpRequestMapping("/avatar/list")
+	public List<Map<String, Object>> getAvatarList(long gameId){
+		List<Avatar> list = avatarService.getListByGameId(gameId);
+		List<Map<String, Object>> avatarObjList = new ArrayList<Map<String, Object>> ();
+		for(Avatar avatar: list){
+			Map<String, Object> avatarObj = new HashMap<String, Object>();
+			avatarObj.put("name", avatar.getName());
+			avatarObj.put("uuid", avatar.getUuid());
+			avatarObj.put("avatarId", avatar.getAvatarId());
+			avatarObj.put("server", avatar.getServer());
+			avatarObjList.add(avatarObj);
+		}
+		return avatarObjList;
 	}
 	
 	@WsRpcCall("/questions")
