@@ -148,10 +148,14 @@ export default{
 
             }else{
                 console.log(data.content.payload);
-                // alert(data.message);
+                $(".errerAlert").show().find("strong").html(data.content.message);
             }
 
         };
+
+        $(".errerAlert .close").click(function(){
+            $(".errerAlert").hide();
+        })
 
         function getName(avatarId){
             for(var i=0;i<self.members.length;i++){
