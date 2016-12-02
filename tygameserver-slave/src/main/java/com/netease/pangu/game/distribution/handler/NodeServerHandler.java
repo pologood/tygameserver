@@ -80,7 +80,10 @@ public class NodeServerHandler extends ChannelInboundHandlerAdapter {
 			Map<String, Object> args = (Map<String, Object>)data.get("params");
 			GameContext<AvatarSession<Avatar>> context = null;
 			//TODO need to optimize
-			Avatar avatar = avatarService.getAvatarByUUID(gameId, uuid);
+			Avatar avatar =avatarSessionService.getAvatarFromCache(gameId, uuid);
+			if(avatar == null) {
+				avatar = avatarService.getAvatarByUUID(gameId, uuid);
+			}
 			if(avatar != null){
 				AvatarSession<Avatar> session = avatarSessionService.getSession(avatar.getAvatarId());
 				if (session == null) {

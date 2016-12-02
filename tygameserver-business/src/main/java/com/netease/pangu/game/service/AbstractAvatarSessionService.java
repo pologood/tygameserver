@@ -9,6 +9,7 @@ import java.util.concurrent.ConcurrentMap;
 
 import javax.annotation.Resource;
 
+import com.netease.pangu.game.meta.Avatar;
 import org.springframework.util.Assert;
 
 import com.netease.pangu.game.common.meta.IAvatar;
@@ -19,6 +20,8 @@ import io.netty.channel.Channel;
 public abstract class AbstractAvatarSessionService<A extends IAvatar> {
 	@Resource
 	private UniqueIDGeneratorService uniqueIdGeneratorService;
+
+	public Map<Long, Map<String , A>> avatarsCache = new HashMap<Long, Map<String, A>>();
 
 	public interface SessionCallable<T, SA extends IAvatar> {
 		public T call(AvatarSession<SA> playerSession);
@@ -54,13 +57,33 @@ public abstract class AbstractAvatarSessionService<A extends IAvatar> {
 	
 	public boolean put(long avatarId, AvatarSession<A> session) {
 		if (sessions.put(avatarId, session) == null) {
+			synchronized (avatarsCache){
+				if(!avatarsCache.containsKey(session.getGameId())){
+					avatarsCache.put(session.getGameId(), new HashMap<String, A>());
+				}
+				avatarsCache.get(session.getGameId()).put(session.getUuid(), session.getAvatar());
+			}
 			return true;
 		}
 		return false;
 	}
 
+	public A getAvatarFromCache(long gameId, String uuid){
+		if(avatarsCache.containsKey(gameId)) {
+			return avatarsCache.get(gameId).get(uuid);
+		}else{
+			return null;
+		}
+	}
+
 	public boolean remove(long avatarId) {
-		if (sessions.remove(avatarId) != null) {
+		AvatarSession<A>  session = sessions.remove(avatarId);
+		if (session != null) {
+			synchronized (avatarsCache){
+				if(avatarsCache.containsKey(session.getGameId())){
+					avatarsCache.get(session.getGameId()).remove(session.getUuid());
+				}
+			}
 			return true;
 		}
 		return false;
@@ -77,7 +100,7 @@ public abstract class AbstractAvatarSessionService<A extends IAvatar> {
 		session.setRoomId(0L);
 		session.setCreateTime(System.currentTimeMillis());
 		session.setChannel(channel);
-		sessions.put(session.getAvatarId(), session);
+		put(session.getAvatarId(), session);
 		return session;
 	}
 

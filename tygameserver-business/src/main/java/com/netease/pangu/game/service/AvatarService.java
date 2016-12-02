@@ -1,15 +1,13 @@
 package com.netease.pangu.game.service;
 
-import java.util.List;
-
-import javax.annotation.Resource;
-
-import org.springframework.stereotype.Component;
-
 import com.netease.pangu.game.dao.impl.AvatarDaoImpl;
 import com.netease.pangu.game.meta.Avatar;
+import org.springframework.stereotype.Service;
 
-@Component
+import javax.annotation.Resource;
+import java.util.List;
+
+@Service
 public class AvatarService extends AbstractAvatarService<Avatar> {
 	@Resource private AvatarDaoImpl avatarDao;
 	

@@ -60,7 +60,7 @@
                     <archive>
                         <!-- 清单文件 -->
                         <manifest>
-                            <mainClass>com.netease.pangu.game.distribution.MasterBootstrap</mainClass>
+                            <mainClass>com.netease.pangu.game.bootstrap.MasterBootstrap</mainClass>
                             <addClasspath>true</addClasspath>
                             <classpathPrefix>lib/</classpathPrefix>
                         </manifest>

@@ -1,9 +1,10 @@
-package com.netease.pangu.game.distribution;
+package com.netease.pangu.game.bootstrap;
 
 import java.io.IOException;
 
 import javax.annotation.Resource;
 
+import com.netease.pangu.game.distribution.Bootstrap;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ConfigurableApplicationContext;

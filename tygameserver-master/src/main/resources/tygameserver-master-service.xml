@@ -30,6 +30,7 @@
 		</property>
     </bean>
 	<context:annotation-config />
+	<context:component-scan base-package="com.netease.pangu.game.bootstrap" />
 	<context:component-scan base-package="com.netease.pangu.game.distribution" />
 	<context:component-scan base-package="com.netease.pangu.game.core" />
 	<context:component-scan base-package="com.netease.pangu.game.demo.business.controller.http" />

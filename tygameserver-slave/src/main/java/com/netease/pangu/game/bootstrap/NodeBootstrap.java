@@ -1,4 +1,4 @@
-package com.netease.pangu.game.distribution;
+package com.netease.pangu.game.bootstrap;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -8,6 +8,9 @@ import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Resource;
 
+import com.netease.pangu.game.distribution.Bootstrap;
+import com.netease.pangu.game.distribution.MasterCallService;
+import com.netease.pangu.game.distribution.Node;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ConfigurableApplicationContext;

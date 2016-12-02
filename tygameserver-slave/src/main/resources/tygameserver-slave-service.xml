@@ -30,6 +30,7 @@
 			<value>utf-8</value>
 		</property>
     </bean>
+	<context:component-scan base-package="com.netease.pangu.game.bootstrap" />
 	<context:component-scan base-package="com.netease.pangu.game.distribution" />
 	<context:component-scan base-package="com.netease.pangu.game.controller.slave" />
 	<context:component-scan base-package="com.netease.pangu.game.business.controller" />

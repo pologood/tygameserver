@@ -60,7 +60,7 @@
                     <archive>
                         <!-- 清单文件 -->
                         <manifest>
-                            <mainClass>com.netease.pangu.game.distribution.NodeBootstrap</mainClass>
+                            <mainClass>com.netease.pangu.game.bootstrap.NodeBootstrap</mainClass>
                             <addClasspath>true</addClasspath>
                             <classpathPrefix>lib/</classpathPrefix>
                         </manifest>
@@ -107,7 +107,6 @@
                 <version>2.1</version>
                 <configuration>
                     <attach>true</attach>
-                    <encoding>UTF-8</encoding>
                 </configuration>
                 <executions>
                     <execution>
