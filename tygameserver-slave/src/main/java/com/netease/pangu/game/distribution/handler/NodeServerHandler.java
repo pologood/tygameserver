@@ -125,8 +125,8 @@ public class NodeServerHandler extends ChannelInboundHandlerAdapter {
 							new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.BAD_REQUEST,
 									Unpooled.copiedBuffer("parameter gameId not exist!", Charset.forName("UTF-8"))));
 				}
-				Double tmp = NumberUtils.toDouble(params.get("gameId").toString());
-				long gameId = tmp.longValue();
+				Double dGameId = NumberUtils.toDouble(params.get("gameId").toString());
+				long gameId = dGameId.longValue();
 				URI uri = URI.create(request.uri());
 				if (httpRequestInvoker.containsURIPath(gameId,uri.getPath())) {
 					FullHttpResponse result = httpRequestInvoker.invoke(gameId, uri.getPath(), params, request);

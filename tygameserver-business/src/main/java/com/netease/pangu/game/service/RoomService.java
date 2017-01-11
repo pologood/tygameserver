@@ -65,7 +65,7 @@ public class RoomService {
 	public boolean isReady(long roomId){
 		GameRoom room = getGameRoom(roomId);
 		Set<Long> avatarIds = room.getSessionIds();
-		Map<Long, AvatarSession<Avatar>> sessionsMap = avatarSessionService.getAvatarSesssions(avatarIds);
+		Map<Long, AvatarSession<Avatar>> sessionsMap = avatarSessionService.getAvatarSessions(avatarIds);
 		if(sessionsMap.values().size() < 2){
 			return false;
 		}
@@ -204,7 +204,7 @@ public class RoomService {
 	public void broadcast(String path, long roomId, Object msg) {
 		GameRoom room = getGameRoom(roomId);
 		Set<Long> sessionIds = room.getSessionIds();
-		Map<Long, AvatarSession<Avatar>> sessionMap = avatarSessionService.getAvatarSesssions(sessionIds);
+		Map<Long, AvatarSession<Avatar>> sessionMap = avatarSessionService.getAvatarSessions(sessionIds);
 		for(AvatarSession<Avatar> session: sessionMap.values()){
 			if(session.getChannel() != null && session.getChannel().isActive()){
 				NettyHttpUtil.sendWsResponse(ROOM_BROADCAST + path , session.getChannel(), msg);
@@ -216,7 +216,7 @@ public class RoomService {
 	public void chatTo(String path, long roomId, List<Long> avatarIds, Object msg) {
 		GameRoom room = getGameRoom(roomId);
 		Set<Long> sessionIds = room.getSessionIds();
-		Map<Long, AvatarSession<Avatar>> sessionMap = avatarSessionService.getAvatarSesssions(sessionIds);
+		Map<Long, AvatarSession<Avatar>> sessionMap = avatarSessionService.getAvatarSessions(sessionIds);
 		for(Long avatarId: avatarIds){
 			AvatarSession<Avatar> session = sessionMap.get(avatarId);
 			if(session != null && session.getChannel() != null && session.getChannel().isActive()){
@@ -291,7 +291,7 @@ public class RoomService {
 	public GameResult getRoomInfo(long roomId){
 		GameRoom room = getGameRoom(roomId);
 		Map<String, Object> payload = new HashMap<String, Object>();
-		Map<Long, AvatarSession<Avatar>> sessions = avatarSessionService.getAvatarSesssions(room.getSessionIds());
+		Map<Long, AvatarSession<Avatar>> sessions = avatarSessionService.getAvatarSessions(room.getSessionIds());
 		List<SimpleAvatar> simples = new ArrayList<SimpleAvatar>();
 		for(AvatarSession<Avatar> session:sessions.values()){
 			simples.add(SimpleAvatar.create(session));

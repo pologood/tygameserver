@@ -1,8 +1,8 @@
 package com.netease.pangu.game.service;
 
-import javax.annotation.Resource;
-
 import com.netease.pangu.game.common.meta.IAvatar;
+
+import javax.annotation.Resource;
 
 public abstract class AbstractAvatarService<A extends IAvatar> {
 	@Resource
@@ -10,11 +10,7 @@ public abstract class AbstractAvatarService<A extends IAvatar> {
 	
 	public AbstractAvatarService(){
 	}
-	/**
-	 * 
-	 * @param player
-	 * @return 如果角色已存在返回存在的角色
-	 */
+
 	public A createAvatar(A avatar){
 		long avatarId = uniqueIdGeneratorService.generateAvatarId();
 		avatar.setAvatarId(avatarId);

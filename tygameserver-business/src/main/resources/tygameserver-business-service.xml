@@ -31,7 +31,7 @@
 			write-fsync="${mongo.writeFsync}" />
 	</mongo:mongo>
 	<!-- 设置使用的数据库 名 -->
-	<mongo:db-factory dbname="littlegame" mongo-ref="mongo" />
+	<mongo:db-factory dbname="littlegame" mongo-ref="mongo" username="${mongo.userName}" password="${mongo.password}" />
 	<!-- mongodb的模板 -->
 	<bean id="mongoTemplate" class="org.springframework.data.mongodb.core.MongoTemplate">
 		<constructor-arg name="mongoDbFactory" ref="mongoDbFactory" />
