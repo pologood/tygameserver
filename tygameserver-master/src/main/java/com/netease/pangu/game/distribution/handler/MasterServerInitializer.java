@@ -1,23 +1,20 @@
 package com.netease.pangu.game.distribution.handler;
 
-import javax.annotation.Resource;
+import io.netty.channel.*;
+import io.netty.channel.socket.*;
+import io.netty.handler.codec.http.*;
+import io.netty.handler.codec.http.websocketx.*;
+import io.netty.handler.codec.http.websocketx.extensions.compression.*;
+import io.netty.handler.ssl.*;
+import org.springframework.beans.factory.config.*;
+import org.springframework.stereotype.*;
 
-import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
-import org.springframework.stereotype.Component;
-
-import io.netty.channel.ChannelInitializer;
-import io.netty.channel.ChannelPipeline;
-import io.netty.channel.socket.SocketChannel;
-import io.netty.handler.codec.http.HttpObjectAggregator;
-import io.netty.handler.codec.http.HttpServerCodec;
-import io.netty.handler.codec.http.websocketx.WebSocketServerProtocolHandler;
-import io.netty.handler.codec.http.websocketx.extensions.compression.WebSocketServerCompressionHandler;
-import io.netty.handler.ssl.SslContext;
+import javax.annotation.*;
 
 @Component
 public class MasterServerInitializer extends ChannelInitializer<SocketChannel> {
 
-private static final String WEBSOCKET_PATH = "/websocket";
+private static final String WEBSOCKET_PATH = "/ws";
     @Resource
     private AutowireCapableBeanFactory beanFactory;
 	
@@ -26,7 +23,7 @@ private static final String WEBSOCKET_PATH = "/websocket";
     @Override
     public void initChannel(SocketChannel ch) throws Exception {
         ChannelPipeline pipeline = ch.pipeline();
-        if (sslCtx != null) {
+        if (sslCtx!= null) {
             pipeline.addLast(sslCtx.newHandler(ch.alloc()));
         }
  
