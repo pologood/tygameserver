@@ -28,7 +28,7 @@ export default{
         const self =this;
         // 创建一个Socket实例		
         this.connectData=data;
-		this.socket = new WebSocket('ws://' + this.connectData.ip + ':'+this.connectData.port+'/websocket'); 
+		this.socket = new WebSocket('ws://' + this.connectData.ip + ':'+this.connectData.port+'/ws'); 
 
         // 打开Socket 
 		this.socket.onopen = function(event) { 

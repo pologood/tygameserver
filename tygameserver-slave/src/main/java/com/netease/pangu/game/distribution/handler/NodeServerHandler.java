@@ -2,6 +2,7 @@ package com.netease.pangu.game.distribution.handler;
 
 import com.netease.pangu.game.common.meta.AvatarSession;
 import com.netease.pangu.game.common.meta.GameContext;
+import com.netease.pangu.game.constant.GameServerConst;
 import com.netease.pangu.game.http.HttpRequestInvoker;
 import com.netease.pangu.game.meta.Avatar;
 import com.netease.pangu.game.rpc.WsRpcCallInvoker;
@@ -35,7 +36,6 @@ import java.util.Map;
 public class NodeServerHandler extends ChannelInboundHandlerAdapter {
     private static final Logger logger = Logger.getLogger(NodeServerHandler.class);
 
-    private static String WEB_SOCKET_PATH = "ws";
     @Resource
     private WsRpcCallInvoker wsRpcCallInvoker;
     @Resource
@@ -54,7 +54,7 @@ public class NodeServerHandler extends ChannelInboundHandlerAdapter {
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         System.out.println("#1 " + ctx.channel().id().asLongText());
         if (msg instanceof FullHttpRequest) {
-            handleHttpRequest(ctx, (FullHttpRequest) msg, WEB_SOCKET_PATH);
+            handleHttpRequest(ctx, (FullHttpRequest) msg, GameServerConst.WEB_SOCKET_PATH);
         } else if (msg instanceof WebSocketFrame) {
             handleWebSocketFrame(ctx, (WebSocketFrame) msg);
         }

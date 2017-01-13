@@ -114,6 +114,7 @@ public class GuessGame {
 			this.draw = draw;
 		}	
 	}
+
 	public static class Guess{
 		private long avatarId;
 		private String answer;

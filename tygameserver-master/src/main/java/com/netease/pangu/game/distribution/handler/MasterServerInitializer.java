@@ -1,5 +1,6 @@
 package com.netease.pangu.game.distribution.handler;
 
+import com.netease.pangu.game.constant.GameServerConst;
 import io.netty.channel.*;
 import io.netty.channel.socket.*;
 import io.netty.handler.codec.http.*;
@@ -13,8 +14,6 @@ import javax.annotation.*;
 
 @Component
 public class MasterServerInitializer extends ChannelInitializer<SocketChannel> {
-
-private static final String WEBSOCKET_PATH = "/ws";
     @Resource
     private AutowireCapableBeanFactory beanFactory;
 	
@@ -30,7 +29,7 @@ private static final String WEBSOCKET_PATH = "/ws";
         pipeline.addLast(new HttpServerCodec());
         pipeline.addLast(new HttpObjectAggregator(65536));
         pipeline.addLast(new WebSocketServerCompressionHandler());
-        pipeline.addLast(new WebSocketServerProtocolHandler(WEBSOCKET_PATH, null, true));
+        pipeline.addLast(new WebSocketServerProtocolHandler(GameServerConst.WEB_SOCKET_PATH, null, true));
         pipeline.addLast(beanFactory.getBean(MasterServerHandler.class));
     }
 

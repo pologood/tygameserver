@@ -1,14 +1,5 @@
 package com.netease.pangu.game.demo.business.controller.http;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.annotation.Resource;
-
-import org.apache.commons.lang3.StringUtils;
-
 import com.netease.pangu.game.common.meta.GameConst;
 import com.netease.pangu.game.core.service.NodeScheduleService;
 import com.netease.pangu.game.distribution.Node;
@@ -23,6 +14,13 @@ import com.netease.pangu.game.service.AvatarService;
 import com.netease.pangu.game.service.GuessGameService;
 import com.netease.pangu.game.service.RoomAllocationService;
 import com.netease.pangu.game.util.JsonUtil;
+import org.apache.commons.lang3.StringUtils;
+
+import javax.annotation.Resource;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @WsRpcController(value="/master", gameId=GameConst.GUESSS)
 @HttpController(value="/master", gameId=GameConst.GUESSS)
@@ -60,11 +58,13 @@ public class MasterController {
 			avatar.setLastLoginTime(System.currentTimeMillis());
 			avatar.setName(roleName);
 			node = appWorkerScheduleService.getNodeByScheduled();
-			avatar.setServer(node.getName());
-			avatar.setUuid(uuid);
-			avatar.setWriteToDbTime(System.currentTimeMillis());
-			avatar = avatarService.createAvatar(avatar);
-			avatarService.insert(avatar);
+			if(node != null) {
+				avatar.setServer(node.getName());
+				avatar.setUuid(uuid);
+				avatar.setWriteToDbTime(System.currentTimeMillis());
+				avatar = avatarService.createAvatar(avatar);
+				avatarService.insert(avatar);
+			}
 		}
 		if(node != null){
 			Map<String, Object> workerInfo = new HashMap<String, Object>();
