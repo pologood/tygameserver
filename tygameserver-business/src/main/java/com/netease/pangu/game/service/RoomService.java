@@ -9,14 +9,14 @@ import com.netease.pangu.game.service.AbstractAvatarSessionService.SessionCallab
 import com.netease.pangu.game.util.NettyHttpUtil;
 import com.netease.pangu.game.util.ReturnUtils;
 import com.netease.pangu.game.util.ReturnUtils.GameResult;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-@Component
+@Service
 public class RoomService {
     @Resource
     private AvatarSessionService avatarSessionService;
@@ -68,11 +68,10 @@ public class RoomService {
         return true;
     }
 
-
     /**
      * @param gameId
      * @param avatarId
-     * @param type
+     * @param maxSize
      * @return roomId
      */
     public long createRoom(final long gameId, final long avatarId, final int maxSize) {
@@ -296,18 +295,18 @@ public class RoomService {
         GameRoom room = getGameRoom(roomId);
         Map<String, Object> payload = new HashMap<String, Object>();
         Map<Long, AvatarSession<Avatar>> sessions = avatarSessionService.getAvatarSessions(room.getSessionIds());
-        List<SimpleAvatar> simples = new ArrayList<SimpleAvatar>();
+        List<SimpleAvatar> members = new ArrayList<SimpleAvatar>();
         for (AvatarSession<Avatar> session : sessions.values()) {
-            simples.add(SimpleAvatar.create(session));
+            members.add(SimpleAvatar.create(session));
         }
-        payload.put("members", simples);
+        payload.put("members", members);
         payload.put("id", room.getId());
         payload.put("state", room.getStatus().ordinal());
         payload.put("maxSize", room.getMaxSize());
         payload.put("count", room.getSessionIds().size());
         AvatarSession<Avatar> session = avatarSessionService.getSession(room.getOwnerId());
         payload.put("ownerName", session.getName());
-        payload.put("ownerName", session.getAvatarId());
+        payload.put("avatarId", session.getAvatarId());
         GameResult result = ReturnUtils.succ(payload);
         return result;
     }

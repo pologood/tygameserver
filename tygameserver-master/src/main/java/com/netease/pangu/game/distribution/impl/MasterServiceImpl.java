@@ -49,7 +49,6 @@ public class MasterServiceImpl extends MasterServiceGrpc.MasterServiceImplBase {
         }
 
         RpcResponse result = builder.build();
-        logger.info(JsonUtil.toJson(node));
         responseObserver.onNext(result);
         responseObserver.onCompleted();
 
