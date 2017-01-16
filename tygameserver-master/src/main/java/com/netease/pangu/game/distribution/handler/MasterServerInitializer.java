@@ -1,31 +1,33 @@
 package com.netease.pangu.game.distribution.handler;
 
 import com.netease.pangu.game.constant.GameServerConst;
-import io.netty.channel.*;
-import io.netty.channel.socket.*;
-import io.netty.handler.codec.http.*;
-import io.netty.handler.codec.http.websocketx.*;
-import io.netty.handler.codec.http.websocketx.extensions.compression.*;
-import io.netty.handler.ssl.*;
-import org.springframework.beans.factory.config.*;
-import org.springframework.stereotype.*;
+import io.netty.channel.ChannelInitializer;
+import io.netty.channel.ChannelPipeline;
+import io.netty.channel.socket.SocketChannel;
+import io.netty.handler.codec.http.HttpObjectAggregator;
+import io.netty.handler.codec.http.HttpServerCodec;
+import io.netty.handler.codec.http.websocketx.WebSocketServerProtocolHandler;
+import io.netty.handler.codec.http.websocketx.extensions.compression.WebSocketServerCompressionHandler;
+import io.netty.handler.ssl.SslContext;
+import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
+import org.springframework.stereotype.Component;
 
-import javax.annotation.*;
+import javax.annotation.Resource;
 
 @Component
 public class MasterServerInitializer extends ChannelInitializer<SocketChannel> {
     @Resource
     private AutowireCapableBeanFactory beanFactory;
-	
-	private SslContext sslCtx;
-    
+
+    private SslContext sslCtx;
+
     @Override
     public void initChannel(SocketChannel ch) throws Exception {
         ChannelPipeline pipeline = ch.pipeline();
-        if (sslCtx!= null) {
+        if (sslCtx != null) {
             pipeline.addLast(sslCtx.newHandler(ch.alloc()));
         }
- 
+
         pipeline.addLast(new HttpServerCodec());
         pipeline.addLast(new HttpObjectAggregator(65536));
         pipeline.addLast(new WebSocketServerCompressionHandler());
@@ -33,12 +35,12 @@ public class MasterServerInitializer extends ChannelInitializer<SocketChannel> {
         pipeline.addLast(beanFactory.getBean(MasterServerHandler.class));
     }
 
-	public SslContext getSslCtx() {
-		return sslCtx;
-	}
+    public SslContext getSslCtx() {
+        return sslCtx;
+    }
 
-	public void setSslCtx(SslContext sslCtx) {
-		this.sslCtx = sslCtx;
-	}
+    public void setSslCtx(SslContext sslCtx) {
+        this.sslCtx = sslCtx;
+    }
 
 }

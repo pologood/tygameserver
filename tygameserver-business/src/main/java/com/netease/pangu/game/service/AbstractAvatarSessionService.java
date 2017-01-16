@@ -1,22 +1,18 @@
 package com.netease.pangu.game.service;
 
+import com.netease.pangu.game.common.meta.AvatarSession;
+import com.netease.pangu.game.common.meta.IAvatar;
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelId;
+import org.springframework.util.Assert;
+
+import javax.annotation.Resource;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-
-import javax.annotation.Resource;
-
-import com.netease.pangu.game.meta.Avatar;
-import io.netty.channel.ChannelId;
-import org.springframework.util.Assert;
-
-import com.netease.pangu.game.common.meta.IAvatar;
-import com.netease.pangu.game.common.meta.AvatarSession;
-
-import io.netty.channel.Channel;
 
 public abstract class AbstractAvatarSessionService<A extends IAvatar> {
     @Resource
@@ -68,8 +64,8 @@ public abstract class AbstractAvatarSessionService<A extends IAvatar> {
                 }
                 avatarsCache.get(session.getGameId()).put(session.getUuid(), session.getAvatar());
             }
-            synchronized (avatarSessions){
-                if(!avatarSessions.containsKey(session.getGameId())){
+            synchronized (avatarSessions) {
+                if (!avatarSessions.containsKey(session.getGameId())) {
                     avatarSessions.put(session.getGameId(), new HashMap<ChannelId, Long>());
                 }
                 avatarSessions.get(session.getGameId()).put(session.getChannelId(), session.getAvatarId());
@@ -94,8 +90,8 @@ public abstract class AbstractAvatarSessionService<A extends IAvatar> {
                 }
             }
 
-            synchronized (avatarSessions){
-                if(avatarSessions.containsKey(session.getGameId())){
+            synchronized (avatarSessions) {
+                if (avatarSessions.containsKey(session.getGameId())) {
                     avatarSessions.get(session.getGameId()).remove(session.getChannelId());
                 }
             }

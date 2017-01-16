@@ -29,85 +29,85 @@ import java.util.Map;
 @Lazy
 @Component
 public class MasterServerHandler extends ChannelInboundHandlerAdapter {
-	@Resource
-	private WsRpcCallInvoker wsRpcCallInvoker;
-	@Resource 
-	private HttpRequestInvoker httpRequestInvoker;
-	
-	@Override
-	public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
-	}
+    @Resource
+    private WsRpcCallInvoker wsRpcCallInvoker;
+    @Resource
+    private HttpRequestInvoker httpRequestInvoker;
 
-	@Override
-	public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-		if (msg instanceof FullHttpRequest) {
-			handleHttpRequest(ctx, (FullHttpRequest) msg, GameServerConst.WEB_SOCKET_PATH);
-		} else if (msg instanceof WebSocketFrame) {
-			handleWebSocketFrame(ctx, (WebSocketFrame) msg);
-		}
-	}
+    @Override
+    public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
+    }
 
-	private void handleWebSocketFrame(ChannelHandlerContext ctx, WebSocketFrame frame) {
-		if(frame instanceof TextWebSocketFrame){
-			String dataStr = ((TextWebSocketFrame) frame).text();
-			Map<String, Object> data = JsonUtil.fromJson(dataStr);
-			String rpcMethodName = (String) data.get("rpcMethod");
-			@SuppressWarnings("unchecked")
-			Map<String, Object> args = (Map<String, Object>)data.get("params");
-			Double tmp = NumberUtils.toDouble(data.get("gameId").toString());
-			long gameId = tmp.longValue();
-			GameContext<Void> context = new GameContext<Void>(ctx, null, rpcMethodName, frame);
-			wsRpcCallInvoker.invoke(gameId, rpcMethodName, args, context);
-		}
-	}
+    @Override
+    public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+        if (msg instanceof FullHttpRequest) {
+            handleHttpRequest(ctx, (FullHttpRequest) msg, GameServerConst.WEB_SOCKET_PATH);
+        } else if (msg instanceof WebSocketFrame) {
+            handleWebSocketFrame(ctx, (WebSocketFrame) msg);
+        }
+    }
 
-	private void handleHttpRequest(ChannelHandlerContext ctx, FullHttpRequest request, String webSocketPath) throws IOException {
-		if (!request.decoderResult().isSuccess()) {
-			NettyHttpUtil.sendHttpResponse(ctx, request,
-					new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.BAD_REQUEST));
-			return;
-		}
+    private void handleWebSocketFrame(ChannelHandlerContext ctx, WebSocketFrame frame) {
+        if (frame instanceof TextWebSocketFrame) {
+            String dataStr = ((TextWebSocketFrame) frame).text();
+            Map<String, Object> data = JsonUtil.fromJson(dataStr);
+            String rpcMethodName = (String) data.get("rpcMethod");
+            @SuppressWarnings("unchecked")
+            Map<String, Object> args = (Map<String, Object>) data.get("params");
+            Double tmp = NumberUtils.toDouble(data.get("gameId").toString());
+            long gameId = tmp.longValue();
+            GameContext<Void> context = new GameContext<Void>(ctx, null, rpcMethodName, frame);
+            wsRpcCallInvoker.invoke(gameId, rpcMethodName, args, context);
+        }
+    }
 
-		if (request.method() == HttpMethod.GET) {
-			if (request.uri().equalsIgnoreCase(webSocketPath)) {
-				WebSocketServerHandshakerFactory wsFactory = new WebSocketServerHandshakerFactory(
-						NettyHttpUtil.getWebSocketLocation(request, webSocketPath), null, true);
-				WebSocketServerHandshaker handshaker = wsFactory.newHandshaker(request);
-				if (handshaker == null) {
-					WebSocketServerHandshakerFactory.sendUnsupportedVersionResponse(ctx.channel());
-				} else {
-					handshaker.handshake(ctx.channel(), request);
-				}
-			}else{
-				Map<String, String> params = NettyHttpUtil.parseRequest(request);
-				if(!params.containsKey("gameId")){
-					NettyHttpUtil.sendHttpResponse(ctx, request,
-							new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.BAD_REQUEST,
-									Unpooled.copiedBuffer("parameter gameId not exist!", Charset.forName("UTF-8"))));
-					return;
-				}
-				URI uri = URI.create(request.uri());	
-				Double tmp = NumberUtils.toDouble(params.get("gameId").toString());
-				long gameId = tmp.longValue();
-				if(httpRequestInvoker.containsURIPath(gameId, uri.getPath())){
-					FullHttpResponse result = httpRequestInvoker.invoke(gameId, uri.getPath(), params, request);
-					NettyHttpUtil.sendHttpResponse(ctx, request, result);
-				}else{
-					NettyHttpUtil.sendHttpResponse(ctx, request, new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.BAD_REQUEST, Unpooled.copiedBuffer("uri not exist!",Charset.forName("UTF-8"))));
-				}
-			}
-			
-		}else{
-			NettyHttpUtil.sendHttpResponse(ctx, request,
-					new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.FORBIDDEN));
-			return;
-		}
-		
-		
-	}
+    private void handleHttpRequest(ChannelHandlerContext ctx, FullHttpRequest request, String webSocketPath) throws IOException {
+        if (!request.decoderResult().isSuccess()) {
+            NettyHttpUtil.sendHttpResponse(ctx, request,
+                    new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.BAD_REQUEST));
+            return;
+        }
 
-	@Override
-	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-		cause.printStackTrace();
-	}
+        if (request.method() == HttpMethod.GET) {
+            if (request.uri().equalsIgnoreCase(webSocketPath)) {
+                WebSocketServerHandshakerFactory wsFactory = new WebSocketServerHandshakerFactory(
+                        NettyHttpUtil.getWebSocketLocation(request, webSocketPath), null, true);
+                WebSocketServerHandshaker handshaker = wsFactory.newHandshaker(request);
+                if (handshaker == null) {
+                    WebSocketServerHandshakerFactory.sendUnsupportedVersionResponse(ctx.channel());
+                } else {
+                    handshaker.handshake(ctx.channel(), request);
+                }
+            } else {
+                Map<String, String> params = NettyHttpUtil.parseRequest(request);
+                if (!params.containsKey("gameId")) {
+                    NettyHttpUtil.sendHttpResponse(ctx, request,
+                            new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.BAD_REQUEST,
+                                    Unpooled.copiedBuffer("parameter gameId not exist!", Charset.forName("UTF-8"))));
+                    return;
+                }
+                URI uri = URI.create(request.uri());
+                Double tmp = NumberUtils.toDouble(params.get("gameId").toString());
+                long gameId = tmp.longValue();
+                if (httpRequestInvoker.containsURIPath(gameId, uri.getPath())) {
+                    FullHttpResponse result = httpRequestInvoker.invoke(gameId, uri.getPath(), params, request);
+                    NettyHttpUtil.sendHttpResponse(ctx, request, result);
+                } else {
+                    NettyHttpUtil.sendHttpResponse(ctx, request, new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.BAD_REQUEST, Unpooled.copiedBuffer("uri not exist!", Charset.forName("UTF-8"))));
+                }
+            }
+
+        } else {
+            NettyHttpUtil.sendHttpResponse(ctx, request,
+                    new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.FORBIDDEN));
+            return;
+        }
+
+
+    }
+
+    @Override
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+        cause.printStackTrace();
+    }
 }

@@ -21,9 +21,9 @@ public class NodeServerInitializer extends ChannelInitializer<SocketChannel> {
 
     @Resource
     private AutowireCapableBeanFactory beanFactory;
-	
-	private SslContext sslCtx;
-    
+
+    private SslContext sslCtx;
+
     @Override
     public void initChannel(SocketChannel ch) throws Exception {
         ChannelPipeline pipeline = ch.pipeline();
@@ -38,12 +38,12 @@ public class NodeServerInitializer extends ChannelInitializer<SocketChannel> {
         pipeline.addLast(beanFactory.getBean(NodeServerHandler.class));
     }
 
-	public SslContext getSslCtx() {
-		return sslCtx;
-	}
+    public SslContext getSslCtx() {
+        return sslCtx;
+    }
 
-	public void setSslCtx(SslContext sslCtx) {
-		this.sslCtx = sslCtx;
-	}
+    public void setSslCtx(SslContext sslCtx) {
+        this.sslCtx = sslCtx;
+    }
 
 }

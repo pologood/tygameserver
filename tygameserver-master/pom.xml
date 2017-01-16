@@ -1,26 +1,26 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<parent>
-		<groupId>com.netease.pangu.tygameserver</groupId>
-		<artifactId>tygameserver</artifactId>
-		<version>0.0.1-SNAPSHOT</version>
-	</parent>
-	<artifactId>tygameserver-master</artifactId>
-	<dependencies>
-		<dependency>
-			<groupId>com.netease.pangu.tygameserver</groupId>
-			<artifactId>tygameserver-protocol</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>com.netease.pangu.tygameserver</groupId>
-			<artifactId>tygameserver-business</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
-		</dependency>
-	</dependencies>
-	<build>
-		<sourceDirectory>src/main/java</sourceDirectory>
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.netease.pangu.tygameserver</groupId>
+        <artifactId>tygameserver</artifactId>
+        <version>0.0.1-SNAPSHOT</version>
+    </parent>
+    <artifactId>tygameserver-master</artifactId>
+    <dependencies>
+        <dependency>
+            <groupId>com.netease.pangu.tygameserver</groupId>
+            <artifactId>tygameserver-protocol</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>com.netease.pangu.tygameserver</groupId>
+            <artifactId>tygameserver-business</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+    </dependencies>
+    <build>
+        <sourceDirectory>src/main/java</sourceDirectory>
         <resources>
             <!-- 控制资源文件的拷贝 -->
             <resource>
@@ -119,5 +119,5 @@
                 </executions>
             </plugin>
         </plugins>
-	</build>
+    </build>
 </project>
