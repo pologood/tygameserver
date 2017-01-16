@@ -9,21 +9,15 @@ import java.util.Map;
 
 public class AvatarSession<A extends IAvatar> implements IAvatar {
     private final static int WAIT_MILLIS = 5 * 1000;
-    public static final int READY = 1;
-    public static final int IDLE = 0;
-
-    public static enum Status {
-        NOT_CONNECTED, CONNECTING, CONNECTED, CLOSED
-    }
 
     private A avatar;
     private long roomId;
-    private int state;
+    private ConnectionStatus state;
     private Channel channel;
     private Map<String, Object> attrs;
     private long createTime;
     private long lastestActiveTime;
-
+    private RoomStatus roomStatus;
     public Map<String, Object> getAttrs() {
         return attrs;
     }
@@ -150,12 +144,20 @@ public class AvatarSession<A extends IAvatar> implements IAvatar {
         return avatar.getGameId();
     }
 
-    public int getState() {
+    public ConnectionStatus getState() {
         return state;
     }
 
-    public void setState(int state) {
+    public void setState(ConnectionStatus state) {
         this.state = state;
+    }
+
+    public RoomStatus getRoomStatus() {
+        return roomStatus;
+    }
+
+    public void setRoomStatus(RoomStatus roomStatus) {
+        this.roomStatus = roomStatus;
     }
 
 }

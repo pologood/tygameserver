@@ -40,7 +40,7 @@ public class RoomController {
         long roomId = roomService.createRoom(gameId, session.getAvatarId(), maxSize);
         GameResult result;
         if (roomId > 0) {
-            session.setState(AvatarSession.READY);
+            session.setRoomStatus(RoomStatus.READY);
             roomService.broadcast(RoomService.ROOM_INFO, roomId, roomService.getRoomInfo(roomId));
             result = ReturnUtils.succ(roomId);
         } else {

@@ -2,6 +2,7 @@ package com.netease.pangu.game.business.controller;
 
 import com.netease.pangu.game.common.meta.AvatarSession;
 import com.netease.pangu.game.common.meta.GameContext;
+import com.netease.pangu.game.common.meta.RoomStatus;
 import com.netease.pangu.game.distribution.service.SystemAttrService;
 import com.netease.pangu.game.meta.Avatar;
 import com.netease.pangu.game.rpc.WsRpcResponse;
@@ -42,8 +43,8 @@ public class AvatarController {
     @WsRpcCall("/ready")
     public GameResult ready(GameContext<AvatarSession<Avatar>> ctx) {
         AvatarSession<Avatar> session = ctx.getSession();
-        if (session.getState() != AvatarSession.READY) {
-            session.setState(AvatarSession.READY);
+        if (session.getRoomStatus() != RoomStatus.READY) {
+            session.setRoomStatus(RoomStatus.READY);
             roomService.broadcast(RoomService.ROOM_INFO, session.getRoomId(), roomService.getRoomInfo(session.getRoomId()));
         }
         GameResult result = ReturnUtils.succ("ready go");

@@ -1,9 +1,11 @@
 package com.netease.pangu.game.service;
 
 import com.netease.pangu.game.common.meta.AvatarSession;
+import com.netease.pangu.game.common.meta.ConnectionStatus;
 import com.netease.pangu.game.common.meta.GameRoom;
 import com.netease.pangu.game.common.meta.GameRoom.RoomType;
 import com.netease.pangu.game.common.meta.GameRoom.Status;
+import com.netease.pangu.game.common.meta.RoomStatus;
 import com.netease.pangu.game.meta.Avatar;
 import com.netease.pangu.game.service.AbstractAvatarSessionService.SessionCallable;
 import com.netease.pangu.game.util.NettyHttpUtil;
@@ -61,7 +63,7 @@ public class RoomService {
             return false;
         }
         for (AvatarSession<Avatar> session : sessionsMap.values()) {
-            if (session.getState() != AvatarSession.READY) {
+            if (session.getRoomStatus() != RoomStatus.READY) {
                 return false;
             }
         }
@@ -220,7 +222,7 @@ public class RoomService {
         private long avatarId;
         private String avatarImg;
         private long roomId;
-        private int state;
+        private ConnectionStatus state;
 
         public String getName() {
             return name;
@@ -270,11 +272,11 @@ public class RoomService {
             this.roomId = roomId;
         }
 
-        public int getState() {
+        public ConnectionStatus getState() {
             return state;
         }
 
-        public void setState(int state) {
+        public void setState(ConnectionStatus state) {
             this.state = state;
         }
 

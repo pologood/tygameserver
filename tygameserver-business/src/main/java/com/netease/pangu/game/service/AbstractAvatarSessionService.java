@@ -1,6 +1,7 @@
 package com.netease.pangu.game.service;
 
 import com.netease.pangu.game.common.meta.AvatarSession;
+import com.netease.pangu.game.common.meta.ConnectionStatus;
 import com.netease.pangu.game.common.meta.IAvatar;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelId;
@@ -20,7 +21,7 @@ public abstract class AbstractAvatarSessionService<A extends IAvatar> {
 
     private final Map<Long, Map<String, A>> avatarsCache;
 
-    private final Map<Long, Map<ChannelId, Long>> avatarSessions;
+    private final ConcurrentMap<ChannelId, Long> channelIdAvatarIdMap;
 
     private final ConcurrentMap<Long, AvatarSession<A>> sessions;
 
@@ -31,7 +32,7 @@ public abstract class AbstractAvatarSessionService<A extends IAvatar> {
     public AbstractAvatarSessionService() {
         sessions = new ConcurrentHashMap<Long, AvatarSession<A>>();
         avatarsCache = new HashMap<Long, Map<String, A>>();
-        avatarSessions = new HashMap<Long, Map<ChannelId, Long>>();
+        channelIdAvatarIdMap = new ConcurrentHashMap<ChannelId, Long>();
     }
 
     public Map<Long, AvatarSession<A>> getSessions() {
@@ -64,11 +65,8 @@ public abstract class AbstractAvatarSessionService<A extends IAvatar> {
                 }
                 avatarsCache.get(session.getGameId()).put(session.getUuid(), session.getAvatar());
             }
-            synchronized (avatarSessions) {
-                if (!avatarSessions.containsKey(session.getGameId())) {
-                    avatarSessions.put(session.getGameId(), new HashMap<ChannelId, Long>());
-                }
-                avatarSessions.get(session.getGameId()).put(session.getChannelId(), session.getAvatarId());
+            synchronized (channelIdAvatarIdMap) {
+                channelIdAvatarIdMap.put(session.getChannelId(), session.getAvatarId());
             }
         }
     }
@@ -90,10 +88,8 @@ public abstract class AbstractAvatarSessionService<A extends IAvatar> {
                 }
             }
 
-            synchronized (avatarSessions) {
-                if (avatarSessions.containsKey(session.getGameId())) {
-                    avatarSessions.get(session.getGameId()).remove(session.getChannelId());
-                }
+            synchronized (channelIdAvatarIdMap) {
+                channelIdAvatarIdMap.remove(session.getChannelId());
             }
         }
     }
@@ -109,6 +105,7 @@ public abstract class AbstractAvatarSessionService<A extends IAvatar> {
         session.setRoomId(0L);
         session.setCreateTime(System.currentTimeMillis());
         session.setChannel(channel);
+        session.setState(ConnectionStatus.CONNECTED);
         put(session.getAvatarId(), session);
         return session;
     }
@@ -128,5 +125,10 @@ public abstract class AbstractAvatarSessionService<A extends IAvatar> {
             return callable.call(null);
         }
         return null;
+    }
+
+    public <T> T updateAvatarSessionByChannelId(ChannelId channelId, SessionCallable<T, A> callable) {
+        long avatarId = channelIdAvatarIdMap.get(channelId);
+        return updateAvatarSession(avatarId, callable);
     }
 }
