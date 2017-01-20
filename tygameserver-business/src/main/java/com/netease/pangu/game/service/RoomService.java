@@ -1,11 +1,7 @@
 package com.netease.pangu.game.service;
 
-import com.netease.pangu.game.common.meta.AvatarSession;
-import com.netease.pangu.game.common.meta.ConnectionStatus;
-import com.netease.pangu.game.common.meta.GameRoom;
+import com.netease.pangu.game.common.meta.*;
 import com.netease.pangu.game.common.meta.GameRoom.RoomType;
-import com.netease.pangu.game.common.meta.GameRoom.Status;
-import com.netease.pangu.game.common.meta.RoomStatus;
 import com.netease.pangu.game.meta.Avatar;
 import com.netease.pangu.game.service.AbstractAvatarSessionService.SessionCallable;
 import com.netease.pangu.game.util.NettyHttpUtil;
@@ -63,7 +59,7 @@ public class RoomService {
             return false;
         }
         for (AvatarSession<Avatar> session : sessionsMap.values()) {
-            if (session.getRoomStatus() != RoomStatus.READY) {
+            if (session.getAvatarStatus() != AvatarStatus.READY) {
                 return false;
             }
         }
@@ -87,8 +83,8 @@ public class RoomService {
                         room.setId(roomId);
                         room.setGameId(gameId);
                         room.setOwnerId(avatarId);
-                        room.setSessionIds(new HashSet<Long>());
-                        room.setStatus(Status.IDLE);
+                        room.setSessionIds(new LinkedHashSet<Long>());
+                        room.setStatus(RoomStatus.IDLE);
                         room.setMaxSize(maxSize);
                         room.getSessionIds().add(avatarId);
 
@@ -107,12 +103,17 @@ public class RoomService {
 
     public boolean canJoin(long roomId) {
         GameRoom room = getGameRoom(roomId);
-        return room != null && room.getStatus() == GameRoom.Status.IDLE
+        return room != null && room.getStatus() == RoomStatus.IDLE
                 && room.getSessionIds().size() < room.getMaxSize() ? true : false;
     }
 
-    public void setRoomState(long roomId, Status status) {
+    public void setRoomState(long roomId, RoomStatus status) {
         GameRoom room = getGameRoom(roomId);
+        Set<Long> sessionIds = room.getSessionIds();
+        Map<Long, AvatarSession<Avatar>> sessionMap = avatarSessionService.getAvatarSessions(sessionIds);
+        for (AvatarSession<Avatar> session : sessionMap.values()) {
+            session.setAvatarStatus(AvatarStatus.GAMING);
+        }
         room.setStatus(status);
     }
 
@@ -174,10 +175,11 @@ public class RoomService {
                         }
                     } else {
                         room.setOwnerId(0L);
-                        room.setStatus(Status.CLOSING);
+                        room.setStatus(RoomStatus.CLOSING);
                         remove(room.getId());
                     }
                     playerSession.setRoomId(0L);
+                    playerSession.setAvatarStatus(AvatarStatus.IDLE);
                     return true;
                 }
                 return false;

@@ -18,6 +18,11 @@ public class JsonUtil {
         }).getType());
     }
 
+    public static  <T1, T2> Map<T1, T2> fromJsonByType(String jsonStr) {
+        return gson.fromJson(jsonStr, (new TypeToken<Map<T1, T2>>() {
+        }).getType());
+    }
+
     public static <T> T fromJson(String jsonStr, Class<T> clazz) {
         return gson.fromJson(jsonStr, clazz);
 

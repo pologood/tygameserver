@@ -30,7 +30,7 @@ public class NodeServerInitializer extends ChannelInitializer<SocketChannel> {
         if (sslCtx != null) {
             pipeline.addLast(sslCtx.newHandler(ch.alloc()));
         }
-        pipeline.addLast("ping", new IdleStateHandler(60, 15, 13, TimeUnit.SECONDS));
+        pipeline.addLast("ping", new IdleStateHandler(5, 5, 10, TimeUnit.MINUTES));
         pipeline.addLast(new HttpServerCodec());
         pipeline.addLast(new HttpObjectAggregator(65536));
         pipeline.addLast(new WebSocketServerCompressionHandler());

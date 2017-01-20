@@ -1,8 +1,8 @@
 package com.netease.pangu.game.common.meta;
 
 /**
- * Created by huangc on 2017/1/16.
+ * Created by huangc on 2017/1/18.
  */
 public enum RoomStatus {
-    READY, IDLE
+    IDLE, READY, GAMEING, CLOSING
 }

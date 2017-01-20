@@ -17,7 +17,7 @@ public class AvatarSession<A extends IAvatar> implements IAvatar {
     private Map<String, Object> attrs;
     private long createTime;
     private long lastestActiveTime;
-    private RoomStatus roomStatus;
+    private AvatarStatus avatarStatus;
     public Map<String, Object> getAttrs() {
         return attrs;
     }
@@ -152,12 +152,12 @@ public class AvatarSession<A extends IAvatar> implements IAvatar {
         this.state = state;
     }
 
-    public RoomStatus getRoomStatus() {
-        return roomStatus;
+    public AvatarStatus getAvatarStatus() {
+        return avatarStatus;
     }
 
-    public void setRoomStatus(RoomStatus roomStatus) {
-        this.roomStatus = roomStatus;
+    public void setAvatarStatus(AvatarStatus avatarStatus) {
+        this.avatarStatus = avatarStatus;
     }
 
 }

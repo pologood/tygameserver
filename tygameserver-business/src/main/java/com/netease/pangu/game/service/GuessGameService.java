@@ -6,9 +6,14 @@ import com.netease.pangu.game.common.meta.GameRoom;
 import com.netease.pangu.game.meta.Avatar;
 import com.netease.pangu.game.meta.GuessGame;
 import com.netease.pangu.game.meta.GuessGame.Guess;
-import com.netease.pangu.game.meta.GuessGame.Question;
+import com.netease.pangu.game.meta.GuessGameState;
 import com.netease.pangu.game.meta.GuessQuestion;
 import com.netease.pangu.game.util.ObjectUtil;
+import com.netease.pangu.game.util.ReturnUtils;
+import io.netty.util.Timeout;
+import io.netty.util.TimerTask;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.MapUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -18,9 +23,12 @@ import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class GuessGameService {
@@ -29,7 +37,22 @@ public class GuessGameService {
     @Resource
     private RoomService roomService;
 
-    public final List<GuessQuestion> questions = new ArrayList<GuessQuestion>();
+    private final List<GuessQuestion> questions = new ArrayList<GuessQuestion>();
+
+    public final static long gameId = 1;
+    private final static int TOTOAL_ROUND = 8;
+    private final static int ROUND_INTERVAL_TIME = 5000;
+    private final static int ROUNG_GAME_TIME = 60000;
+    private final static Map<GuessGame.RULE, Integer> RULE_SCORE;
+
+    static {
+        RULE_SCORE = new HashMap<GuessGame.RULE, Integer>();
+        RULE_SCORE.put(GuessGame.RULE.FIRST_GUESSED, 3);
+        RULE_SCORE.put(GuessGame.RULE.GUESSED, 1);
+        RULE_SCORE.put(GuessGame.RULE.BE_GUESSED, 1);
+        RULE_SCORE.put(GuessGame.RULE.LIKE, 1);
+        RULE_SCORE.put(GuessGame.RULE.EXIT, -10);
+    }
 
     @PostConstruct
     public void init() {
@@ -54,26 +77,130 @@ public class GuessGameService {
         }
     }
 
-    public final static long gameId = 1;
 
-    public boolean createGuessGame(long roomId, long avatarId) {
+    public boolean startGame(long roomId) {
+        long avatarId = generateDrawer(roomId);
         if (!gameMap.containsKey(roomId)) {
             GuessGame game = new GuessGame();
             game.setGameId(gameId);
-            game.setDrawerId(0);
             game.setRoomId(roomId);
-            game.setDrawerId(avatarId);
-            game.setState(GuessGame.QUESTION_CHOOSING);
-            game.setStartTime(System.currentTimeMillis());
-            return gameMap.putIfAbsent(roomId, game) == null;
+            game.setRound(0);
+            game.setState(GuessGameState.START);
+            game.getTimer().newTimeout(new TimerTask() {
+                @Override
+                public void run(Timeout timeout) throws Exception {
+                    GuessGame game = gameMap.get(roomId);
+                    synchronized (game) {
+                        long current = System.currentTimeMillis();
+                        if (game.getState() == GuessGameState.START) {
+                            game.setDrawerId(generateDrawer(roomId));
+                            long startTime = System.currentTimeMillis();
+                            game.setStartTime(startTime);
+                            game.setNextStartTime(0);
+                            game.setEndTime(startTime + ROUNG_GAME_TIME);
+                            game.setRound(1);
+                            game.setState(GuessGameState.ROUND_GAMING);
+                        } else if (game.getState() != GuessGameState.ROUND_INTERNAL) {
+                            if (current >= game.getEndTime()) {
+                                if(game.getRound() == TOTOAL_ROUND) {
+                                    game.setState(GuessGameState.GAME_STATS);
+                                    Map<String, Object> ret = new HashMap<String, Object>();
+                                    ret.put("lrt", game.getEndTime());
+                                    ret.put("answer", game.getQuestion().getAnswer());
+                                    roomService.broadcast("/guess/gameover", roomId, ReturnUtils.succ(ret));
+                                }else{
+                                    game.setState(GuessGameState.ROUND_INTERNAL);
+                                    long nextStartTime = current + ROUND_INTERVAL_TIME;
+                                    game.setNextStartTime(nextStartTime);
+                                    Map<String, Object> ret = new HashMap<String, Object>();
+                                    ret.put("lrt", game.getEndTime());
+                                    ret.put("nrt", nextStartTime);
+                                    ret.put("answer", game.getQuestion().getAnswer());
+                                    roomService.broadcast("/guess/roundover", roomId, ReturnUtils.succ(ret));
+                                }
+                                //save game data
+                            }
+                        } else if (game.getState() == GuessGameState.ROUND_INTERNAL && game.getRound() < TOTOAL_ROUND) {
+                            if (current == game.getNextStartTime()) {
+                                game.setState(GuessGameState.ROUND_GAMING);
+                                long drawerId = generateDrawer(roomId);
+                                game.setDrawerId(drawerId);
+                                game.setStartTime(game.getNextStartTime());
+                                game.setEndTime(game.getNextStartTime() + ROUNG_GAME_TIME);
+                                game.setRound(game.getRound() + 1);
+                            }
+                        } else if (game.getState() == GuessGameState.GAME_STATS) {
+
+                        }
+                    }
+                }
+            }, 100, TimeUnit.MILLISECONDS);
+
+            if (gameMap.putIfAbsent(roomId, game) == null) {
+                game.getTimer().start();
+            }
         }
         return false;
+    }
+
+    public void answer(long roomId, long avatarId, Guess guess) {
+
     }
 
     public void addGuessGameAnswer(long roomId, Guess guess) {
         GuessGame game = gameMap.get(roomId);
         synchronized (game) {
             game.getAnswers().add(guess);
+        }
+    }
+
+    public boolean addScore(GuessGame.RULE rule, long roomId, long avatarId) {
+        GuessGame game = gameMap.get(roomId);
+        if (game != null) {
+            synchronized (game) {
+                Map<Long, List<GuessGame.RULE>> operations = game.getOperations();
+                Map<Long, Integer> scores = game.getScores();
+                long drawerId = game.getDrawerId();
+                if (!operations.containsKey(drawerId)) {
+                    operations.put(drawerId, new ArrayList<GuessGame.RULE>());
+                }
+                if (!operations.containsKey(avatarId)) {
+                    operations.put(avatarId, new ArrayList<GuessGame.RULE>());
+                }
+                if (rule == GuessGame.RULE.GUESSED || rule == GuessGame.RULE.FIRST_GUESSED || rule == GuessGame.RULE.LIKE) {
+                    GuessGame.RULE drawRule = null;
+                    if (rule == GuessGame.RULE.GUESSED || rule == GuessGame.RULE.FIRST_GUESSED) {
+                        drawRule = GuessGame.RULE.BE_GUESSED;
+                    } else if (rule == GuessGame.RULE.LIKE) {
+                        drawRule = GuessGame.RULE.LIKE;
+                    }
+                    List<GuessGame.RULE> drawerRuleList = operations.get(drawerId);
+                    drawerRuleList.add(drawRule);
+                    int drawerScore = MapUtils.getIntValue(scores, rule, 0) + RULE_SCORE.get(drawRule);
+                    scores.put(avatarId, drawerScore > 0 ? drawerScore : 0);
+                }
+
+                List<GuessGame.RULE> ruleList = operations.get(avatarId);
+                ruleList.add(rule);
+                int score = MapUtils.getIntValue(scores, rule, 0) + RULE_SCORE.get(rule);
+                scores.put(avatarId, score > 0 ? score : 0);
+            }
+        }
+        return false;
+    }
+
+    public boolean containsRule(GuessGame.RULE rule, long roomId, long avatarId) {
+        GuessGame game = gameMap.get(roomId);
+        if (game != null) {
+            Map<Long, List<GuessGame.RULE>> operations = game.getOperations();
+            List<GuessGame.RULE> ruleList = operations.get(avatarId);
+            if (CollectionUtils.isNotEmpty(ruleList)) {
+                return ruleList.contains(rule);
+            } else {
+                return true;
+            }
+        } else {
+            return false;
         }
     }
 
@@ -92,38 +219,31 @@ public class GuessGameService {
         return getGuessGame(roomId).getAnswers();
     }
 
-    public int getGuessGameState(long roomId) {
+    public GuessGameState getGuessGameState(long roomId) {
         GuessGame game = gameMap.get(roomId);
         return game.getState();
     }
 
-    public void setGuessGameQuestion(long roomId, Question question) {
+    public boolean isGameOver(long roomId) {
         GuessGame game = gameMap.get(roomId);
-        synchronized (game) {
-            if (game.getState() == GuessGame.QUESTION_CHOOSING) {
-                game.setQuestion(question);
-                game.setState(GuessGame.QUESTION_OK);
-            }
+        if (game.getEndTime() <= System.currentTimeMillis()) {
+            return true;
+        } else {
+            return false;
         }
-    }
 
-    public void setDrawer(long roomId, long avatarId) {
-        GuessGame game = gameMap.get(roomId);
-        synchronized (game) {
-            game.setDrawerId(avatarId);
-            game.setState(GuessGame.QUESTION_CHOOSING);
-        }
     }
 
     public GuessGame getGuessGame(long roomId) {
         return ObjectUtil.deepCopy(gameMap.get(roomId));
     }
 
+
     public boolean exit(long roomId) {
         return gameMap.remove(roomId) != null;
     }
 
-    public long generateDrawer(long roomId) {
+    private long generateDrawer(long roomId) {
         GameRoom room = roomService.getGameRoom(roomId);
         Long[] avatarIds = room.getSessionIds().toArray(new Long[0]);
         int random = RandomUtils.nextInt(0, avatarIds.length);

@@ -1,7 +1,6 @@
 package com.netease.pangu.game.business.controller;
 
 import com.netease.pangu.game.common.meta.*;
-import com.netease.pangu.game.common.meta.GameRoom.Status;
 import com.netease.pangu.game.meta.Avatar;
 import com.netease.pangu.game.rpc.WsRpcResponse;
 import com.netease.pangu.game.rpc.annotation.WsRpcCall;
@@ -40,7 +39,7 @@ public class RoomController {
         long roomId = roomService.createRoom(gameId, session.getAvatarId(), maxSize);
         GameResult result;
         if (roomId > 0) {
-            session.setRoomStatus(RoomStatus.READY);
+            session.setAvatarStatus(AvatarStatus.READY);
             roomService.broadcast(RoomService.ROOM_INFO, roomId, roomService.getRoomInfo(roomId));
             result = ReturnUtils.succ(roomId);
         } else {
@@ -77,7 +76,7 @@ public class RoomController {
         if (session.getRoomId() > 0) {
             GameRoom room = roomService.getGameRoom(session.getRoomId());
             if (session.getAvatarId() == room.getOwnerId()) {
-                if (room.getStatus() == Status.IDLE) {
+                if (room.getStatus() == RoomStatus.IDLE) {
                     boolean isOk = roomService.exitRoom(avatarId);
                     if (isOk) {
                         roomService.broadcast(RoomService.ROOM_REMOVE_MEMBER, room.getId(), ReturnUtils.succ(avatarId));

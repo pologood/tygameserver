@@ -20,8 +20,8 @@ public class Avatar implements IAvatar, Serializable {
     private long lastLoginTime;
     private String server;
     private int totalScore;
-    private Map<String, Object> statis;
-
+    private Map<String, Object> data;
+    private Map<String, Object> history;
     @Override
     public String getName() {
         return this.name;
@@ -102,14 +102,6 @@ public class Avatar implements IAvatar, Serializable {
         this.avatarImg = avatarImg;
     }
 
-    public Map<String, Object> getStatis() {
-        return statis;
-    }
-
-    public void setStatis(Map<String, Object> statis) {
-        this.statis = statis;
-    }
-
     public int getTotalScore() {
         return totalScore;
     }
@@ -118,4 +110,19 @@ public class Avatar implements IAvatar, Serializable {
         this.totalScore = totalScore;
     }
 
+    public Map<String, Object> getData() {
+        return data;
+    }
+
+    public void setData(Map<String, Object> data) {
+        this.data = data;
+    }
+
+    public Map<String, Object> getHistory() {
+        return history;
+    }
+
+    public void setHistory(Map<String, Object> history) {
+        this.history = history;
+    }
 }

@@ -1,23 +1,38 @@
 package com.netease.pangu.game.meta;
 
-import java.util.ArrayList;
-import java.util.List;
+import io.netty.util.HashedWheelTimer;
+import org.springframework.data.annotation.Transient;
+import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
+
+@Document(collection = "guessgame")
 public class GuessGame {
     private long gameId;
     private long roomId;
     private long startTime;
     private long endTime;
+    private long nextStartTime;
     private long drawerId;
     private Question question;
     private List<Guess> answers;
-    private int state;
+    private boolean isFirstGuessed;
+    private Map<Long, Integer> scores;
+    private Map<Long, List<RULE>> operations;
+    private GuessGameState state;
     private int round;
-    public final static int QUESTION_CHOOSING = 0;
-    public final static int QUESTION_OK = 1;
+
+    @Transient
+    private HashedWheelTimer timer;
 
     public GuessGame() {
         this.answers = new ArrayList<Guess>();
+        this.operations = new HashMap<Long, List<RULE>>();
+        this.timer = new HashedWheelTimer(1, TimeUnit.SECONDS);
     }
 
     public long getRoomId() {
@@ -76,11 +91,11 @@ public class GuessGame {
         this.answers.add(guess);
     }
 
-    public int getState() {
+    public GuessGameState getState() {
         return state;
     }
 
-    public void setState(int state) {
+    public void setState(GuessGameState state) {
         this.state = state;
     }
 
@@ -90,6 +105,42 @@ public class GuessGame {
 
     public void setRound(int round) {
         this.round = round;
+    }
+
+    public Map<Long, List<RULE>> getOperations() {
+        return operations;
+    }
+
+    public Map<Long, Integer> getScores() {
+        return scores;
+    }
+
+    public boolean isFirstGuessed() {
+        return isFirstGuessed;
+    }
+
+    public void setFirstGuessed(boolean firstGuessed) {
+        isFirstGuessed = firstGuessed;
+    }
+
+    public HashedWheelTimer getTimer() {
+        return timer;
+    }
+
+    public long getNextStartTime() {
+        return nextStartTime;
+    }
+
+    public void setNextStartTime(long nextStartTime) {
+        this.nextStartTime = nextStartTime;
+    }
+
+    public enum RULE {
+        FIRST_GUESSED,
+        GUESSED,
+        LIKE,
+        BE_GUESSED,
+        EXIT
     }
 
     public static class Question {

@@ -1,13 +1,11 @@
 package com.netease.pangu.game.distribution.handler;
 
 import com.netease.pangu.game.common.meta.AvatarSession;
-import com.netease.pangu.game.common.meta.ConnectionStatus;
 import com.netease.pangu.game.common.meta.GameContext;
 import com.netease.pangu.game.constant.GameServerConst;
 import com.netease.pangu.game.http.HttpRequestInvoker;
 import com.netease.pangu.game.meta.Avatar;
 import com.netease.pangu.game.rpc.WsRpcCallInvoker;
-import com.netease.pangu.game.service.AbstractAvatarSessionService;
 import com.netease.pangu.game.service.AvatarService;
 import com.netease.pangu.game.service.AvatarSessionService;
 import com.netease.pangu.game.util.JsonUtil;
@@ -159,13 +157,7 @@ public class NodeServerHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
         System.out.println("#5 " + ctx.channel().id().asLongText());
-        avatarSessionService.updateAvatarSessionByChannelId(ctx.channel().id(), new AbstractAvatarSessionService.SessionCallable<Void, Avatar>() {
-            @Override
-            public Void call(AvatarSession<Avatar> playerSession) {
-                playerSession.setState(ConnectionStatus.NOT_CONNECTED);
-                return null;
-            }
-        });
+        avatarSessionService.updateAvatarSessionToNotConnectedByChannelId(ctx.channel().id());
     }
 
     @Override
