@@ -196,6 +196,11 @@ public class GuessGame {
         private String answer;
         private long time;
 
+        public Guess(Guess guess){
+            this.setAnswer(guess.getAnswer());
+            this.setAvatarId(guess.getAvatarId());
+            this.setTime(guess.getTime());
+        }
         public long getAvatarId() {
             return avatarId;
         }
