@@ -17,6 +17,7 @@ import org.apache.commons.collections.MapUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.bson.types.ObjectId;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -121,7 +122,10 @@ public class GuessGameService {
                                     ret.put("answer", game.getQuestion().getAnswer());
                                     roomService.broadcast("/guess/roundover", roomId, ReturnUtils.succ(ret));
                                 }
-                                guessGameDao.save(game);
+                                if(guessGameDao.save(game)){
+                                    ObjectId id = game.getId();
+                                }
+
                                 //save game data
                             }
                         } else if (game.getState() == GuessGameState.ROUND_INTERNAL && game.getRound() < TOTOAL_ROUND) {

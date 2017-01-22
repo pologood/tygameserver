@@ -1,8 +1,10 @@
 package com.netease.pangu.game.meta;
 
 import io.netty.util.HashedWheelTimer;
+import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -12,6 +14,8 @@ import java.util.concurrent.TimeUnit;
 
 @Document(collection = "guessgame")
 public class GuessGame {
+    @Field("_id")
+    private ObjectId id;
     private long gameId;
     private long roomId;
     private long startTime;
@@ -33,6 +37,14 @@ public class GuessGame {
         this.answers = new ArrayList<Guess>();
         this.operations = new HashMap<Long, List<RULE>>();
         this.timer = new HashedWheelTimer(1, TimeUnit.SECONDS);
+    }
+
+    public ObjectId getId() {
+        return id;
+    }
+
+    public void setId(ObjectId id) {
+        this.id = id;
     }
 
     public long getRoomId() {
