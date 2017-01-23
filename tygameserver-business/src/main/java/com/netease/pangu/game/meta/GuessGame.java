@@ -151,6 +151,7 @@ public class GuessGame {
         FIRST_GUESSED,
         GUESSED,
         LIKE,
+        UNLIKE,
         BE_GUESSED,
         EXIT
     }
@@ -207,6 +208,9 @@ public class GuessGame {
         private long avatarId;
         private String answer;
         private long time;
+        public Guess(){
+
+        }
 
         public Guess(Guess guess){
             this.setAnswer(guess.getAnswer());

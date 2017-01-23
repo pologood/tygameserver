@@ -60,23 +60,32 @@ public class GuessGameController {
         }
     }
 
-    @WsRpcCall("/exit")
-    public GameResult exit(long roomId, GameContext<AvatarSession<Avatar>> ctx){
-        GameRoom room = roomService.getGameRoom(roomId);
-        if(room != null) {
-            if (room.getStatus() == RoomStatus.GAMEING){
-
-            }
-        }
-        return ReturnUtils.failed();
+    @WsRpcCall("/like")
+    public GameResult like(long roomId, GameContext<AvatarSession<Avatar>> ctx){
+        return guessGameService.like(roomId, ctx.getSession());
     }
 
+    @WsRpcCall("/exit")
+    public void exit(long roomId, GameContext<AvatarSession<Avatar>> ctx){
+        guessGameService.exit(roomId, ctx.getSession());
+    }
+
+    @WsRpcCall("/unlike")
+    public GameResult unlike(long roomId, GameContext<AvatarSession<Avatar>> ctx){
+        return guessGameService.unlike(roomId, ctx.getSession());
+    }
 
     @WsRpcCall("/answer")
     public GameResult setAnswer(long roomId, String answer, GameContext<AvatarSession<Avatar>> ctx) {
+        GuessGame.Guess guess = new GuessGame.Guess();
+        guess.setAvatarId(ctx.getSession().getAvatarId());
+        guess.setAnswer(answer);
+        guess.setTime(System.currentTimeMillis());
         if (guessGameService.getGuessGameState(roomId) == GuessGameState.ROUND_GAMING) {
-
+            guessGameService.answer(roomId, ctx.getSession(), guess);
+            return ReturnUtils.succ();
+        }else {
+            return ReturnUtils.failed("not in gaming");
         }
-        return ReturnUtils.failed("you are drawer");
     }
 }

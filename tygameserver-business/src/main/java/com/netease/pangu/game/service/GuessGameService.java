@@ -55,6 +55,7 @@ public class GuessGameService {
         RULE_SCORE.put(GuessGame.RULE.GUESSED, 1);
         RULE_SCORE.put(GuessGame.RULE.BE_GUESSED, 1);
         RULE_SCORE.put(GuessGame.RULE.LIKE, 1);
+        RULE_SCORE.put(GuessGame.RULE.UNLIKE, 0);
         RULE_SCORE.put(GuessGame.RULE.EXIT, -10);
     }
 
@@ -185,16 +186,48 @@ public class GuessGameService {
         }
     }
 
-    public void like(long roomId, AvatarSession<Avatar> avatarSession){
+    public ReturnUtils.GameResult like(long roomId, AvatarSession<Avatar> avatarSession){
         GuessGame game = gameMap.get(roomId);
         if (game != null) {
             synchronized (game) {
-                if(containsRule(GuessGame.RULE.LIKE, roomId, avatarSession.getAvatarId())){
+                if(!containsRule(GuessGame.RULE.LIKE, roomId, avatarSession.getAvatarId())){
                     addScore(GuessGame.RULE.LIKE, game, avatarSession.getAvatarId());
                     roomService.broadcast("/guess/like/", roomId, ReturnUtils.succ());
+                    return ReturnUtils.succ();
                 }
             }
         }
+        return ReturnUtils.failed();
+    }
+
+    public ReturnUtils.GameResult unlike(long roomId, AvatarSession<Avatar> avatarSession){
+        GuessGame game = gameMap.get(roomId);
+        if (game != null) {
+            synchronized (game) {
+                if(!containsRule(GuessGame.RULE.UNLIKE, roomId, avatarSession.getAvatarId())){
+                    addScore(GuessGame.RULE.UNLIKE, game, avatarSession.getAvatarId());
+                    roomService.broadcast("/guess/unlike/", roomId, ReturnUtils.succ());
+                    return ReturnUtils.succ();
+                }
+            }
+        }
+        return ReturnUtils.failed();
+    }
+
+    public ReturnUtils.GameResult exit(long roomId, AvatarSession<Avatar> avatarSession){
+        GuessGame game = gameMap.get(roomId);
+        if(game != null){
+            synchronized (game){
+                if(!containsRule(GuessGame.RULE.EXIT, roomId, avatarSession.getAvatarId())){
+                    addScore(GuessGame.RULE.EXIT, game, avatarSession.getAvatarId());
+                    if(roomService.exitRoom(avatarSession.getAvatarId())) {
+                        roomService.broadcast("/guess/exit/", roomId, ReturnUtils.succ());
+                        return ReturnUtils.succ();
+                    }
+                }
+            }
+        }
+        return ReturnUtils.failed();
     }
 
     private void addScore(GuessGame.RULE rule,  GuessGame game, long avatarId) {
