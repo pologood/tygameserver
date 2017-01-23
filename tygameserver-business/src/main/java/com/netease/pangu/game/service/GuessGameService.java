@@ -110,18 +110,14 @@ public class GuessGameService {
                                 if (game.getRound() == TOTOAL_ROUND) {
                                     game.setState(GuessGameState.GAME_STATS);
                                     Map<String, Object> ret = new HashMap<String, Object>();
-                                    ret.put("lrt", game.getEndTime());
-                                    ret.put("answer", game.getQuestion().getAnswer());
                                     roomService.broadcast("/guess/gameover", roomId, ReturnUtils.succ(ret));
                                 } else {
                                     game.setState(GuessGameState.ROUND_INTERNAL);
 
                                     game.setNextStartTime(nextStartTime);
-                                    Map<String, Object> ret = new HashMap<String, Object>();
-                                    ret.put("lrt", game.getEndTime());
-                                    ret.put("nrt", nextStartTime);
+                                    Map<String, Object> ret = new HashMap<String, Object>(getCurrentGameInfo(roomId));
                                     ret.put("answer", game.getQuestion().getAnswer());
-                                    roomService.broadcast("/guess/roundover", roomId, ReturnUtils.succ(ret));
+                                    roomService.broadcast("/guess/roundover", roomId, ReturnUtils.succ());
                                 }
                                 if(guessGameDao.save(game)){
                                     ObjectId id = game.getId();
@@ -137,10 +133,7 @@ public class GuessGameService {
                                 game.setStartTime(game.getNextStartTime());
                                 game.setEndTime(nextStartTime);
                                 game.setRound(game.getRound() + 1);
-                                Map<String, Object> ret = new HashMap<String, Object>();
-                                ret.put("lrt", game.getEndTime());
-                                ret.put("nrt", nextStartTime);
-                                ret.put("answer", game.getQuestion().getAnswer());
+                                Map<String, Object> ret = new HashMap<String, Object>(getCurrentGameInfo(roomId));
                                 roomService.broadcast("/guess/gaming", roomId, ReturnUtils.succ(ret));
                             }
                         } else if (game.getState() == GuessGameState.GAME_STATS) {
@@ -161,6 +154,17 @@ public class GuessGameService {
         return guess;
     }
 
+
+    public Map<String, Object> getCurrentGameInfo(long roomId) {
+        Map<String, Object> currentGame = new HashMap<String, Object>();
+        GuessGame game = gameMap.get(roomId);
+        currentGame.put("round", game.getRound());
+        currentGame.put("endTime", game.getEndTime());
+        currentGame.put("nextStartTime", game.getNextStartTime());
+        currentGame.put("scores", game.getScores());
+        return currentGame;
+    }
+
     public void answer(long roomId, AvatarSession<Avatar> avatarSession, Guess guess) {
         GuessGame game = gameMap.get(roomId);
         if (game != null) {
@@ -169,6 +173,8 @@ public class GuessGameService {
                     avatarSession.sendMessage(ReturnUtils.failed("you are game drawer"));
                     return;
                 } else {
+                    Map<String, Object> ret = new HashMap<String, Object>(getCurrentGameInfo(roomId));
+                    ret.put("fAnswer", filterAnswer(guess));
                     if (isCorrectAnswer(game, guess)) {
                         if (!game.isFirstGuessed()) {
                             addScore(GuessGame.RULE.FIRST_GUESSED, game, avatarSession.getAvatarId());
@@ -177,9 +183,11 @@ public class GuessGameService {
                             addScore(GuessGame.RULE.GUESSED, game, avatarSession.getAvatarId());
                         }
                         game.getAnswers().add(guess);
-                        roomService.broadcast("/guess/answer/", roomId, ReturnUtils.succ(filterAnswer(guess)));
+
+
+                        roomService.broadcast("/guess/answer/", roomId, ReturnUtils.succ(ret));
                     } else{
-                        roomService.broadcast("/guess/answer/", roomId, ReturnUtils.succ(filterAnswer(guess)));
+                        roomService.broadcast("/guess/answer/", roomId, ReturnUtils.succ(ret));
                     }
                 }
             }
