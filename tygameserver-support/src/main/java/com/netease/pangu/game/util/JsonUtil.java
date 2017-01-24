@@ -23,6 +23,10 @@ public class JsonUtil {
         }).getType());
     }
 
+    public static <T> T fromJson(String jsonStr, TypeToken<T> typeToken){
+        return gson.fromJson(jsonStr, typeToken.getType());
+    }
+
     public static <T> T fromJson(String jsonStr, Class<T> clazz) {
         return gson.fromJson(jsonStr, clazz);
 
