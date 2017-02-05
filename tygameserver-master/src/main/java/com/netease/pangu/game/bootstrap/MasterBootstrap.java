@@ -1,6 +1,5 @@
 package com.netease.pangu.game.bootstrap;
 
-import com.netease.pangu.game.distribution.Bootstrap;
 import com.netease.pangu.game.distribution.handler.MasterServerInitializer;
 import com.netease.pangu.game.distribution.impl.MasterServiceImpl;
 import io.grpc.Server;

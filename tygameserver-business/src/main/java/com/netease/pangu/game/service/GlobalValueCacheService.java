@@ -24,8 +24,8 @@ public class GlobalValueCacheService {
 	private final static Logger logger = Logger.getLogger(GlobalValueCacheService.class);
 	
 	/**
-	 * Í¨¹ıMemCachedÊÇÊµÏÖÒ»¸öÈ«¾ÖµÄÀÖ¹ÛËø,±£Ö¤Í¬Ò»Ê±¼äÖ»Ö´ĞĞÒ»¸ö¡£ µÈ´ı10ÃëÈç¹û³¬Ê±£¬Ç¿ĞĞ»ñÈ¡
- *         Ö´ĞĞÍæ²Ù×÷ºó£¬ÀÖ¹ÛËø»áÉ¾³ı
+	 * é€šè¿‡MemCachedæ˜¯å®ç°ä¸€ä¸ªå…¨å±€çš„ä¹è§‚é”,ä¿è¯åŒä¸€æ—¶é—´åªæ‰§è¡Œä¸€ä¸ªã€‚ ç­‰å¾…10ç§’å¦‚æœè¶…æ—¶ï¼Œå¼ºè¡Œè·å–
+ *         æ‰§è¡Œç©æ“ä½œåï¼Œä¹è§‚é”ä¼šåˆ é™¤
 	 * @param callback
 	 * @return
 	 */
@@ -34,23 +34,23 @@ public class GlobalValueCacheService {
 		T cachedValue = callback.getCachedValue();
 		if (cachedValue == null) {
 			boolean lockAquired = false;
-			for (int i = 0; i < 10; i++) { // ³¢ÊÔ10s
+			for (int i = 0; i < 10; i++) { // å°è¯•10s
 				lockAquired = commonRedisDao.setIfAbsent(accessTokenLock, "LOCKED");
 				if (!lockAquired) {
-					// µÈ´ı1s£¬ÏÂ´ÎÔÙÊÔ
+					// ç­‰å¾…1sï¼Œä¸‹æ¬¡å†è¯•
 					try {
 						Thread.sleep(1000);
 					} catch (InterruptedException e) {
 					}
 				} else {
-					// ³É¹¦»ñÈ¡ÁËËø
+					// æˆåŠŸè·å–äº†é”
 					break;
 				}
 			}
 
-			// ËøÒÑ¾­³É¹¦»ñÈ¡£¬»òÕß³¬Ê±Ç¿ĞĞ»ñÈ¡
+			// é”å·²ç»æˆåŠŸè·å–ï¼Œæˆ–è€…è¶…æ—¶å¼ºè¡Œè·å–
 			if (!lockAquired) {
-				// Ëø³¬Ê±ÁË£¬Ç¿ĞĞ»ñÈ¡
+				// é”è¶…æ—¶äº†ï¼Œå¼ºè¡Œè·å–
 				commonRedisDao.putWithTTL(accessTokenLock, "LOCKED", 300, TimeUnit.SECONDS);
 				logger.info(String.format("get lock %s", accessTokenLock));
 			}
@@ -60,7 +60,7 @@ public class GlobalValueCacheService {
 					cachedValue = callback.getMissValue();
 				}
 			} finally {
-				commonRedisDao.remove(accessTokenLock); // É¾³ıËø
+				commonRedisDao.remove(accessTokenLock); // åˆ é™¤é”
 			}
 		}
 
@@ -126,8 +126,8 @@ public class GlobalValueCacheService {
 	
 	/**
 	 * 
-	 * ĞèÒª¶¨ÖÆ¸üĞÂÊ±¼äkey
-	 * ĞèÒª×Ô¼º´¦Àí»º´æ
+	 * éœ€è¦å®šåˆ¶æ›´æ–°æ—¶é—´key
+	 * éœ€è¦è‡ªå·±å¤„ç†ç¼“å­˜
 	 * @param cacheableValueWithTTL
 	 * @return
 	 */

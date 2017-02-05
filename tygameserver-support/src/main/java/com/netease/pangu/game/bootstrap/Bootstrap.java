@@ -1,4 +1,4 @@
-package com.netease.pangu.game.distribution;
+package com.netease.pangu.game.bootstrap;
 
 import org.springframework.context.ConfigurableApplicationContext;
 

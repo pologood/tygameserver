@@ -1,7 +1,6 @@
 package com.netease.pangu.game.bootstrap;
 
 import com.netease.pangu.distribution.proto.RpcResponse;
-import com.netease.pangu.game.distribution.Bootstrap;
 import com.netease.pangu.game.distribution.MasterCallService;
 import com.netease.pangu.game.distribution.Node;
 import com.netease.pangu.game.distribution.handler.NodeServerInitializer;
