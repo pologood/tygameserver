@@ -25,7 +25,7 @@ public class Main {
         Callback<String> onMsg = new Callback<String>() {
             public void onMessage(String message) {
                 //open latch
-                System.out.println(message);
+                System.out.println("receive: "+ message);
                 latch.countDown();
             }
         };

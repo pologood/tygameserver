@@ -8,6 +8,9 @@ import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.*;
+import io.netty.handler.codec.http.cookie.*;
+import io.netty.handler.codec.http.cookie.Cookie;
+import io.netty.handler.codec.http.cookie.ServerCookieEncoder;
 import io.netty.handler.codec.http.multipart.Attribute;
 import io.netty.handler.codec.http.multipart.HttpPostRequestDecoder;
 import io.netty.handler.codec.http.multipart.InterfaceHttpData;
@@ -15,9 +18,7 @@ import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 
 public class NettyHttpUtil {
@@ -113,4 +114,43 @@ public class NettyHttpUtil {
     public static FullHttpResponse createHttpResponse(HttpResponseStatus status, String msg) {
         return new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, status, Unpooled.copiedBuffer(msg, Charset.forName("UTF-8")));
     }
+
+    public static Set<Cookie> getCookies(FullHttpRequest request){
+        return getCookies(request.headers());
+    }
+
+    public static String getCookieValue(FullHttpRequest request, String cookieName, String defaultValue){
+        Set<Cookie> cookies = getCookies(request);
+        for(Cookie cookie : cookies){
+            if(cookie.name().equals(cookieName)){
+                return cookie.value();
+            }
+        }
+        return defaultValue;
+    }
+
+    public static Set<Cookie> getCookies(FullHttpResponse response){
+        return getCookies(response.headers());
+    }
+
+    private static Set<Cookie> getCookies(HttpHeaders headers){
+        Set<Cookie> cookies;
+        String value = headers.get(HttpHeaderNames.COOKIE);
+        if (value == null) {
+            /**
+             * Returns an empty set (immutable).
+             */
+            cookies = Collections.emptySet();
+        } else {
+            cookies = ServerCookieDecoder.STRICT.decode(value);
+        }
+        return cookies;
+    }
+
+    public static void setCookie(FullHttpResponse response, Cookie cookie){
+        Set<Cookie> cookies = getCookies(response);
+        cookies.add(cookie);
+        response.headers().set(HttpHeaderNames.SET_COOKIE, ServerCookieEncoder.STRICT.encode(cookies));
+    }
+
 }
