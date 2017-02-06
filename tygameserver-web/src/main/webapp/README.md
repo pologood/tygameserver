@@ -1,1 +1,2 @@
-#你画我猜
+feg server start
+feg release -wL
