@@ -195,10 +195,11 @@
         </dependencies>
     </dependencyManagement>
     <modules>
-        <module>tygameserver-business</module>
-        <module>tygameserver-master</module>
         <module>tygameserver-support</module>
         <module>tygameserver-protocol</module>
+        <module>tygameserver-business</module>
+        <module>tygameserver-master</module>
+        <module>tygameserver-auth</module>
         <module>tygameserver-slave</module>
         <module>tygameserver-config</module>
         <module>tygameserver-web</module>

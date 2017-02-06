@@ -54,15 +54,15 @@ public class HttpRequestInvoker {
     }
 
     private Map<Integer, String> getParamsIndex(long gameId, String requestUri) {
-        return methodParamIndexMap.get(gameId).get(requestUri);
+        return methodMap.get(gameId) != null ? methodParamIndexMap.get(gameId).get(requestUri): null;
     }
 
     public boolean containsURIPath(long gameId, String requestUri) {
-        return methodMap.get(gameId).keySet().contains(requestUri);
+        return methodMap.get(gameId) != null ? methodMap.get(gameId).keySet().contains(requestUri):false;
     }
 
     private Object getController(long gameId, String requestUri) {
-        return controllerMap.get(gameId).get(httpRequestMappingAnnoValueMap.get(gameId).get(requestUri));
+        return methodMap.get(gameId) != null ?  controllerMap.get(gameId).get(httpRequestMappingAnnoValueMap.get(gameId).get(requestUri)): null;
 
     }
 

@@ -1,4 +1,4 @@
-package com.netease.pangu.game.distribution.handler;
+package com.netease.pangu.game.netty;
 
 import com.netease.pangu.game.common.meta.GameContext;
 import com.netease.pangu.game.constant.GameServerConst;

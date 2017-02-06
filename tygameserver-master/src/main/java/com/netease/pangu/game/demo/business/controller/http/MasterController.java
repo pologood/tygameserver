@@ -8,8 +8,6 @@ import com.netease.pangu.game.http.annotation.HttpController;
 import com.netease.pangu.game.http.annotation.HttpRequestMapping;
 import com.netease.pangu.game.meta.Avatar;
 import com.netease.pangu.game.meta.GuessQuestion;
-import com.netease.pangu.game.rpc.annotation.WsRpcCall;
-import com.netease.pangu.game.rpc.annotation.WsRpcController;
 import com.netease.pangu.game.service.AvatarService;
 import com.netease.pangu.game.service.GuessGameService;
 import com.netease.pangu.game.service.RoomAllocationService;
@@ -22,7 +20,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@WsRpcController(value = "/master", gameId = GameConst.GUESSS)
 @HttpController(value = "/master", gameId = GameConst.GUESSS)
 public class MasterController {
     @Resource
@@ -36,7 +33,6 @@ public class MasterController {
     @Resource
     GuessGameService guessGameService;
 
-    @WsRpcCall("/init")
     @HttpRequestMapping("/init")
     public String getNode(String uuid, String roleName, String avatarImg, long gameId, long roomId, String callback) {
         Node node = null;
@@ -83,7 +79,6 @@ public class MasterController {
         return callback + "(" + null + ")";
     }
 
-    @WsRpcCall("/avatar")
     @HttpRequestMapping("/avatar")
     public Map<String, Object> getAvatarByUUID(long gameId, String uuid) {
         Avatar avatar = avatarService.getAvatarByUUID(gameId, uuid);
@@ -97,7 +92,6 @@ public class MasterController {
         return playerObj;
     }
 
-    @WsRpcCall("/avatar/list")
     @HttpRequestMapping("/avatar/list")
     public List<Map<String, Object>> getAvatarList(long gameId) {
         List<Avatar> list = avatarService.getListByGameId(gameId);
@@ -115,7 +109,6 @@ public class MasterController {
         return avatarObjList;
     }
 
-    @WsRpcCall("/questions")
     @HttpRequestMapping("/questions")
     public List<GuessQuestion> getQuestions() {
         return guessGameService.getQuestions();
