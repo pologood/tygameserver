@@ -28,6 +28,7 @@ puremvc.define({
             this.$container.find(".joinBtn").click(function(){
             	_this.dispatchJoinRoom();
             })
+            
 		}
 	},
 	{
@@ -39,6 +40,11 @@ puremvc.define({
 		},
 		dispatchEvent:function(event){
 			drawsomething.view.event.AppEvents.dispatchEvent(this.container,event);
+		},
+		dispatchLoginStatus:function(){
+			var e = this.createEvent( drawsomething.view.event.AppEvents.GET_LOGIN_STATUS);
+			e.msg={};
+			this.dispatchEvent(e);
 		},
 		dispatchLoginSuccess:function(urs){
 			var loginEvent = this.createEvent( drawsomething.view.event.AppEvents.URS_LOGIN_SUCCESS);

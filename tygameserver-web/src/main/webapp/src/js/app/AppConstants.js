@@ -6,6 +6,10 @@ puremvc.define({name:'drawsomething.AppConstants'},{},{
 	CONNECT_SUCCESS:'connect_success',//socket链接成功
 	START_GAME:'start_game',//房主开启游戏
 	URS_LOGIN_SUCCESS:'urs_login_success',//urs登录成功
-	GET_ROLELIST:'get_rolelist'
+	URS_UNLOGIN:'urs_unlogin',
+	GET_ROLELIST:'get_rolelist',
+	CHECK_LOGIN:'check_login',
+	LOGINED:'logined',
+	UNLOGIN:'unlogin'
 
 })

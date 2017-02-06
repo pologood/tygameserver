@@ -22,6 +22,9 @@ puremvc.define({
 		gameState:0,
 		selfName:'',
 		host:'http://littlegame.tianyu.163.com:8090',
+		onRegister:function(){
+			this.getLoginStatus();
+		},
 		getRoleList:function(){
 			var _this=this;
 			$.getJSON(this.host+"/master/avatar/roles?callback=?&gameId="+this.gameId,function(msg){
@@ -36,9 +39,14 @@ puremvc.define({
             })
 		},
 		getLoginStatus:function(){
-			var _this=this;
-			$.getJSON(this.host+"/master/isLogin?callback=?",function(msg){
-				
+			var _this=this;			
+			$.getJSON(this.host+"/master/isLogin?callback=?&gameId="+this.gameId,function(msg){
+				console.log(msg)
+				if(msg.code==1){
+					_this.sendNotification(drawsomething.AppConstants.URS_LOGIN_SUCCESS,{});
+				}else{
+					_this.sendNotification(drawsomething.AppConstants.URS_UNLOGIN,{});
+				}
 			})
 		},
 		connectSocket:function(data){

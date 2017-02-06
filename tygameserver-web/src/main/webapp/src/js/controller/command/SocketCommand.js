@@ -16,6 +16,9 @@ puremvc.define({
 			case drawsomething.AppConstants.GET_ROLELIST:
 				proxy.getRoleList();
 			break;
+			case drawsomething.AppConstants.CHECK_LOGIN:
+				proxy.getLoginStatus();
+			break;
 		}
 	}
 })
