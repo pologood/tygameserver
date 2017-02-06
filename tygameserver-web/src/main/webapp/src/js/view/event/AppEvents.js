@@ -11,6 +11,8 @@ puremvc.define(
 		CONNECT_SOCKET:'connect_socket',
 		URS_LOGIN_SUCCESS:'urs_login_success',
 		ROLE_CONFIRM:'role_confirm',
+		CREATE_ROOM:'create_room',
+		JOIN_ROOM:'join_room',
 		createEvent:function(eventName){
 			var event;
 			if(document.createEvent){

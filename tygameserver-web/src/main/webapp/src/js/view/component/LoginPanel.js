@@ -20,6 +20,14 @@ puremvc.define({
             this.$container.find(".confirmBtn").click(function(){
             	_this.dispatchConfirm();
             })
+
+            this.$container.find(".createBtn").click(function(){
+            	_this.dispatchCreateRoom();
+            })
+
+            this.$container.find(".joinBtn").click(function(){
+            	_this.dispatchJoinRoom();
+            })
 		}
 	},
 	{
@@ -39,6 +47,18 @@ puremvc.define({
 			};
 			this.dispatchEvent(loginEvent);
 		},
+		dispatchCreateRoom:function(){
+			var e = this.createEvent( drawsomething.view.event.AppEvents.CREATE_ROOM);
+			e.msg={};
+			this.dispatchEvent(e);
+		},
+		dispatchJoinRoom:function(){
+			var e = this.createEvent( drawsomething.view.event.AppEvents.JOIN_ROOM);
+			e.msg={
+				roomId:this.$container.find(".roomIdIpt").val()
+			};
+			this.dispatchEvent(e);
+		},
 		dispatchConfirm:function(){
 			var e = this.createEvent( drawsomething.view.event.AppEvents.ROLE_CONFIRM);
 			e.msg={
@@ -49,10 +69,17 @@ puremvc.define({
 		showRoleList:function(){
 			this.$container.find(".loginCnt").hide();
 			this.$container.find(".selectRole").show();
+			this.$container.find(".entrance").hide();
 		},
-		showLoginList:function(){
+		showLogin:function(){
 			this.$container.find(".loginCnt").show();
 			this.$container.find(".selectRole").hide();
+			this.$container.find(".entrance").hide();
+		},
+		showEntrance:function(){
+			this.$container.find(".loginCnt").hide();
+			this.$container.find(".selectRole").hide();
+			this.$container.find(".entrance").show();
 		},
 		hide:function(){
 			this.container.hide();
