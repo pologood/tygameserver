@@ -59,10 +59,10 @@ public class HttpRequestInvoker {
         if(method != null){
             Anonymous anno = method.getDeclaredAnnotation(Anonymous.class);
             if(anno != null){
-                return true;
+                return false;
             }
         }
-        return false;
+        return true;
     }
 
     private Map<Integer, String> getParamsIndex(long gameId, String requestUri) {
