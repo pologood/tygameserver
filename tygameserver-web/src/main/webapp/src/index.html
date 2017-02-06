@@ -1,0 +1,269 @@
+<!doctype html>
+<html>
+<head>
+    <title>你画我猜</title>
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="keywords" content="">
+    <meta name="description" content="">
+    <meta charset="UTF-8">
+    <meta name="renderer" content="webkit">
+    <link rel="dns-prefetch" href="https://nie.res.netease.com">    
+    <!--<link href="http://res.tianyu.netease.com/qt/16/drawsomething/css/bootstrap.min.css" rel="stylesheet">-->
+    <link rel="stylesheet" type="text/css" href="css/index.less">
+    <script src="http://res.tianyu.netease.com/qt/16/drawsomething/js/createjs-2015.11.26.min.js"></script> 
+    <script type="text/javascript" src="https://webzj.reg.163.com/webapp/javascript/page/json3.js"></script>
+    <script type="text/javascript" src="https://webzj.reg.163.com/webapp/javascript/message.js"></script>
+    <!--[if lt IE 9]>
+    <script src="http://res.nie.netease.com/comm/html5/html5shiv.js"></script>
+    <![endif]-->
+</head>
+
+<body>
+    <div class="g-wrap" id="drawsomething">
+        <div id="loginPanel" class="loginPanel">
+            <p class="title">欢迎来到天谕你画我猜</p>
+            <div class="loginCnt" id="login">
+
+            </div>
+            <div class="selectRole">
+                <h2> 请选择游戏角色 </h2>
+                <div class="radioCnt">
+                    <label><input name="role" type="radio" value="gbid" />sdfd </label>
+                    <label><input name="role" type="radio" value="gbid" />桃sdfdsf子 </label>
+                    <label><input name="role" type="radio" value="gbid" />香sdf蕉 </label>
+                    <label><input name="role" type="radio" value="gbid" />sdf梨 </label>
+                    <label><input name="role" type="radio" value="gbid" />f </label>
+                </div>
+                <a href="javascript:;" class="confirmBtn">确认</a>
+            </div>
+            <div class="entrance">
+                <div class="joinRoom">
+                    <p>加入房间</p>
+                    <div>
+                        <input type='text'>
+                    </div>
+                    <div>
+                        <a href="javascript:;">加入房间</a>
+                    </div>
+                    <p class="err"></p>
+                </div>
+                <div class="createRoom">
+                    <p>创建房间</p>
+                    <p>点击“创建房间”建立全新的游戏房间</p>
+                    <div>
+                        <a href="javascript:;">创建房间</a>
+                    </div>
+                    <p class="err"></p>
+                </div>
+            </div>
+        </div>
+        <div id="connectPanel" class="connectPanel">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">连接服务器</h3>
+                </div>
+                <div class="panel-body">
+
+                    <div class="form-horizontal">
+
+                         <div class="form-group f-cb">
+                            <label class="col-md-2 control-label f-fl" >玩家名字</label>
+                            <div class="col-md-10 f-fl">
+                                <input type="text" class="form-control" placeholder="请填写您的昵称" id="playerName">
+                            </div>                      
+                        </div>
+
+                        <div class="form-group f-cb">
+                            <label class="col-md-2 control-label f-fl">uuid</label>
+                            <div class="col-md-10 f-fl">
+                                <input type="text" class="form-control" placeholder="请填写数字" id="uuid">
+                            </div>
+                        </div>
+
+                        <div class="form-group f-cb">
+                            <label class="col-md-2 control-label f-fl">头像</label>
+                            <div class="col-md-10 f-fl">
+                                <input type="text" class="form-control" placeholder="可以不填写" id="headImg">
+                            </div>
+                        </div>
+
+                        <div class="form-group f-cb">
+                            <label for="inputPassword3" class="col-sm-2 control-label f-fl">房间号</label>
+                            <div class="col-sm-10 f-fl">
+                                <input type="text" class="form-control" id="roomId"> 
+                            </div>
+                        </div>
+
+                        <div class="btncnt form-inline">
+                            <button class="btn btn-success connectBtn">连接服务器</button>
+                        </div>                    
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <div id="readyPanel" class="readyPannel">
+            <div class="playerList f-cb">
+                <div class="item f-fl">
+                    <span class="name">最多八个字八个字<span class="score f-fr">10分</span></span>
+                    <div class="head">
+                        <img src="img/ready/head.png" width="72" height="72">
+                        <span class="head_border"></span>
+                    </div>
+                    <a href="javascript:;" class="btn btn-ready">点击准备</a>
+                    <a href="javascript:;" class="closeBtn"></a>
+                </div>
+                <div class="item f-fl">
+                    <span class="name">最多八个字八个字<span class="score f-fr">10分</span></span>
+                    <div class="head">
+                        <img src="img/ready/head.png" width="72" height="72">
+                        <span class="head_border"></span>
+                    </div>
+                    <span class="btn btn-already">已准备<span class="icon-already"></span></span>
+                    <a href="javascript:;" class="closeBtn"></a>
+                </div>
+                <div class="item f-fl">
+                    <span class="name">最多八个字八个字<span class="score f-fr">10分</span></span>
+                    <div class="head">
+                        <img src="img/ready/head.png" width="72" height="72">
+                        <span class="head_border"></span>
+                    </div>
+                    <span class="btn btn-unready">未准备</span>
+                    <a href="javascript:;" class="closeBtn"></a>
+                </div>
+                <div class="item f-fl">
+                    <span class="name">最多八个字八个字<span class="score f-fr">10分</span></span>
+                    <div class="head">
+                        <img src="img/ready/head.png" width="72" height="72">
+                        <span class="head_border"></span>
+                    </div>
+                    <span class="countDown">
+                        <span class="icon-time"></span>
+                        <span class="second">59</span><span class="txt">/秒</span>                        
+                    </span>
+                    <a href="javascript:;" class="closeBtn"></a>
+                </div>
+                <div class="item f-fl">
+
+                </div>
+                <div class="item f-fl">
+
+                </div>
+                <div class="item f-fl">
+
+                </div>
+                <div class="item f-fl">
+
+                </div>
+            </div>
+            <a href="javascript:;" class="startBtn"></a>
+        </div>
+        <div id="drawPanel" class="drawPanel">
+            <div class="book">
+                <div class="hintCnt">
+                    <span class="title">回合开始</span>
+                    <div class="info">
+                        <p>现在由<span class="u-name">小怪兽</span>画图</p>
+                        <p>提示1：<span>2个字</span></p>
+                        <p>提示1：<span>食物</span></p>
+                    </div>
+                    <div class="raccoon"></div>
+                </div>
+                <div class="chatBox">
+                    <div class="wrap">
+                        <div class="content">
+                            <p>
+                                <span class="u-name">小怪兽：</span>
+                                哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈
+                            </p>
+                            <p>
+                                <span class="u-name">小怪兽：</span>
+                                哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈
+                            </p>
+                            <p>
+                                <span class="u-name">小怪兽：</span>
+                                哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈
+                            </p>
+                            <p>
+                                <span class="u-name">小怪兽：</span>
+                                哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈
+                            </p>
+                            <p>
+                                <span class="u-name">小怪兽：</span>
+                                哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="iptCnt">
+                    <input type="text">
+                    <a href="javascript:;" class="sendBtn"></a>
+                </div>
+            </div>
+            <div class="colorDisc">
+                <div class="pen">
+                    <div class="selected"></div>
+                    <div class="normalPen"></div>                    
+                </div>
+                <div class="colorcard colorcard-1">
+                    <span class="circle"></span>
+                </div>
+                <div class="colorcard colorcard-2">
+                    <span class="circle"></span>
+                </div>
+                <div class="colorcard colorcard-3">
+                    <span class="circle"></span>
+                </div>
+                <div class="colorcard colorcard-4">
+                    <span class="circle"></span>
+                </div>
+                <div class="colorcard colorcard-5">
+                    <span class="circle"></span>
+                </div>
+                <div class="colorcard colorcard-6">
+                    <span class="circle"></span>
+                </div>
+                <div class="colorcard colorcard-7">
+                    <span class="circle"></span>
+                </div>
+                <div class="colorcard colorcard-8">
+                    <span class="circle"></span>
+                </div>
+                <div class="colorcard colorcard-9">
+                    <span class="circle"></span>
+                </div>
+                <div class="colorcard colorcard-10">
+                    <span class="circle"></span>
+                </div>
+                <div class="cursor cursor-10"></div>
+            </div>
+            <div class="circleOverlayer"></div>
+            <canvas id="drawingBoard" width="550" height="418" class="drawingBoard"></canvas>
+        </div>
+    </div>
+    <script charset="gb2312" src="https://nie.res.netease.com/comm/js/jquery(mixNIE).1.11.js"></script>
+    <script type="text/javascript" src="https://nie.res.netease.com/comm/js/jquery(mixNIE).last.js"></script>
+    <script type="text/javascript" src="js/lib/puremvc-1.0.1.min.js"></script>
+    <script type="text/javascript" src="js/view/event/AppEvents.js"></script>
+    <script type="text/javascript" src="js/view/component/ConnectPanel.js"></script>
+    <script type="text/javascript" src="js/view/component/DrawPanel.js"></script>
+    <script type="text/javascript" src="js/view/component/Scroll.js"></script>
+    <script type="text/javascript" src="js/view/component/ReadyPanel.js"></script>
+    <script type="text/javascript" src="js/view/component/LoginPanel.js"></script>  
+    <script type="text/javascript" src="js/view/mediator/ConnectPanelMediator.js"></script>
+    <script type="text/javascript" src="js/view/mediator/DrawPanelMediator.js"></script>
+    <script type="text/javascript" src="js/view/mediator/ReadyPanelMediator.js"></script>
+    <script type="text/javascript" src="js/view/mediator/LoginPanelMediator.js"></script>
+    <script type="text/javascript" src="js/app/AppConstants.js"></script>
+    <script type="text/javascript" src="js/model/proxy/DrawSomethingProxy.js"></script>
+    <script type="text/javascript" src="js/controller/command/PrepControllerCommand.js"></script>
+    <script type="text/javascript" src="js/controller/command/PrepViewCommand.js"></script>
+    <script type="text/javascript" src="js/controller/command/PrepModelCommand.js"></script>
+    <script type="text/javascript" src="js/controller/command/StartupCommand.js"></script>
+    <script type="text/javascript" src="js/controller/command/SendChatMsgCommand.js"></script>
+    <script type="text/javascript" src="js/controller/command/SocketCommand.js"></script>
+    <script type="text/javascript" src="js/app/app.js"></script>
+    <script type="text/javascript" src="js/app/index.js"></script>
+</body>
+</html>

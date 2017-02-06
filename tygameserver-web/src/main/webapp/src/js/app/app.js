@@ -1,0 +1,12 @@
+puremvc.define({
+		name:'drawsomething.Application',
+		constructor:function(){
+			this.facade.registerCommand(drawsomething.AppConstants.STARTUP,drawsomething.controller.command.StartupCommand);
+			this.facade.sendNotification(drawsomething.AppConstants.STARTUP);
+		}
+	},
+	{
+		STARTUP:'startup',
+		facade:puremvc.Facade.getInstance(drawsomething.AppConstants.STARTUP)
+	}
+)

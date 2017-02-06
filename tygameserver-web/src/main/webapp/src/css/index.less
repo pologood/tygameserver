@@ -1,0 +1,271 @@
+﻿@import "_reset.less";
+body,textarea,input,button,select,keygen,legend{font:14px/1.14  "Microsoft YaHei",Tahoma,Helvetica Neue,Helvetica,Arial,Hiragino Sans GB,Microsoft Yahei,Simhei,sans-serif;color:#333;outline:0;}
+body{
+	background: #fff;
+}
+.g-wrap{
+	width: 1105px;position: relative;height: 623px;background: #bbb;
+}
+.loginPanel{
+	.title{
+		font-size: 40px;color: #fff;text-align: center;padding-top: 20px;
+	}
+	.loginCnt{
+		width: 420px;height: 332px;position: absolute;margin-left: -210px;margin-top: -166px;left: 50%;top: 50%;
+	}
+	.selectRole{
+		width: 420px;height: 332px;position: absolute;margin-left: -210px;margin-top: -166px;left: 50%;top: 50%;
+		background: #fff;display: none;
+		h2{
+			padding: 5px;font-weight: normal;padding-left: 20px;
+		}
+		label{
+			display: block;padding-left: 20px;margin-top: 10px;
+		}
+		.radioCnt{
+			height: 200px;background: #ccc;overflow-y: auto;
+		}
+		.confirmBtn{
+			width: 100px;height: 40px;background: #2d85be;display: block;line-height: 40px;text-align: center;color: #fff;
+			margin: 10px auto;
+		}
+	}
+}
+.connectPanel{
+	width: 600px;position: absolute;margin-left: -300px;left: 50%;margin-top: -150px;
+	height: 300px;background: #363636;top: 50%;border-radius: 10px;display: none;z-index: 9;
+	.panel-heading{
+		height: 50px;line-height: 50px;border-bottom: 1px solid #ccc;text-indent: 2em;color: #fff;text-align: center;
+		margin-bottom: 5px;
+	}
+	.panel-body{
+		padding-left: 30px;color: #fff;
+		label{
+			width: 100px;
+		}
+		.form-group{
+			padding: 5px;
+			input{
+				width: 420px;height: 30px;text-indent: 1em;border-radius: 5px;border: none;
+			}
+		}
+		.btncnt{
+			text-align: center;margin-top: 20px;
+			button{
+				background: #5079bb;border: none;border-radius: 5px;width: 100px;height: 40px;color: #fff;
+			}
+
+		}
+	}
+	.form-group{
+		line-height: 24px;
+	}
+	
+
+}
+
+.readyPannel{
+	width: 1105px;height: 623px;background: url(../img/ready/bg.jpg) no-repeat;border-radius: 5px;display: none;
+	.playerList{
+		width: 674px;margin: 0 auto;padding-top: 60px;
+	}
+	.item{
+		width: 327px;height: 111px;background: url(../img/ready/item.png) no-repeat;margin-right: 10px;margin-bottom: 10px;
+		position: relative;font-size: 16px;color: #ffffe5;
+		.name{
+			display: block;width: 260px;height: 31px;background: url(../img/ready/name_bg.png) no-repeat;line-height: 31px;text-indent: 54px;
+			position: absolute;top: 20px;left: 48px;
+			.score{
+				text-indent: 0;margin-right: 15px;.text-shadow (0 0 2px rgba(0, 0, 0, 1));
+			}
+		}
+		.head{
+			width: 78px;height: 78px;position: absolute;top: 16px;left: 16px;
+			.head_border{
+				width: 100%;height: 100%;background: url(../img/ready/head_overlayer.png) no-repeat;display: block;position: absolute;top: 0;left: 0;
+			}
+			img{
+				width: 72px;height: 72px;border-radius: 50%;position: absolute;margin-left: -36px;margin-top: -36px;top: 50%;left: 50%;
+			}
+		}
+		.btn{
+			width: 94px;height: 28px;display: block;background: #b47d4e;color: #ffffe5;line-height: 28px;text-align: center;
+			border-radius: 4px;position: absolute;top: 64px;left: 215px;.transition(all 0.3s);
+			&.btn-ready{
+				&:hover{
+					background: #574d43;
+				}
+				.box-shadow(2px 2px 4px rgba(0, 0, 0, 0.4));
+			}
+			&.btn-already{
+				background: #2f624b;cursor: default;.inner-shadow(0,0,10px,0,0.4);
+				.icon-already{
+					display: inline-block;width: 17px;height: 11px;background: url(../img/ready/icon_ready.png) no-repeat;margin-left: 4px;
+				}
+			}
+			&.btn-unready{
+				background: #b47d4e;color: #41250c;cursor: default;.inner-shadow(0,0,10px,0,0.4);
+			}
+		}
+		.countDown{
+			color: #c58a56;position: absolute;top: 64px;left: 215px;
+			.icon-time{
+				display: inline-block;width: 18px;height: 18px;background: url(../img/ready/icon_time.png) no-repeat;
+				vertical-align: middle;margin-right: 2px;
+			}
+			.second{
+				font-size: 18px;vertical-align: middle;font-weight: bold;
+			}
+			.txt{
+				font-size: 14px;vertical-align: bottom;
+			}
+		}
+		.closeBtn{
+			width: 13px;height: 12px;display: block;position: absolute;background: url(../img/ready/icon_close.png) no-repeat;
+			position: absolute;top: 11px;left: 304px;
+		}
+	}
+	.startBtn{
+		display: block;width: 224px;height: 66px;background: url(../img/ready/start_btn.png) no-repeat;margin: 0 auto;
+	}
+}
+.drawPanel{
+	width: 1109px;height: 627px;background: url(../img/draw/bg.jpg) no-repeat;position: absolute;top: 0;left: 0;border-radius: 10px;display: none;
+	.book{
+		width: 945px;height: 531px;background: url(../img/draw/book_bg.png) no-repeat;position: absolute;top: 0px;left: 0px;
+		font-size: 14px;
+		.hintCnt{
+			position: absolute;width: 200px;height: 150px;top: 80px;left: 54px;font-weight: bold;
+			.title{
+				display: block;width: 100%;height: 18px;line-height: 18px;color: #403326;font-weight: bold;text-align: center;
+				background: url(../img/draw/line.png) no-repeat center center;
+			}
+			.info{
+				padding-top: 5px;
+				p{
+					line-height: 25px;
+				}
+			}
+			.raccoon{
+				width: 94px;height: 142px;background: url(../img/draw/raccoon.png) no-repeat;position: absolute;top: 30px;left: 115px;
+			}
+		}
+		.chatBox{
+			width: 230px;height: 200px;position: absolute;font-weight: bold;color: #663517;
+			top: 246px;left: 42px;			
+			.wrap{
+				overflow: hidden;height: 100%;
+				.content{
+					padding-right: 32px;line-height: 24px;
+				}
+			}
+		}
+		.iptCnt{
+			width: 222px;height: 22px;background: url(../img/draw/input_bg.png) no-repeat;position: absolute;
+			top: 452px;left: 40px;
+			input{
+				background: transparent;border: none;color: #fff;height: 22px;line-height: 22px;text-indent: 1em;
+				width: 200px;
+			}
+			.sendBtn{
+				width: 27px;height: 26px;display: block;background: url(../img/draw/enter.png) no-repeat;
+				position: absolute;top: -1px;right: -2px;
+			}
+		}
+		
+	}
+	.colorDisc{
+		width: 259px;height: 175px;background: url(../img/draw/color.png) no-repeat;position: absolute;
+		right: 0;bottom: 0;
+		.pen{
+			width: 44px;height: 102px;position: absolute;top: -80px;right: 20px;
+			.normalPen{
+				width: 44px;height: 102px;background: url(../img/draw/pen.png) no-repeat;position: absolute;
+			}
+			.selected{
+				width: 58px;height: 111px;background: url(../img/draw/pen_selected.png) no-repeat;position: absolute;
+				left: -11px;
+			}
+		}
+		.colorcard{
+			width: 510px;height: 100px;transform: rotate(0deg) skew(81deg);overflow: hidden;
+			position: absolute;bottom: 0px;right: 0px;right: 0;transform-origin:bottom right;
+			.circle{
+				width: 344px;height: 344px;border-radius: 50%;display: block;
+				transform:skew(-81deg);bottom: -172px;right: -172px;transform-origin:center center;
+				position: absolute;cursor: pointer;
+			}
+			&.colorcard-2{
+				transform: rotate(9deg) skew(81deg);
+			}
+			&.colorcard-3{
+				transform: rotate(18deg) skew(81deg);
+			}
+			&.colorcard-4{
+				transform: rotate(27deg) skew(81deg);
+			}
+			&.colorcard-5{
+				transform: rotate(36deg) skew(81deg);
+			}
+			&.colorcard-6{
+				transform: rotate(45deg) skew(81deg);
+			}
+			&.colorcard-7{
+				transform: rotate(54deg) skew(81deg);
+			}
+			&.colorcard-8{
+				transform: rotate(63deg) skew(81deg);
+			}
+			&.colorcard-9{
+				transform: rotate(72deg) skew(81deg);
+			}
+			&.colorcard-10{
+				transform: rotate(81deg) skew(81deg);
+			}
+		}
+		.cursor{
+			width: 35px;height: 175px;background: url(../img/draw/color_selected-1.png) no-repeat;
+			position: absolute;margin-right: -17.5px;right: 0;transform: rotate(-4deg);transform-origin:center bottom;
+			.transition(all 0.3s);
+		}
+		.cursor-9{
+			transform: rotate(-14deg);
+		}
+		.cursor-8{
+			transform: rotate(-23deg);
+		}
+		.cursor-7{
+			transform: rotate(-30deg);height: 190px;
+		}
+		.cursor-6{
+			transform: rotate(-39deg);height: 190px;
+		}
+		.cursor-5{
+			transform: rotate(-47deg);height: 190px;
+		}
+		.cursor-4{
+			transform: rotate(-54deg);height: 190px;
+		}
+		.cursor-3{
+			transform: rotate(-63deg);height: 190px;
+		}
+		.cursor-2{
+			transform: rotate(-72deg);height: 190px;
+		}
+		.cursor-1{
+			transform: rotate(-80deg);height: 190px;
+		}
+
+	} 
+	.circleOverlayer{
+		width: 260px;height: 260px;border-radius: 50%;margin-right: -130px;margin-bottom: -130px;position: absolute;
+		bottom: 0;right: 0;
+	}
+	.drawingBoard{
+		position: absolute;width: 550px;height: 418px;top: 40px;left: 328px;
+	}
+}
+
+.u-name{
+	color: #99701f;font-weight: bold;text-decoration: underline;margin: 0 5px;
+}
