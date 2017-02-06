@@ -14,6 +14,7 @@ import com.netease.pangu.game.service.DataCenterApiService;
 import com.netease.pangu.game.service.GuessGameService;
 import com.netease.pangu.game.service.RoomAllocationService;
 import com.netease.pangu.game.util.JSONPUtil;
+import com.netease.pangu.game.util.ReturnUtils;
 import com.netease.pangu.game.util.UrsAuthUtils;
 import io.netty.handler.codec.http.FullHttpRequest;
 import org.apache.commons.lang3.StringUtils;
@@ -80,9 +81,9 @@ public class MasterController {
             workerInfo.put("port", node.getPort());
             workerInfo.put("name", node.getName());
             workerInfo.put("avatarId", avatar.getAvatarId());
-            return JSONPUtil.getJSONP(callback , workerInfo);
+            return JSONPUtil.getJSONP(callback , ReturnUtils.succ(workerInfo));
         }
-        return JSONPUtil.getJSONP(callback , null);
+        return JSONPUtil.getJSONP(callback , ReturnUtils.failed());
     }
 
     @HttpRequestMapping("/avatar")
@@ -102,16 +103,16 @@ public class MasterController {
     public String getRolesByUrs(String callback, FullHttpRequest request){
         String urs = UrsAuthUtils.getLoginedUserName(request);
         Map<String, List<DataCenterSimpleRoleInfo>> roles = dataCenterApiService.getSimpleAvatarsInfoByUrs(urs);
-        return JSONPUtil.getJSONP(callback , roles);
+        return JSONPUtil.getJSONP(callback , ReturnUtils.succ(roles));
     }
 
     @HttpRequestMapping("/isLogin")
     public String isLogin(String callback, FullHttpRequest request){
         String urs = UrsAuthUtils.getLoginedUserName(request);
         if(StringUtils.isNotEmpty(urs)) {
-            return JSONPUtil.getJSONP(callback, true);
+            return JSONPUtil.getJSONP(callback, ReturnUtils.succ());
         }else{
-            return JSONPUtil.getJSONP(callback, false);
+            return JSONPUtil.getJSONP(callback, ReturnUtils.failed());
         }
     }
 
