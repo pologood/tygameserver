@@ -9,6 +9,6 @@ import java.lang.annotation.Target;
  * Created by huangc on 2017/2/6.
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target(value = {ElementType.TYPE})
+@Target(value = {ElementType.METHOD})
 public @interface Anonymous {
 }

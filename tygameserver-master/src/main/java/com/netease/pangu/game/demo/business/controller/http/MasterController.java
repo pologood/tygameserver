@@ -4,6 +4,7 @@ import com.netease.pangu.game.common.meta.GameConst;
 import com.netease.pangu.game.core.service.NodeScheduleService;
 import com.netease.pangu.game.distribution.Node;
 import com.netease.pangu.game.distribution.NodeManager;
+import com.netease.pangu.game.http.annotation.Anonymous;
 import com.netease.pangu.game.http.annotation.HttpController;
 import com.netease.pangu.game.http.annotation.HttpRequestMapping;
 import com.netease.pangu.game.meta.Avatar;
@@ -106,6 +107,7 @@ public class MasterController {
         return JSONPUtil.getJSONP(callback , ReturnUtils.succ(roles));
     }
 
+    @Anonymous
     @HttpRequestMapping("/isLogin")
     public String isLogin(String callback, FullHttpRequest request){
         String urs = UrsAuthUtils.getLoginedUserName(request);
