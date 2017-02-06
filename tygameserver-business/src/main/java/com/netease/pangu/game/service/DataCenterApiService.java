@@ -20,6 +20,7 @@ public class DataCenterApiService {
     private GlobalValueCacheService globalValueCacheService;
 
     private static final String SIMPLE_AVATAR_BYURS_KEY_PREFIX = "DC_SABYURS_KP";
+    private static final String GAME_SERVERS_KEY_PREFIX = "DC_GAMESERVER_KP";
     public static String getUpdateKey(String keyPrefix, String key) {
         return String.format("%s-%s", keyPrefix, key);
     }
@@ -40,6 +41,25 @@ public class DataCenterApiService {
             @Override
             public String getCachedKey() {
                 return avatarByUrsKey;
+            }
+
+            @Override
+            public long getTTL() {
+                return EXPIRE_TIME;
+            }
+        });
+    }
+
+    public Map<String, Object> getGameServers(){
+        return globalValueCacheService.doPersistentCachedWithTTLForUpdate(new GlobalValueCacheService.CacheableValueWithTTLForUpdate<Map<String, Object>>() {
+            @Override
+            public Map<String, Object> getMissValue() {
+                return dataCenterApiDao.getGameServers();
+            }
+
+            @Override
+            public String getCachedKey() {
+                return GAME_SERVERS_KEY_PREFIX;
             }
 
             @Override

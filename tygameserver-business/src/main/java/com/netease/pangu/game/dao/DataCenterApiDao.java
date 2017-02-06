@@ -19,6 +19,7 @@ import java.util.Map;
 public class DataCenterApiDao {
     private @Value("${datacenter.url:}") String ApiURL;
     private static final String SIMPLE_BYURS_API = "/api/simpleAvatar/by-urs";
+    private static final String GAME_SERVERS_API = "/api/game/servers";
 
     private String getData(String url, Map<String, Object> params) {
         HttpClientUtils.HttpResult result = HttpClientUtils.get(ApiURL + url, params);
@@ -34,5 +35,11 @@ public class DataCenterApiDao {
         String data = getData(SIMPLE_BYURS_API, params);
         return data != null
                 ? JsonUtil.fromJson(data, new TypeToken<Map<String, List<DataCenterSimpleRoleInfo>>>(){}): null;
+    }
+
+    public Map<String, Object> getGameServers() {
+        String data = getData(GAME_SERVERS_API, null);
+        return data != null
+                ? JsonUtil.fromJson(data, new TypeToken<Map<String, Object>>(){}): new HashMap<String, Object>();
     }
 }
