@@ -57,12 +57,14 @@ public class AuthServerHandler extends ChannelInboundHandlerAdapter {
             URI uri = URI.create(request.uri());
             Double tmp = NumberUtils.toDouble(params.get("gameId").toString());
             long gameId = tmp.longValue();
+            FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.CONTINUE);
             if (httpRequestInvoker.containsURIPath(gameId, uri.getPath())) {
-                FullHttpResponse response = httpRequestInvoker.invoke(gameId, uri.getPath(), params, request);
-                NettyHttpUtil.sendHttpResponse(ctx, request, response);
+                httpRequestInvoker.invoke(gameId, uri.getPath(), params, request, response);
             } else {
-                NettyHttpUtil.sendHttpResponse(ctx, request, new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.BAD_REQUEST, Unpooled.copiedBuffer("uri not exist!", Charset.forName("UTF-8"))));
+                NettyHttpUtil.setHttpResponse(response, HttpResponseStatus.BAD_REQUEST,"uri not exist!");
             }
+            NettyHttpUtil.sendHttpResponse(ctx, request, response);
+            return;
         } else {
             NettyHttpUtil.sendHttpResponse(ctx, request,
                     new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.FORBIDDEN));
