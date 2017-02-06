@@ -58,6 +58,7 @@ public class HttpRequestInvoker {
         Method method = getMethod(gameId, requestUri);
         if(method != null){
             Anonymous anno = method.getDeclaredAnnotation(Anonymous.class);
+
             if(anno != null){
                 return false;
             }
