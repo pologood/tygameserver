@@ -158,7 +158,7 @@ public class NettyHttpUtil {
     }
 
     public static void setCookie(FullHttpResponse response, Cookie cookie){
-        Set<Cookie> cookies = getCookies(response);
+        Set<Cookie> cookies = new HashSet<Cookie>(getCookies(response));
         cookies.add(cookie);
         response.headers().set(HttpHeaderNames.SET_COOKIE, ServerCookieEncoder.STRICT.encode(cookies));
     }

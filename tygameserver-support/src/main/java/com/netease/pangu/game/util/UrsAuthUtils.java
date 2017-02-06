@@ -12,8 +12,6 @@ import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Created by huangc on 2017/2/5.
@@ -21,11 +19,10 @@ import java.util.regex.Pattern;
 public class UrsAuthUtils {
 
     private final static Logger logger = Logger.getLogger(UrsAuthUtils.class);
-    private final static Pattern URS_COOKIE_PATTERN = Pattern.compile("\\bP_INFO=([^;]+)");
     private final static String SALT_SEGMENT = "yc2EAAAABIwAAAQEApy3VNB&*()mBeJ11QHqZ2bTr~f@/0d#5$%^s8J69phCSEntqfvVZMBYWD5dqP8gyP+gyT8u/aqQzErgsOJKowQqpvIV//0WP1Cz8vclNUKqypi0UPQb8e+zAJ/7MsjZhHgb7vbnHt/lZ,.p&*((3)45YPHvgc0PZ4Kbm4WxHFkNe/cDM";
     private final static long CREDIDENTIAL_LIFE = DateUtils.MILLIS_PER_MINUTE * 5;// 凭据有效期为20分钟
     private final static String CREDIDENTIAL_COOKIE_NAME = "hd_ty_cred";
-    private final static Pattern COOKIE_PATTERN = Pattern.compile("\\bhd_ty_cred=([^;]+)");
+    private final static String P_INFO = "P_INFO";
     private final static String USERNAME_ATTR_KEY = "USERNAME_ATTR_KEY";
     private final static String QUERY_BIND_PRODUCT_KEY;
     public static final String COOKIENAME_URS = "NTES_SESS";
@@ -119,19 +116,14 @@ public class UrsAuthUtils {
         String pInfo = null;
         Set<Cookie> cookies = NettyHttpUtil.getCookies(request);
         for (Cookie cookie : cookies) {
-            String value = cookie.value();
-            Matcher urs_m = URS_COOKIE_PATTERN.matcher(value);
-            if (urs_m.find()) {
-                pInfo = urs_m.group(1);
-            }
-            Matcher ty_m = COOKIE_PATTERN.matcher(value);
-            if (ty_m.find()) {
-                tyHdInfo = ty_m.group(1);
+            if(cookie.name().equals(P_INFO)) {
+                pInfo = cookie.value();
+            } else if(cookie.name().equals(CREDIDENTIAL_COOKIE_NAME)) {
+                tyHdInfo = cookie.value();
             }
         }
 
         String ursName = getUrsNameFromPInfo(pInfo);
-
         String ntessess = NettyHttpUtil.getCookieValue(request, COOKIENAME_URS, "");
 
         if(StringUtils.isNotBlank(tyHdInfo)) {
@@ -163,7 +155,7 @@ public class UrsAuthUtils {
             }
             // 判断验证后的urs是不是跟P_INFO中一样
             if (NumberUtils.toInt(values[0], 0) == 1 && values.length == 2) {
-                if (!StringUtils.equals(values[1], ursName)) {
+                if (!StringUtils.equals(getCompleteURSUserName(values[1]), ursName)) {
                     ret = -1;
                 }
             }
@@ -178,6 +170,14 @@ public class UrsAuthUtils {
             }
         }
         return null;
+    }
+
+    private static String getCompleteURSUserName(String userName) {
+        if (userName.contains("@")) {
+            return userName;
+        } else {
+            return userName + "@163.com";
+        }
     }
 
 
