@@ -21,15 +21,16 @@ puremvc.define({
 		answerList:[],
 		gameState:0,
 		selfName:'',
+		host:'http://littlegame.tianyu.163.com:8090',
 		getRoleList:function(){
 			var _this=this;
-			$.getJSON("http://littlegame.tianyu.163.com:8090/master/avatar/roles?callback=?&gameId="+this.gameId,function(msg){
+			$.getJSON(this.host+"/master/avatar/roles?callback=?&gameId="+this.gameId,function(msg){
 				console.log(msg)
 			})
 		},
 		getConnectData:function(obj){
 			var _this=this;
-			$.getJSON("http://littlegame.tianyu.163.com:8090/master/init?callback=?&uuid="+obj.uuid+"&roleName="+obj.roleName+"&avatarImg="+encodeURIComponent(obj.avatarImg)+"&gameId="+obj.gameId+"&roomId="+obj.roomId, function(data){
+			$.getJSON(this.host+"/master/init?callback=?&uuid="+obj.uuid+"&roleName="+obj.roleName+"&avatarImg="+encodeURIComponent(obj.avatarImg)+"&gameId="+obj.gameId+"&roomId="+obj.roomId, function(data){
                 console.log(data)
                 _this.connectSocket(data);
             })

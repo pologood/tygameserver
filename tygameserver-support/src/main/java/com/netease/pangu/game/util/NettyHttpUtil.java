@@ -115,14 +115,14 @@ public class NettyHttpUtil {
         return new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, status, Unpooled.copiedBuffer(msg, Charset.forName("UTF-8")));
     }
 
-    public static void setHttpResponse(FullHttpResponse reponse, HttpResponseStatus status){
-        reponse.setStatus(status);
+    public static void setHttpResponse(FullHttpResponse response, HttpResponseStatus status){
+        response.setStatus(status);
     }
 
 
-    public static void setHttpResponse(FullHttpResponse reponse, HttpResponseStatus status, String msg){
-        reponse.setStatus(status);
-        reponse.replace(Unpooled.copiedBuffer(msg, Charset.forName("UTF-8")));
+    public static void setHttpResponse(FullHttpResponse response, HttpResponseStatus status, String msg){
+        response.setStatus(status);
+        response.content().writeBytes(Unpooled.copiedBuffer(msg, Charset.forName("UTF-8")));
     }
 
     public static Set<Cookie> getCookies(FullHttpRequest request){
