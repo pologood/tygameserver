@@ -105,7 +105,7 @@ public class MasterController {
         return JSONPUtil.getJSONP(callback , roles);
     }
 
-    @HttpRequestMapping("/login")
+    @HttpRequestMapping("/isLogin")
     public String isLogin(String callback, FullHttpRequest request){
         String urs = UrsAuthUtils.getLoginedUserName(request);
         if(StringUtils.isNotEmpty(urs)) {
