@@ -85,7 +85,7 @@ public class MasterServerHandler extends ChannelInboundHandlerAdapter {
                 Map<String, String> params = NettyHttpUtil.parseRequest(request);
                 if (!params.containsKey("gameId")) {
                     NettyHttpUtil.sendHttpResponse(ctx, request,
-                            new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.BAD_REQUEST,
+                            new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.NOT_FOUND,
                                     Unpooled.copiedBuffer("parameter gameId not exist!", Charset.forName("UTF-8"))));
                     return;
                 }
@@ -104,7 +104,7 @@ public class MasterServerHandler extends ChannelInboundHandlerAdapter {
                     }
                     httpRequestInvoker.invoke(gameId, uri.getPath(), params, request, response);
                 }else{
-                    NettyHttpUtil.setHttpResponse(response, HttpResponseStatus.BAD_REQUEST, "uri not exist!");
+                    NettyHttpUtil.setHttpResponse(response, HttpResponseStatus.NOT_FOUND, "uri not exist!");
                 }
                 NettyHttpUtil.sendHttpResponse(ctx, request, response);
                 return;
