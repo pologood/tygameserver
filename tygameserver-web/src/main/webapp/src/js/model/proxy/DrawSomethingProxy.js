@@ -35,6 +35,12 @@ puremvc.define({
                 _this.connectSocket(data);
             })
 		},
+		getLoginStatus:function(){
+			var _this=this;
+			$.getJSON(this.host+"/master/isLogin?callback=?",function(msg){
+				
+			})
+		},
 		connectSocket:function(data){
 			console.log("proxy conenct socket");
 			var _this=this;
