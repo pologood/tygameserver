@@ -6,6 +6,8 @@ import com.netease.pangu.game.http.HttpRequestInvoker;
 import com.netease.pangu.game.rpc.WsRpcCallInvoker;
 import com.netease.pangu.game.util.JsonUtil;
 import com.netease.pangu.game.util.NettyHttpUtil;
+import com.netease.pangu.game.util.ReturnUtils;
+import com.netease.pangu.game.util.UrsAuthUtils;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
@@ -15,6 +17,7 @@ import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import io.netty.handler.codec.http.websocketx.WebSocketFrame;
 import io.netty.handler.codec.http.websocketx.WebSocketServerHandshaker;
 import io.netty.handler.codec.http.websocketx.WebSocketServerHandshakerFactory;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
@@ -89,12 +92,22 @@ public class MasterServerHandler extends ChannelInboundHandlerAdapter {
                 URI uri = URI.create(request.uri());
                 Double tmp = NumberUtils.toDouble(params.get("gameId").toString());
                 long gameId = tmp.longValue();
+                FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.CONTINUE);
                 if (httpRequestInvoker.containsURIPath(gameId, uri.getPath())) {
-                    FullHttpResponse result = httpRequestInvoker.invoke(gameId, uri.getPath(), params, request);
-                    NettyHttpUtil.sendHttpResponse(ctx, request, result);
-                } else {
-                    NettyHttpUtil.sendHttpResponse(ctx, request, new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.BAD_REQUEST, Unpooled.copiedBuffer("uri not exist!", Charset.forName("UTF-8"))));
+                    if(httpRequestInvoker.isNeedAuth(gameId, uri.getPath())) {
+                        String userName = UrsAuthUtils.getLoginedUserName(request, response);
+                        if (StringUtils.isEmpty(userName)) {
+                            NettyHttpUtil.setHttpResponse(response, HttpResponseStatus.OK, JsonUtil.toJson(ReturnUtils.failed("need auth")));
+                            NettyHttpUtil.sendHttpResponse(ctx, request, response);
+                            return;
+                        }
+                    }
+                    httpRequestInvoker.invoke(gameId, uri.getPath(), params, request, response);
+                }else{
+                    NettyHttpUtil.setHttpResponse(response, HttpResponseStatus.BAD_REQUEST, "uri not exist!");
                 }
+                NettyHttpUtil.sendHttpResponse(ctx, request, response);
+                return;
             }
 
         } else {
@@ -102,8 +115,6 @@ public class MasterServerHandler extends ChannelInboundHandlerAdapter {
                     new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.FORBIDDEN));
             return;
         }
-
-
     }
 
     @Override

@@ -1,6 +1,7 @@
 package com.netease.pangu.game.http;
 
 import com.google.common.base.Strings;
+import com.netease.pangu.game.http.annotation.Anonymous;
 import com.netease.pangu.game.http.annotation.HttpController;
 import com.netease.pangu.game.http.annotation.HttpRequestMapping;
 import com.netease.pangu.game.util.JsonUtil;
@@ -53,6 +54,17 @@ public class HttpRequestInvoker {
         return methodMap.get(gameId).get(requestUri);
     }
 
+    public boolean isNeedAuth(long gameId, String requestUri){
+        Method method = getMethod(gameId, requestUri);
+        if(method != null){
+            Anonymous anno = method.getDeclaredAnnotation(Anonymous.class);
+            if(anno != null){
+                return true;
+            }
+        }
+        return false;
+    }
+
     private Map<Integer, String> getParamsIndex(long gameId, String requestUri) {
         return methodMap.get(gameId) != null ? methodParamIndexMap.get(gameId).get(requestUri): null;
     }
@@ -74,7 +86,7 @@ public class HttpRequestInvoker {
      * @param request
      * @return
      */
-    public <Player> FullHttpResponse invoke(long gameId, String requestUri, Map<String, String> args, FullHttpRequest request) {
+    public <Player> void invoke(long gameId, String requestUri, Map<String, String> args, FullHttpRequest request, FullHttpResponse response) {
         Method method = getMethod(gameId, requestUri);
         Object controller = getController(gameId, requestUri);
         final Class<?>[] parameterTypes = method.getParameterTypes();
@@ -89,7 +101,8 @@ public class HttpRequestInvoker {
                     String arg = args.get(paramsIndex.get(i));
                     if (arg == null) {
                         logger.info(String.format("parameter %s is null", paramsIndex.get(i)));
-                        return NettyHttpUtil.createBadRequestResponse();
+                        NettyHttpUtil.setHttpResponse(response, HttpResponseStatus.BAD_REQUEST);
+                        return;
                     }
                     Double num = NumberUtils.toDouble(arg);
                     convertedArgs.add(num.longValue());
@@ -98,7 +111,8 @@ public class HttpRequestInvoker {
                     String arg = args.get(paramsIndex.get(i));
                     if (arg == null) {
                         logger.info(String.format("parameter %s is null", paramsIndex.get(i)));
-                        return NettyHttpUtil.createBadRequestResponse();
+                        NettyHttpUtil.setHttpResponse(response, HttpResponseStatus.BAD_REQUEST);
+                        return;
                     }
                     Double num = NumberUtils.toDouble(arg);
                     convertedArgs.add(num.intValue());
@@ -107,7 +121,8 @@ public class HttpRequestInvoker {
                     String arg = args.get(paramsIndex.get(i));
                     if (arg == null) {
                         logger.info(String.format("parameter %s is null", paramsIndex.get(i)));
-                        return NettyHttpUtil.createBadRequestResponse();
+                        NettyHttpUtil.setHttpResponse(response, HttpResponseStatus.BAD_REQUEST);
+                        return;
                     }
                     Double num = NumberUtils.toDouble(arg);
                     convertedArgs.add(num);
@@ -116,7 +131,8 @@ public class HttpRequestInvoker {
                     String arg = args.get(paramsIndex.get(i));
                     if (arg == null) {
                         logger.info(String.format("parameter %s is null", paramsIndex.get(i)));
-                        return NettyHttpUtil.createBadRequestResponse();
+                        NettyHttpUtil.setHttpResponse(response, HttpResponseStatus.BAD_REQUEST);
+                        return;
                     }
                     Double num = NumberUtils.toDouble(arg);
                     convertedArgs.add(num.floatValue());
@@ -124,7 +140,8 @@ public class HttpRequestInvoker {
                     String arg = args.get(paramsIndex.get(i));
                     if (arg == null) {
                         logger.info(String.format("parameter %s is null", paramsIndex.get(i)));
-                        return NettyHttpUtil.createBadRequestResponse();
+                        NettyHttpUtil.setHttpResponse(response, HttpResponseStatus.BAD_REQUEST);
+                        return;
                     }
                     convertedArgs.add(arg);
                 } else if (HttpRequest.class.isAssignableFrom(parameterTypes[i])) {
@@ -133,9 +150,11 @@ public class HttpRequestInvoker {
             }
             Object result = method.invoke(controller, convertedArgs.toArray(new Object[0]));
             if (String.class.isAssignableFrom(result.getClass())) {
-                return NettyHttpUtil.createHttpResponse(HttpResponseStatus.OK, (String) result);
+                NettyHttpUtil.setHttpResponse(response, HttpResponseStatus.OK, (String) result);
+                return;
             } else {
-                return NettyHttpUtil.createHttpResponse(HttpResponseStatus.OK, JsonUtil.toJson(result));
+                NettyHttpUtil.setHttpResponse(response, HttpResponseStatus.OK, JsonUtil.toJson(result));
+                return;
             }
         } catch (IllegalAccessException e) {
             e.printStackTrace();
@@ -144,7 +163,8 @@ public class HttpRequestInvoker {
         } catch (InvocationTargetException e) {
             e.printStackTrace();
         }
-        return NettyHttpUtil.createBadRequestResponse();
+        NettyHttpUtil.setHttpResponse(response, HttpResponseStatus.BAD_REQUEST);
+        return;
     }
 
     @PostConstruct

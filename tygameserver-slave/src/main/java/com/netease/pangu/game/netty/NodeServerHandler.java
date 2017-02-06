@@ -120,14 +120,14 @@ public class NodeServerHandler extends ChannelInboundHandlerAdapter {
                 Double dGameId = NumberUtils.toDouble(params.get("gameId").toString());
                 long gameId = dGameId.longValue();
                 URI uri = URI.create(request.uri());
+                FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.CONTINUE);
                 if (httpRequestInvoker.containsURIPath(gameId, uri.getPath())) {
-                    FullHttpResponse result = httpRequestInvoker.invoke(gameId, uri.getPath(), params, request);
-                    NettyHttpUtil.sendHttpResponse(ctx, request, result);
+                    httpRequestInvoker.invoke(gameId, uri.getPath(), params, request, response);
                 } else {
-                    NettyHttpUtil.sendHttpResponse(ctx, request,
-                            new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.BAD_REQUEST,
-                                    Unpooled.copiedBuffer("uri not exist!", Charset.forName("UTF-8"))));
+                    NettyHttpUtil.setHttpResponse(response, HttpResponseStatus.BAD_REQUEST, "uri not exist!");
                 }
+                NettyHttpUtil.sendHttpResponse(ctx, request, response);
+                return;
             }
 
         } else {

@@ -102,6 +102,10 @@ public class UrsAuthUtils {
         return null;
     }
 
+    public static String getLoginedUserName(FullHttpRequest request) {
+        return request.headers().get(USERNAME_ATTR_KEY);
+    }
+
     private static String encodeCredential(String userName, long expiresAt, String ntessess) {
         String actualMd5 = DigestUtils.md5Hex(userName + expiresAt + SALT_SEGMENT + ntessess);
         return actualMd5;

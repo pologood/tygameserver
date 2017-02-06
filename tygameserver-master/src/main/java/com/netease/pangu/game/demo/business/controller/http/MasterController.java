@@ -7,11 +7,15 @@ import com.netease.pangu.game.distribution.NodeManager;
 import com.netease.pangu.game.http.annotation.HttpController;
 import com.netease.pangu.game.http.annotation.HttpRequestMapping;
 import com.netease.pangu.game.meta.Avatar;
+import com.netease.pangu.game.meta.DataCenterSimpleRoleInfo;
 import com.netease.pangu.game.meta.GuessQuestion;
 import com.netease.pangu.game.service.AvatarService;
+import com.netease.pangu.game.service.DataCenterApiService;
 import com.netease.pangu.game.service.GuessGameService;
 import com.netease.pangu.game.service.RoomAllocationService;
 import com.netease.pangu.game.util.JsonUtil;
+import com.netease.pangu.game.util.UrsAuthUtils;
+import io.netty.handler.codec.http.FullHttpRequest;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.Resource;
@@ -23,15 +27,17 @@ import java.util.Map;
 @HttpController(value = "/master", gameId = GameConst.GUESSS)
 public class MasterController {
     @Resource
-    NodeScheduleService appWorkerScheduleService;
+    private NodeScheduleService appWorkerScheduleService;
     @Resource
-    AvatarService avatarService;
+    private AvatarService avatarService;
     @Resource
-    NodeManager nodeManager;
+    private NodeManager nodeManager;
     @Resource
-    RoomAllocationService roomAllocationService;
+    private RoomAllocationService roomAllocationService;
     @Resource
-    GuessGameService guessGameService;
+    private GuessGameService guessGameService;
+    @Resource
+    private DataCenterApiService dataCenterApiService;
 
     @HttpRequestMapping("/init")
     public String getNode(String uuid, String roleName, String avatarImg, long gameId, long roomId, String callback) {
@@ -90,6 +96,13 @@ public class MasterController {
             playerObj.put("server", avatar.getServer());
         }
         return playerObj;
+    }
+
+    @HttpRequestMapping("/avatar/roles")
+    public String getRolesByUrs(String callback, FullHttpRequest request){
+        String urs = UrsAuthUtils.getLoginedUserName(request);
+        Map<String, List<DataCenterSimpleRoleInfo>> roles = dataCenterApiService.getSimpleAvatarsInfoByUrs(urs);
+        return callback + "(" + JsonUtil.toJson(roles) + ")";
     }
 
     @HttpRequestMapping("/avatar/list")
