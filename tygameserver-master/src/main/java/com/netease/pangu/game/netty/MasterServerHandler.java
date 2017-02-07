@@ -93,9 +93,9 @@ public class MasterServerHandler extends ChannelInboundHandlerAdapter {
                 Double tmp = NumberUtils.toDouble(params.get("gameId").toString());
                 long gameId = tmp.longValue();
                 FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.CONTINUE);
+                String userName = UrsAuthUtils.getLoginedUserName(request, response);
                 if (httpRequestInvoker.containsURIPath(gameId, uri.getPath())) {
                     if(httpRequestInvoker.isNeedAuth(gameId, uri.getPath())) {
-                        String userName = UrsAuthUtils.getLoginedUserName(request, response);
                         if (StringUtils.isEmpty(userName)) {
                             NettyHttpUtil.setHttpResponse(response, HttpResponseStatus.OK, JsonUtil.toJson(ReturnUtils.failed("need auth")));
                             NettyHttpUtil.sendHttpResponse(ctx, request, response);

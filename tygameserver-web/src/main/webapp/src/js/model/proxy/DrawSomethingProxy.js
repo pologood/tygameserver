@@ -4,6 +4,10 @@ puremvc.define({
 	},
 	{	
 		gameId:1,
+		rolesList:[],
+		gbId:'',
+		roleName:'',
+		avatarImg:'',
 		socket:null,
 		connectData:null,
 		roomId:0,
@@ -22,33 +26,68 @@ puremvc.define({
 		gameState:0,
 		selfName:'',
 		host:'http://littlegame.tianyu.163.com:8090',
+		onRegister:function(){
+			this.getLoginStatus();
+		},
 		getRoleList:function(){
 			var _this=this;
 			$.getJSON(this.host+"/master/avatar/roles?callback=?&gameId="+this.gameId,function(msg){
-				console.log(msg)
+				if(msg.code==1){
+					_this.rolesList=[];
+					for(var i in msg.payload) {
+				        var serverName=i;
+				        for(var j in msg.payload[i]){
+				        	var info=msg.payload[i][j];
+				        	_this.rolesList.push({
+				        		serverName:serverName,
+				        		gbId:info.gbId,
+				        		playerName:info.playerName,
+				        		school:info.school,
+				        		level:info.level
+				        	})
+				        }
+				    }
+				}
+				_this.sendNotification(drawsomething.AppConstants.GET_ROLELIST_SUCCESS,{rolesList:_this.rolesList})
 			})
 		},
-		getConnectData:function(obj){
+		getConnectData:function(){
 			var _this=this;
-			$.getJSON(this.host+"/master/init?callback=?&uuid="+obj.uuid+"&roleName="+obj.roleName+"&avatarImg="+encodeURIComponent(obj.avatarImg)+"&gameId="+obj.gameId+"&roomId="+obj.roomId, function(data){
-                console.log(data)
-                _this.connectSocket(data);
+			$.getJSON(this.host+"/master/init?callback=?&uuid="+this.gbId+"&roleName="+this.roleName+"&avatarImg="+encodeURIComponent(this.avatarImg)+"&gameId="+this.gameId+"&roomId="+this.roomId, function(msg){
+                _this.connectSocket(msg.payload);
             })
 		},
 		getLoginStatus:function(){
-			var _this=this;
-			$.getJSON(this.host+"/master/isLogin?callback=?",function(msg){
-				
+			var _this=this;			
+			$.getJSON(this.host+"/master/isLogin?callback=?&gameId="+this.gameId,function(msg){
+				if(msg.code==1){
+					_this.sendNotification(drawsomething.AppConstants.URS_LOGIN_SUCCESS,{});
+				}else{
+					_this.sendNotification(drawsomething.AppConstants.URS_UNLOGIN,{});
+				}
 			})
+		},
+		roleConfirm:function(data){
+			this.gbId=data.gbId;
+			this.roleName=data.roleName;
+		},
+		setRoomId:function(data){
+			this.roomId=data.roomId;
+			this.getConnectData();
 		},
 		connectSocket:function(data){
 			console.log("proxy conenct socket");
 			var _this=this;
 			this.connectData=data;
-			this.socket=new WebSocket('ws://'+this.connectData.ip+':'+this.connectData.port+'/websocket');
+			this.socket=new WebSocket('ws://'+this.connectData.ip+':'+this.connectData.port+'/ws');
 			this.socket.onopen=function(event){
 				console.log("Client open a message",event.data);
-				_this.sendNotification(drawsomething.AppConstants.CONNECT_SUCCESS,{});
+				// 
+				if(_this.roomId==0){
+					_this.createRoom();
+				}else{
+					_this.joinRoom();
+				}
 			}
 
 			this.socket.onmessage=function(event){
@@ -58,13 +97,15 @@ puremvc.define({
 				if(data.content.code==1){
 					if(data.rpcMethodName.toLowerCase() == "/room/create"){
 	                    console.log(data.content.payload);
-	                    self.roomId=data.content.payload;	
+	                    _this.roomId=data.content.payload;	
+	                    _this.sendNotification(drawsomething.AppConstants.CONNECT_SUCCESS,{});
 	                    // self.router.push('room');			
 	                }
 
 	                if(data.rpcMethodName.toLowerCase() == "/room/join"){
 	                    console.log(data.content.payload);
-	                    self.roomId=data.content.payload;
+	                    _this.roomId=data.content.payload;
+	                    _this.sendNotification(drawsomething.AppConstants.CONNECT_SUCCESS,{});
 	                    // self.router.push('room');	
 	                }
 
@@ -158,13 +199,14 @@ puremvc.define({
 			var msg={
 				rpcMethodName:"/room/create",
 				params:{
-					gameId:this.player.gameId,
+					gameId:this.gameId,
 					maxSize:10
 				},
-				gameId:this.player.gameId,
-				uuid:this.player.uuid
+				gameId:this.gameId,
+				uuid:this.gbId
 			}
 			this.socket.send(JSON.stringify(msg));
+			console.log(msg)
 		},
 		joinRoom:function(){
 			console.log("joinRoom");

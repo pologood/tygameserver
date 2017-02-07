@@ -16,6 +16,18 @@ puremvc.define({
 			case drawsomething.AppConstants.GET_ROLELIST:
 				proxy.getRoleList();
 			break;
+			case drawsomething.AppConstants.CHECK_LOGIN:
+				proxy.getLoginStatus();
+			break;
+			case drawsomething.AppConstants.ROLE_CONFIRM:
+				proxy.roleConfirm(note.getBody());
+			break;
+			case drawsomething.AppConstants.JOIN_ROOM:
+				proxy.setRoomId(note.getBody());
+			break;
+			case drawsomething.AppConstants.CREATE_ROOM:
+				proxy.setRoomId(note.getBody());
+			break;
 		}
 	}
 })
