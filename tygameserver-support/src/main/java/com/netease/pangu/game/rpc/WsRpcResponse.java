@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class WsRpcResponse {
-    private String rpcMethodName;
+    private String rpcMethod;
     private Map<String, Object> attr;
     private Object content;
 
@@ -19,7 +19,7 @@ public class WsRpcResponse {
     }
 
     public WsRpcResponse(String rpcMethodName) {
-        this.rpcMethodName = rpcMethodName;
+        this.rpcMethod = rpcMethodName;
         attr = new HashMap<String, Object>();
     }
 
@@ -27,12 +27,12 @@ public class WsRpcResponse {
         attr = new HashMap<String, Object>();
     }
 
-    public String getRpcMethodName() {
-        return rpcMethodName;
+    public String getRpcMethod() {
+        return rpcMethod;
     }
 
-    public void setRpcMethodName(String rpcMethodName) {
-        this.rpcMethodName = rpcMethodName;
+    public void setRpcMethod(String rpcMethod) {
+        this.rpcMethod = rpcMethod;
     }
 
     public Object getContent() {
