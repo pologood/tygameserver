@@ -11,6 +11,7 @@
     <link rel="dns-prefetch" href="https://nie.res.netease.com">    
     <!--<link href="http://res.tianyu.netease.com/qt/16/drawsomething/css/bootstrap.min.css" rel="stylesheet">-->
     <link rel="stylesheet" type="text/css" href="css/index.less">
+    <script type="text/javascript" src="https://nie.res.netease.com/comm/js/jquery(mixNIE).last.js"></script>
     <script src="http://res.tianyu.netease.com/qt/16/drawsomething/js/createjs-2015.11.26.min.js"></script> 
     <script type="text/javascript" src="https://webzj.reg.163.com/webapp/javascript/page/json3.js"></script>
     <script type="text/javascript" src="https://webzj.reg.163.com/webapp/javascript/message.js"></script>
@@ -29,11 +30,7 @@
             <div class="selectRole">
                 <h2> 请选择游戏角色 </h2>
                 <div class="radioCnt">
-                    <label><input name="role" type="radio" value="gbid" />sdfd </label>
-                    <label><input name="role" type="radio" value="gbid" />桃sdfdsf子 </label>
-                    <label><input name="role" type="radio" value="gbid" />香sdf蕉 </label>
-                    <label><input name="role" type="radio" value="gbid" />sdf梨 </label>
-                    <label><input name="role" type="radio" value="gbid" />f </label>
+                    <label><input name="role" type="radio" value="gbid" /></label>
                 </div>
                 <a href="javascript:;" class="confirmBtn">确认</a>
             </div>
@@ -242,8 +239,18 @@
             <canvas id="drawingBoard" width="550" height="418" class="drawingBoard"></canvas>
         </div>
     </div>
-    <script charset="gb2312" src="https://nie.res.netease.com/comm/js/jquery(mixNIE).1.11.js"></script>
-    <script type="text/javascript" src="https://nie.res.netease.com/comm/js/jquery(mixNIE).last.js"></script>
+    <script id="roleItems-template" type="text/x-handlebars-template">
+        {{#each rolesList}}
+        <label>
+            <input name="role" type="radio" value="{{this.gbId}}" data-roleName="{{this.playerName}}">
+            <span>{{this.playerName}}</span>
+            <span>{{this.serverName}}</span>
+            <span>{{this.school}}</span>
+            <span>lv{{this.level}}</span>
+        </label>
+        {{/each}}
+    </script>
+    <script type="text/javascript" src="js/lib/handlebars-v4.0.5.js"></script>
     <script type="text/javascript" src="js/lib/puremvc-1.0.1.min.js"></script>
     <script type="text/javascript" src="js/view/event/AppEvents.js"></script>
     <script type="text/javascript" src="js/view/component/ConnectPanel.js"></script>

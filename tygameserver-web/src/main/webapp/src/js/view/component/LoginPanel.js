@@ -55,7 +55,9 @@ puremvc.define({
 		},
 		dispatchCreateRoom:function(){
 			var e = this.createEvent( drawsomething.view.event.AppEvents.CREATE_ROOM);
-			e.msg={};
+			e.msg={
+				roomId:0
+			};
 			this.dispatchEvent(e);
 		},
 		dispatchJoinRoom:function(){
@@ -63,12 +65,21 @@ puremvc.define({
 			e.msg={
 				roomId:this.$container.find(".roomIdIpt").val()
 			};
+			if(e.msg.roomId==""){
+				alert("请输入房间号");
+				return;
+			}
 			this.dispatchEvent(e);
 		},
 		dispatchConfirm:function(){
 			var e = this.createEvent( drawsomething.view.event.AppEvents.ROLE_CONFIRM);
 			e.msg={
-				gbid:this.$container.find("input[type='radio']:checked").val()
+				gbId:this.$container.find("input[type='radio']:checked").val(),
+				roleName:this.$container.find("input[type='radio']:checked").attr("data-rolename")
+			}
+			if(e.msg.gbId==undefined){
+				alert("请选择角色");
+				return;
 			}
 			this.dispatchEvent(e);
 		},
@@ -86,6 +97,13 @@ puremvc.define({
 			this.$container.find(".loginCnt").hide();
 			this.$container.find(".selectRole").hide();
 			this.$container.find(".entrance").show();
+		},
+		updateRoleList:function(obj){
+			var source   = $("#roleItems-template").html();
+			var template = Handlebars.compile(source);
+			var context = {rolesList:obj.rolesList};
+			var html    = template(context);
+			this.$container.find(".radioCnt").html(html);
 		},
 		hide:function(){
 			this.container.hide();
