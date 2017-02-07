@@ -314,4 +314,12 @@ public class RoomService {
         GameResult result = ReturnUtils.succ(payload);
         return result;
     }
+
+    public GameResult getMember(AvatarSession<Avatar> session){
+        Map<String, Object> payload = new HashMap<String, Object>();
+        payload.put("avatar", SimpleAvatar.create(session));
+        payload.put("avatarId", session.getAvatarId());
+        GameResult result = ReturnUtils.succ(payload);
+        return result;
+    }
 }
