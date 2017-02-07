@@ -203,6 +203,7 @@
         <module>tygameserver-slave</module>
         <module>tygameserver-config</module>
         <module>tygameserver-web</module>
+        <module>tygameserver-common</module>
     </modules>
     <dependencies>
         <dependency>

@@ -1,4 +1,4 @@
-package com.netease.pangu.game.dao;
+package com.netease.pangu.game.common.dao;
 
 import com.netease.pangu.game.dao.redis.RedisDao;
 import com.netease.pangu.game.dao.redis.RedisTemplateInject;
