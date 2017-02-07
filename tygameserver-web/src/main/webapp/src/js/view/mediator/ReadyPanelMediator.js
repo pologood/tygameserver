@@ -5,7 +5,7 @@ puremvc.define({
     {
         // Notifications this mediator is interested in 
         listNotificationInterests: function() {
-            return [drawsomething.AppConstants.CONNECT_SUCCESS];
+            return [drawsomething.AppConstants.BROADCAST_ROOMINFO];
         },
         
         // Code to be executed when the Mediator instance is registered with the View
@@ -27,7 +27,7 @@ puremvc.define({
         // Handle notifications from other PureMVC actors
         handleNotification: function( note ) {
             switch ( note.getName() ) {
-                case drawsomething.AppConstants.CONNECT_SUCCESS:
+                case drawsomething.AppConstants.BROADCAST_ROOMINFO:
                     this.viewComponent.show();
                     break;
             }

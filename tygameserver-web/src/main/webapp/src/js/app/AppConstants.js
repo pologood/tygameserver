@@ -13,7 +13,7 @@ puremvc.define({name:'drawsomething.AppConstants'},{},{
 	LOGINED:'logined',
 	UNLOGIN:'unlogin',
 	ROLE_CONFIRM:'role_confirm',//选择角色
-	JOIN_ROOM:'join_room'
-
+	JOIN_ROOM:'join_room',
+	BROADCAST_ROOMINFO:'broadcast_roominfo'
 
 })

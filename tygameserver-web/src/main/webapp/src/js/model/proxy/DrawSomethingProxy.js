@@ -3,14 +3,14 @@ puremvc.define({
 		parent:puremvc.Proxy
 	},
 	{	
-		gameId:1,
-		rolesList:[],
-		gbId:'',
-		roleName:'',
+		gameId:1,//你画我猜ID
+		rolesList:[],//游戏角色列表
+		gbId:'',//选择角色gbId
+		roleName:'',//角色昵称
 		avatarImg:'',
 		socket:null,
 		connectData:null,
-		roomId:0,
+		roomId:0,//房间号
 		avatarId:0,
 		player:{
 			roleName:''
@@ -73,16 +73,17 @@ puremvc.define({
 		},
 		setRoomId:function(data){
 			this.roomId=data.roomId;
-			this.getConnectData();
+			if(this.socket==null){
+				this.getConnectData();
+			}
+			
 		},
 		connectSocket:function(data){
-			console.log("proxy conenct socket");
 			var _this=this;
 			this.connectData=data;
 			this.socket=new WebSocket('ws://'+this.connectData.ip+':'+this.connectData.port+'/ws');
 			this.socket.onopen=function(event){
 				console.log("Client open a message",event.data);
-				// 
 				if(_this.roomId==0){
 					_this.createRoom();
 				}else{
@@ -95,50 +96,49 @@ puremvc.define({
 				data=JSON.parse(event.data);
 
 				if(data.content.code==1){
-					if(data.rpcMethodName.toLowerCase() == "/room/create"){
+					if(data.rpcMethod.toLowerCase() == "/room/create"){
 	                    console.log(data.content.payload);
 	                    _this.roomId=data.content.payload;	
-	                    _this.sendNotification(drawsomething.AppConstants.CONNECT_SUCCESS,{});
-	                    // self.router.push('room');			
+	                    _this.sendNotification(drawsomething.AppConstants.CONNECT_SUCCESS,{});			
 	                }
 
-	                if(data.rpcMethodName.toLowerCase() == "/room/join"){
+	                if(data.rpcMethod.toLowerCase() == "/room/join"){
 	                    console.log(data.content.payload);
 	                    _this.roomId=data.content.payload;
 	                    _this.sendNotification(drawsomething.AppConstants.CONNECT_SUCCESS,{});
-	                    // self.router.push('room');	
 	                }
 
-	                if(data.rpcMethodName.toLowerCase() == "/room/info"){
+	                if(data.rpcMethod.toLowerCase() == "/room/info"){
 	                    console.log(data.content.payload);					
 	                    // self.members = data.content.payload.members;
 	                }
 
-	                if(data.rpcMethodName.toLowerCase() == "/room/broadcast/roominfo"){
+	                if(data.rpcMethod.toLowerCase() == "/room/broadcast/roominfo"){
 	                    console.log(data.content.payload);	
-	                    self.ownerName = data.content.payload.ownerName;
-	                    self.members = data.content.payload.members;
-	                    self.selfName = getName(self.avatarId);
+	                    _this.ownerName = data.content.payload.ownerName;
+	                    _this.members = data.content.payload.members;
+	                    _this.sendNotification(drawsomething.AppConstants.BROADCAST_ROOMINFO,{});
+	                    // _this.selfName = getName(_this.avatarId);
 	                }
 
-	                if(data.rpcMethodName.toLowerCase() == "/avatar/ready"){
+	                if(data.rpcMethod.toLowerCase() == "/avatar/ready"){
 	                    self.state=1;
 	                }
 
-	                if(data.rpcMethodName.toLowerCase() == "/room/chat"){
+	                if(data.rpcMethod.toLowerCase() == "/room/chat"){
 	                    console.log(data.content.payload);	
 	                    self.groupmsgs.push({msg:data.content.payload.msg,from:data.content.source.avatarName});
 	                }
 
-	                if(data.rpcMethodName.toLowerCase() ==  "/guess/create"){
+	                if(data.rpcMethod.toLowerCase() ==  "/guess/create"){
                     
                 	}
 
-                	if(data.rpcMethodName.toLowerCase() == "/room/private/startgame"){
+                	if(data.rpcMethod.toLowerCase() == "/room/private/startgame"){
 	                    self.questions = data.content.payload;
 	                }
 
-	                if(data.rpcMethodName.toLowerCase() == "/room/broadcast/startgame"){
+	                if(data.rpcMethod.toLowerCase() == "/room/broadcast/startgame"){
 	                    self.painterId = data.content.payload.avatarId;
 	                    self.gameState = data.content.payload.gameState;
 	                    self.router.push('draw');
@@ -148,7 +148,7 @@ puremvc.define({
 	                    
 	                }
 
-	                if(data.rpcMethodName.toLowerCase() == "/room/broadcast/drawgame"){
+	                if(data.rpcMethod.toLowerCase() == "/room/broadcast/drawgame"){
 	                    var info=data.content.payload;
 	                    if(info.type==1){
 	                        self.border.drawing(info.drawInfo);
@@ -158,17 +158,17 @@ puremvc.define({
 	                    
 	                }
 
-	                if(data.rpcMethodName.toLowerCase() == "/room/broadcast/drawquestion"){
+	                if(data.rpcMethod.toLowerCase() == "/room/broadcast/drawquestion"){
 	                    self.hint=data.content.payload;
 	                    self.gameState=data.content.payload.gameState;
 	                }
 
-	                if(data.rpcMethodName.toLowerCase() == "/room/broadcast/answer"){
+	                if(data.rpcMethod.toLowerCase() == "/room/broadcast/answer"){
 	                    data.content.payload.name = getName(data.content.payload.avatarId);
 	                    self.answerList.push(data.content.payload);
 	                }
 
-	                if(data.rpcMethodName.toLowerCase() == "/room/broadcast/correct"){
+	                if(data.rpcMethod.toLowerCase() == "/room/broadcast/correct"){
 	                    var answer = data.content.payload;
 	                    answer.name = getName(answer.avatarId);
 	                    answer.correct = true;
@@ -197,7 +197,7 @@ puremvc.define({
 		createRoom:function(){
 			console.log('createRoom');
 			var msg={
-				rpcMethodName:"/room/create",
+				rpcMethod:"/room/create",
 				params:{
 					gameId:this.gameId,
 					maxSize:10
@@ -211,7 +211,7 @@ puremvc.define({
 		joinRoom:function(){
 			console.log("joinRoom");
 			var msg={
-				rpcMethodName:"room/join",
+				rpcMethod:"room/join",
 				params:{
 					roomId:this.roomId
 				},
@@ -223,7 +223,7 @@ puremvc.define({
 		ready:function(){
 			console.log("ready");
 			var msg={
-				rpcMethodName:"/avatar/ready",
+				rpcMethod:"/avatar/ready",
 				params:{
 
 				},
