@@ -1,6 +1,7 @@
 package com.netease.pangu.game.meta;
 
 import io.netty.util.HashedWheelTimer;
+import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Transient;
 
 import java.util.ArrayList;
@@ -10,6 +11,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 public class GuessGame {
+    private ObjectId gameObjId;
     private long gameId;
     private long roomId;
     private long startTime;
@@ -133,6 +135,14 @@ public class GuessGame {
         this.nextStartTime = nextStartTime;
     }
 
+    public ObjectId getGameObjId() {
+        return gameObjId;
+    }
+
+    public void setGameObjId(ObjectId gameObjId) {
+        this.gameObjId = gameObjId;
+    }
+
     public enum RULE {
         FIRST_GUESSED(1, "猜题人：首个猜到答案"),
         GUESSED(2, "猜题人：猜到答案"),
@@ -237,7 +247,7 @@ public class GuessGame {
 
     public static class GameRound{
         private int round;
-        private int ownerId;
+        private long ownerId;
         private long startTime;
         private long endTime;
         private long nextStartTime;
@@ -248,7 +258,7 @@ public class GuessGame {
         private Map<Long, Integer> scores;
         private Map<Long, List<RULE>> operations;
 
-        public GameRound(GuessGame game, int ownerId){
+        public GameRound(GuessGame game, long ownerId){
             this.setOwnerId(ownerId);
             this.setRound(game.getRound());
             this.setStartTime(game.getStartTime());
@@ -262,11 +272,11 @@ public class GuessGame {
             this.setOperations(game.getOperations());
         }
 
-        public int getOwnerId() {
+        public long getOwnerId() {
             return ownerId;
         }
 
-        public void setOwnerId(int ownerId) {
+        public void setOwnerId(long ownerId) {
             this.ownerId = ownerId;
         }
 

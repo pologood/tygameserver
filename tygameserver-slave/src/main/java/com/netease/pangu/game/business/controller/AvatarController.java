@@ -43,7 +43,13 @@ public class AvatarController {
     @WsRpcCall("/exit")
     public GameResult exit(GameContext<AvatarSession<Avatar>> ctx) {
         AvatarSession<Avatar> session = ctx.getSession();
-        GameResult result =  ReturnUtils.succ();
+        GameResult result = ReturnUtils.failed();
+        if (session.getAvatarStatus() != AvatarStatus.GAMING) {
+            if (roomService.exitRoom(session.getAvatarId())) {
+                roomService.broadcast(RoomService.ROOM_EXIT, session.getRoomId(), roomService.getMember(session));
+                result = ReturnUtils.succ(session.getAvatarId());
+            }
+        }
         return result;
     }
 
@@ -52,9 +58,9 @@ public class AvatarController {
         AvatarSession<Avatar> session = ctx.getSession();
         if (session.getAvatarStatus() != AvatarStatus.READY) {
             session.setAvatarStatus(AvatarStatus.READY);
-            roomService.broadcast(RoomService.ROOM_INFO, session.getRoomId(), roomService.getRoomInfo(session.getRoomId()));
+            roomService.broadcast(RoomService.ROOM_READY, session.getRoomId(), roomService.getMember(session));
         }
-        GameResult result = ReturnUtils.succ("ready go");
+        GameResult result = ReturnUtils.succ(session.getAvatarId());
         return result;
     }
 

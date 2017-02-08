@@ -191,7 +191,9 @@ public class RoomService {
     public static final String ROOM_PRIVATE = "/room/private/";
 
     public static final String ROOM_INFO = "info";
+    public static final String ROOM_READY = "ready";
     public static final String ROOM_JOIN = "join";
+    public static final String ROOM_EXIT = "exit";
     public static final String ROOM_REMOVE = "remove";
 
     public void broadcast(String path, long roomId, Object msg) {

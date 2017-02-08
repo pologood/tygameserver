@@ -35,13 +35,13 @@ public class GuessGameController {
     public GameResult startGuessGame(long roomId, GameContext<AvatarSession<Avatar>> ctx) {
         if (roomService.isReady(roomId) && roomService.isRoomOwner(roomId, ctx.getSession().getAvatarId())) {
             roomService.setRoomState(roomId, RoomStatus.GAMEING);
-            if (guessGameService.startGame(roomId)) {
-                return ReturnUtils.succ("succ");
+            if (guessGameService.startGame(roomId, ctx.getSession())) {
+                return ReturnUtils.succ();
             } else {
-                return ReturnUtils.failed("failed");
+                return ReturnUtils.failed();
             }
         } else {
-            return ReturnUtils.failed("room is not ready");
+            return ReturnUtils.failed("room is not ready!");
         }
     }
 
