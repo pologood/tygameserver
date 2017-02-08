@@ -35,6 +35,10 @@ public abstract class RedisDao<K, V> {
         redisOperations.delete(key);
     }
 
+    public boolean expire(K key, long timeout, TimeUnit timeUnit) {
+        return redisOperations.expire(key, timeout, timeUnit);
+    }
+
     public void put(K key, V value) {
         redisOperations.opsForValue().set(key, value);
     }

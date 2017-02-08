@@ -1,6 +1,6 @@
 package com.netease.pangu.game.service;
 
-import com.netease.pangu.game.dao.CommonRedisDao;
+import com.netease.pangu.game.common.dao.CommonRedisDao;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.redis.core.RedisOperations;
 import org.springframework.data.redis.core.SessionCallback;

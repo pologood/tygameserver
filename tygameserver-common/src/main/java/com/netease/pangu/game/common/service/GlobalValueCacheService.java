@@ -1,6 +1,6 @@
-package com.netease.pangu.game.service;
+package com.netease.pangu.game.common.service;
 
-import com.netease.pangu.game.dao.CommonRedisDao;
+import com.netease.pangu.game.common.dao.CommonRedisDao;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Service;
 

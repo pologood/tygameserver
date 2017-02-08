@@ -15,7 +15,7 @@
         </dependency>
         <dependency>
             <groupId>com.netease.pangu.tygameserver</groupId>
-            <artifactId>tygameserver-support</artifactId>
+            <artifactId>tygameserver-common</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
         <dependency>

@@ -28,13 +28,14 @@
     <context:component-scan base-package="com.netease.pangu.game.http"/>
     <context:component-scan base-package="com.netease.pangu.game.controller"/>
     <context:component-scan base-package="com.netease.pangu.game.netty"/>
-
+    <context:component-scan base-package="com.netease.pangu.game.service"/>
+    <context:component-scan base-package="com.netease.pangu.game.common"/>
     <bean id="jedisConnFactory"
           class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory">
         <property name="hostName" value="${redis.host}"/>
         <property name="port" value="${redis.port}"/>
         <property name="password" value="${redis.pass}"/>
-        <property name="database" value="${redis.default.db}"/>
+        <property name="database" value="${redis.auth.db}"/>
         <property name="poolConfig" ref="jedisPoolConfig"/>
     </bean>
     <bean id="jedisPoolConfig" class="redis.clients.jedis.JedisPoolConfig">

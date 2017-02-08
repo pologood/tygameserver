@@ -1,7 +1,6 @@
 package com.netease.pangu.game.service;
 
 import com.netease.pangu.game.common.meta.AvatarSession;
-import com.netease.pangu.game.common.meta.ConnectionStatus;
 import com.netease.pangu.game.meta.Avatar;
 import io.netty.channel.ChannelId;
 import org.springframework.stereotype.Service;
@@ -17,8 +16,8 @@ public class AvatarSessionService extends AbstractAvatarSessionService<Avatar> {
         updateAvatarSessionByChannelId(id, new AbstractAvatarSessionService.SessionCallable<Void, Avatar>() {
             @Override
             public Void call(AvatarSession<Avatar> playerSession) {
-                playerSession.setState(ConnectionStatus.NOT_CONNECTED);
                 roomService.exitRoom(playerSession.getAvatarId());
+                remove(playerSession.getAvatarId());
                 return null;
             }
         });
