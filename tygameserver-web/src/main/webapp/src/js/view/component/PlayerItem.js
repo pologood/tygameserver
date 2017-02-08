@@ -1,0 +1,16 @@
+puremvc.define(
+	{
+		name:'drawsomething.view.component.PlayerItem',
+		constructor:function(event){
+			console.log(event);
+		}
+	},
+	{
+		getName:function(){
+			console.log("ScrollName");
+		}
+	},
+	{
+		NAME:'PlayerItem'
+	}
+)

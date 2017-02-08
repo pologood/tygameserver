@@ -117,7 +117,7 @@ puremvc.define({
 	                    console.log(data.content.payload);	
 	                    _this.ownerName = data.content.payload.ownerName;
 	                    _this.members = data.content.payload.members;
-	                    _this.sendNotification(drawsomething.AppConstants.BROADCAST_ROOMINFO,{});
+	                    _this.sendNotification(drawsomething.AppConstants.BROADCAST_ROOMINFO,{info:data.content.payload});
 	                    // _this.selfName = getName(_this.avatarId);
 	                }
 
