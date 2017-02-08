@@ -64,10 +64,14 @@ public class NodeServerHandler extends ChannelInboundHandlerAdapter {
         if (frame instanceof TextWebSocketFrame) {
             String dataStr = ((TextWebSocketFrame) frame).text();
             Map<String, Object> data = JsonUtil.fromJson(dataStr);
-            String rpcMethodName = (String) data.get("rpcMethod");
+            String rpcMethod = (String) data.get("rpcMethod");
+
             String uuid = (String) data.get("uuid");
             Double tmp = NumberUtils.toDouble(data.get("gameId").toString());
             long gameId = tmp.longValue();
+            if(!wsRpcCallInvoker.containsURIPath(gameId, rpcMethod)) {
+                NettyHttpUtil.sendWsResponse(rpcMethod, ctx.channel(), "rpcMethod not exist!");
+            }
             @SuppressWarnings("unchecked")
             Map<String, Object> args = (Map<String, Object>) data.get("params");
             GameContext<AvatarSession<Avatar>> context = null;
@@ -84,10 +88,10 @@ public class NodeServerHandler extends ChannelInboundHandlerAdapter {
                 if (session.getChannel() == null || !session.getChannel().isActive()) {
                     session.setChannel(ctx.channel());
                 }
-                context = new GameContext<AvatarSession<Avatar>>(ctx, session, rpcMethodName, frame);
-                wsRpcCallInvoker.invoke(gameId, rpcMethodName, args, context);
+                context = new GameContext<AvatarSession<Avatar>>(ctx, session, rpcMethod, frame);
+                wsRpcCallInvoker.invoke(gameId, rpcMethod, args, context);
             } else {
-                NettyHttpUtil.sendWsResponse(rpcMethodName, ctx.channel(), "avatar not init");
+                NettyHttpUtil.sendWsResponse(rpcMethod, ctx.channel(), "avatar not init");
             }
         }
     }

@@ -54,13 +54,17 @@ public class MasterServerHandler extends ChannelInboundHandlerAdapter {
         if (frame instanceof TextWebSocketFrame) {
             String dataStr = ((TextWebSocketFrame) frame).text();
             Map<String, Object> data = JsonUtil.fromJson(dataStr);
-            String rpcMethodName = (String) data.get("rpcMethod");
+            String rpcMethod = (String) data.get("rpcMethod");
             @SuppressWarnings("unchecked")
             Map<String, Object> args = (Map<String, Object>) data.get("params");
             Double tmp = NumberUtils.toDouble(data.get("gameId").toString());
             long gameId = tmp.longValue();
-            GameContext<Void> context = new GameContext<Void>(ctx, null, rpcMethodName, frame);
-            wsRpcCallInvoker.invoke(gameId, rpcMethodName, args, context);
+            GameContext<Void> context = new GameContext<Void>(ctx, null, rpcMethod, frame);
+            if(wsRpcCallInvoker.containsURIPath(gameId, rpcMethod)) {
+                wsRpcCallInvoker.invoke(gameId, rpcMethod, args, context);
+            }else{
+                NettyHttpUtil.sendWsResponse(context, "rpcMethod not exist!");
+            }
         }
     }
 

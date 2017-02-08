@@ -67,7 +67,7 @@ public class AvatarController {
         source.put("uuid", context.getSession().getUuid());
         source.put("playerName", context.getSession().getName());
         GameResult result = ReturnUtils.succ(payload, source);
-        WsRpcResponse response = WsRpcResponse.create(context.getRpcMethodName());
+        WsRpcResponse response = WsRpcResponse.create(context.getRpcMethod());
         response.setContent(result);
         session.sendJSONMessage(response);
     }

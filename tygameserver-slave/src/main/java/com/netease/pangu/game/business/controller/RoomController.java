@@ -113,7 +113,7 @@ public class RoomController {
         GameResult result = ReturnUtils.succ(payload, source);
         for (AvatarSession<Avatar> member : members.values()) {
             if (member.getChannel() != null && member.getChannel().isActive()) {
-                WsRpcResponse response = WsRpcResponse.create(ctx.getRpcMethodName());
+                WsRpcResponse response = WsRpcResponse.create(ctx.getRpcMethod());
                 response.setContent(result);
                 member.sendJSONMessage(response);
             }

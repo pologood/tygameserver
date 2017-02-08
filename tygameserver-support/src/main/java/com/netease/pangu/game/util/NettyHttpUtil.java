@@ -45,7 +45,7 @@ public class NettyHttpUtil {
 
 
     public static void sendWsResponse(@SuppressWarnings("rawtypes") GameContext context, Channel channel, Object content) {
-        WsRpcResponse response = WsRpcResponse.create(context.getRpcMethodName());
+        WsRpcResponse response = WsRpcResponse.create(context.getRpcMethod());
         response.setContent(content);
         if (channel.isActive()) {
             channel.writeAndFlush(new TextWebSocketFrame(JsonUtil.toJson(response)));
@@ -54,7 +54,7 @@ public class NettyHttpUtil {
 
 
     public static void sendWsResponse(@SuppressWarnings("rawtypes") GameContext context, Object content) {
-        WsRpcResponse response = WsRpcResponse.create(context.getRpcMethodName());
+        WsRpcResponse response = WsRpcResponse.create(context.getRpcMethod());
         response.setContent(content);
         if (context.getChannel().isActive()) {
             context.getChannel().writeAndFlush(new TextWebSocketFrame(JsonUtil.toJson(response)));

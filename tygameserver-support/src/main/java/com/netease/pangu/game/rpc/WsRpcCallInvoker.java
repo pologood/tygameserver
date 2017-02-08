@@ -53,6 +53,10 @@ public class WsRpcCallInvoker {
         return controllerMap.get(gameId).get(nettyRpcCallAnnoValueMap.get(gameId).get(rpcMethodName));
     }
 
+    public boolean containsURIPath(long gameId, String requestUri) {
+        return methodMap.get(gameId) != null ? methodMap.get(gameId).keySet().contains(requestUri):false;
+    }
+
     @SuppressWarnings("unchecked")
     public void invoke(long gameId, String rpcMethodName, Map<String, Object> args, GameContext<?> context) {
         Method method = getMethod(gameId, rpcMethodName);
