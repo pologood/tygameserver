@@ -120,7 +120,7 @@ public class GuessGameService {
                         game.setRound(1);
                         game.setState(GuessGameState.ROUND_GAMING);
                         game.setQuestion(generateQuestion());
-                        roomService.chatTo(GAME_QUESTION, roomId, Arrays.asList(game.getDrawerId()),ReturnUtils.succ(getCurrentGameInfo(roomId)));
+                        roomService.chatTo(GAME_QUESTION, roomId, Arrays.asList(game.getDrawerId()),ReturnUtils.succ(game.getQuestion()));
                         roomService.broadcast(GAME_START, roomId, ReturnUtils.succ(getCurrentGameInfo(roomId)));
                     } else if (game.getState() != GuessGameState.ROUND_GAMING) {
                         if (current >= game.getEndTime()) {
@@ -145,7 +145,7 @@ public class GuessGameService {
                             game.setEndTime(nextStartTime);
                             game.setQuestion(generateQuestion());
                             game.setRound(game.getRound() + 1);
-                            roomService.chatTo(GAME_QUESTION, roomId, Arrays.asList(game.getDrawerId()),ReturnUtils.succ(getCurrentGameInfo(roomId)));
+                            roomService.chatTo(GAME_QUESTION, roomId, Arrays.asList(game.getDrawerId()),ReturnUtils.succ(game.getQuestion()));
                             Map<String, Object> ret = new HashMap<String, Object>(getCurrentGameInfo(roomId));
                             roomService.broadcast(GAME_RUNNING, roomId, ReturnUtils.succ(ret));
                         }
