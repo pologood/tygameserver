@@ -46,7 +46,9 @@ puremvc.define({
 			console.log("startGame")
 		},
 		setReady:function(){
-			console.log("准备")
+			var e = this.createEvent( drawsomething.view.event.AppEvents.READY);
+			e.msg={};
+			this.dispatchEvent(e);
 		},
 		kickPlayer:function(){
 			console.log("踢人")
