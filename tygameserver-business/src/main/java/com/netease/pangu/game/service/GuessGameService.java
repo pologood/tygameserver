@@ -19,10 +19,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
@@ -79,10 +76,11 @@ public class GuessGameService {
     }
 
     public class GameTimerTask implements TimerTask{
-        private final static String GAME_START = "guess/gamestart";
+        private final static String GAME_START = "guess/start";
         private final static String GAME_OVER = "guess/gameover";
         private final static String ROUND_OVER = "guess/roundover";
-        private final static String GAME_RUNNING = "guess/gamerunning";
+        private final static String GAME_RUNNING = "guess/running";
+        private final static String GAME_QUESTION= "guess/quesion";
         private long roomId;
         private GuessGameInfo guessGameInfo;
 
@@ -121,6 +119,8 @@ public class GuessGameService {
                         game.setEndTime(startTime + ROUNG_GAME_TIME);
                         game.setRound(1);
                         game.setState(GuessGameState.ROUND_GAMING);
+                        game.setQuestion(generateQuestion());
+                        roomService.chatTo(GAME_QUESTION, roomId, Arrays.asList(game.getDrawerId()),ReturnUtils.succ(getCurrentGameInfo(roomId)));
                         roomService.broadcast(GAME_START, roomId, ReturnUtils.succ(getCurrentGameInfo(roomId)));
                     } else if (game.getState() != GuessGameState.ROUND_GAMING) {
                         if (current >= game.getEndTime()) {
@@ -143,7 +143,9 @@ public class GuessGameService {
                             game.setDrawerId(drawerId);
                             game.setStartTime(game.getNextStartTime());
                             game.setEndTime(nextStartTime);
+                            game.setQuestion(generateQuestion());
                             game.setRound(game.getRound() + 1);
+                            roomService.chatTo(GAME_QUESTION, roomId, Arrays.asList(game.getDrawerId()),ReturnUtils.succ(getCurrentGameInfo(roomId)));
                             Map<String, Object> ret = new HashMap<String, Object>(getCurrentGameInfo(roomId));
                             roomService.broadcast(GAME_RUNNING, roomId, ReturnUtils.succ(ret));
                         }
@@ -357,8 +359,9 @@ public class GuessGameService {
         return avatarIds[random];
     }
 
-    public List<GuessQuestion> getQuestions() {
-        return questions;
+    public GuessQuestion generateQuestion() {
+        int random = RandomUtils.nextInt(0, questions.size());
+        return questions.get(random);
     }
 
 }

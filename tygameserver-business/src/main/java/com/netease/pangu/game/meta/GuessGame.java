@@ -18,7 +18,7 @@ public class GuessGame {
     private long endTime;
     private long nextStartTime;
     private long drawerId;
-    private Question question;
+    private GuessQuestion question;
     private List<Guess> answers;
     private boolean isFirstGuessed;
     private Map<Long, Integer> scores;
@@ -75,11 +75,11 @@ public class GuessGame {
         this.gameId = gameId;
     }
 
-    public Question getQuestion() {
+    public GuessQuestion getQuestion() {
         return question;
     }
 
-    public void setQuestion(Question question) {
+    public void setQuestion(GuessQuestion question) {
         this.question = question;
     }
 
@@ -159,54 +159,6 @@ public class GuessGame {
         }
     }
 
-    public static class Question {
-        private long avatarId;
-        private String hint1;
-        private String hint2;
-        private String answer;
-        private Object draw;
-
-        public long getAvatarId() {
-            return avatarId;
-        }
-
-        public void setAvatarId(long avatarId) {
-            this.avatarId = avatarId;
-        }
-
-        public String getHint1() {
-            return hint1;
-        }
-
-        public void setHint1(String hint1) {
-            this.hint1 = hint1;
-        }
-
-        public String getHint2() {
-            return hint2;
-        }
-
-        public void setHint2(String hint2) {
-            this.hint2 = hint2;
-        }
-
-        public String getAnswer() {
-            return answer;
-        }
-
-        public void setAnswer(String answer) {
-            this.answer = answer;
-        }
-
-        public Object getDraw() {
-            return draw;
-        }
-
-        public void setDraw(Object draw) {
-            this.draw = draw;
-        }
-    }
-
     public static class Guess {
         private long avatarId;
         private String answer;
@@ -252,7 +204,7 @@ public class GuessGame {
         private long endTime;
         private long nextStartTime;
         private long drawerId;
-        private Question question;
+        private GuessQuestion question;
         private List<Guess> answers;
         private boolean isFirstGuessed;
         private Map<Long, Integer> scores;
@@ -321,11 +273,11 @@ public class GuessGame {
             this.drawerId = drawerId;
         }
 
-        public Question getQuestion() {
+        public GuessQuestion getQuestion() {
             return question;
         }
 
-        public void setQuestion(Question question) {
+        public void setQuestion(GuessQuestion question) {
             this.question = question;
         }
 
