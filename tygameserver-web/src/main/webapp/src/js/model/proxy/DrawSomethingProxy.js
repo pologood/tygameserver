@@ -113,12 +113,20 @@ puremvc.define({
 	                    // self.members = data.content.payload.members;
 	                }
 
-	                if(data.rpcMethod.toLowerCase() == "/room/broadcast/roominfo"){
-	                    console.log(data.content.payload);	
+	                if(data.rpcMethod.toLowerCase() == "/room/broadcast/info"){
+            			console.log(data.content.payload);	
 	                    _this.ownerName = data.content.payload.ownerName;
 	                    _this.members = data.content.payload.members;
 	                    _this.sendNotification(drawsomething.AppConstants.BROADCAST_ROOMINFO,{info:data.content.payload});
 	                    // _this.selfName = getName(_this.avatarId);
+	                }
+
+	                if(data.rpcMethod.toLowerCase() == "/room/broadcast/join"){
+                  		console.log(data.content.payload);	
+	                }
+
+	                if(data.rpcMethod.toLowerCase() == "/room/broadcast/remove"){
+                  		console.log(data.content.payload);	
 	                }
 
 	                if(data.rpcMethod.toLowerCase() == "/avatar/ready"){
