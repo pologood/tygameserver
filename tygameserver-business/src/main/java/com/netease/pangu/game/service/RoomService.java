@@ -225,7 +225,7 @@ public class RoomService {
         private long avatarId;
         private String avatarImg;
         private long roomId;
-        private ConnectionStatus state;
+        private AvatarStatus state;
 
         public String getName() {
             return name;
@@ -275,11 +275,11 @@ public class RoomService {
             this.roomId = roomId;
         }
 
-        public ConnectionStatus getState() {
+        public AvatarStatus getState() {
             return state;
         }
 
-        public void setState(ConnectionStatus state) {
+        public void setState(AvatarStatus state) {
             this.state = state;
         }
 
@@ -289,7 +289,7 @@ public class RoomService {
             avatar.setName(session.getName());
             avatar.setAvatarImg(session.getAvatar().getAvatarImg());
             avatar.setRoomId(session.getRoomId());
-            avatar.setState(session.getState());
+            avatar.setState(session.getAvatarStatus());
             avatar.setUuid(session.getUuid());
             avatar.setGameId(session.getGameId());
             return avatar;

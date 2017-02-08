@@ -2,7 +2,7 @@ package com.netease.pangu.game.service;
 
 import com.netease.pangu.game.common.meta.AvatarSession;
 import com.netease.pangu.game.common.meta.GameRoom;
-import com.netease.pangu.game.dao.impl.GuessGameDaoImpl;
+import com.netease.pangu.game.dao.impl.GuessGameInfoDaoImpl;
 import com.netease.pangu.game.meta.Avatar;
 import com.netease.pangu.game.meta.GuessGame;
 import com.netease.pangu.game.meta.GuessGame.Guess;
@@ -17,7 +17,6 @@ import org.apache.commons.collections.MapUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.bson.types.ObjectId;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -39,7 +38,7 @@ public class GuessGameService {
     private RoomService roomService;
 
     @Resource
-    GuessGameDaoImpl guessGameDao;
+    GuessGameInfoDaoImpl guessGameInfoDao;
 
     private final List<GuessQuestion> questions = new ArrayList<GuessQuestion>();
 
@@ -119,9 +118,10 @@ public class GuessGameService {
                                     ret.put("answer", game.getQuestion().getAnswer());
                                     roomService.broadcast("/guess/roundover", roomId, ReturnUtils.succ());
                                 }
-                                if(guessGameDao.save(game)){
-                                    ObjectId id = game.getId();
-                                }
+
+//                                if(guessGameInfoDao.save(game)){
+//                                    ObjectId id = game.getId();
+//                                }
 
                                 //save game data
                             }
