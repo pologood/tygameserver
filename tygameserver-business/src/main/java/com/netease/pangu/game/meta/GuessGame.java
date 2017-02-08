@@ -148,12 +148,19 @@ public class GuessGame {
     }
 
     public enum RULE {
-        FIRST_GUESSED,
-        GUESSED,
-        LIKE,
-        UNLIKE,
-        BE_GUESSED,
-        EXIT
+        FIRST_GUESSED(1, "猜题人：首个猜到答案"),
+        GUESSED(2, "猜题人：猜到答案"),
+        LIKE(3, "画题人：绘画被点赞"),
+        UNLIKE(4, "不喜欢"),
+        BE_GUESSED(5, "画题人：每次作品被别人"),
+        EXIT(6, "中途离开");
+
+        private int id;
+        private String desc;
+        private RULE(int id, String desc){
+            this.id = id;
+            this.desc = desc;
+        }
     }
 
     public static class Question {

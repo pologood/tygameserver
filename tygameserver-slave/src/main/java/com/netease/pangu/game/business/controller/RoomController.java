@@ -62,7 +62,7 @@ public class RoomController {
         GameResult result;
         if (isOk) {
             roomService.broadcast(RoomService.ROOM_INFO, roomId, roomService.getMember(session));
-            result = ReturnUtils.succ(roomId);
+            result = ReturnUtils.succ(getRoom(roomId));
         } else {
             result = ReturnUtils.failed(String.format("failed to join %d", roomId));
         }
