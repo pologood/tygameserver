@@ -99,13 +99,13 @@ puremvc.define({
 					if(data.rpcMethod.toLowerCase() == "/room/create"){
 	                    console.log(data.content.payload);
 	                    _this.roomId=data.content.payload;	
-	                    _this.sendNotification(drawsomething.AppConstants.CONNECT_SUCCESS,{});			
+	                    // _this.sendNotification(drawsomething.AppConstants.CONNECT_SUCCESS,{});			
 	                }
 
 	                if(data.rpcMethod.toLowerCase() == "/room/join"){
 	                    console.log(data.content.payload);
 	                    _this.roomId=data.content.payload;
-	                    _this.sendNotification(drawsomething.AppConstants.CONNECT_SUCCESS,{});
+	                    // _this.sendNotification(drawsomething.AppConstants.CONNECT_SUCCESS,{});
 	                }
 
 	                if(data.rpcMethod.toLowerCase() == "/room/info"){
@@ -211,12 +211,12 @@ puremvc.define({
 		joinRoom:function(){
 			console.log("joinRoom");
 			var msg={
-				rpcMethod:"room/join",
+				rpcMethod:"/room/join",
 				params:{
 					roomId:this.roomId
 				},
-				gameId:this.player.gameId,
-				uuid:this.player.uuid
+				gameId:this.gameId,
+				uuid:this.gbId
 			}
 			this.socket.send(JSON.stringify(msg));
 		},

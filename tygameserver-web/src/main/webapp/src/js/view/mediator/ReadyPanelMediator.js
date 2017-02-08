@@ -29,6 +29,7 @@ puremvc.define({
             switch ( note.getName() ) {
                 case drawsomething.AppConstants.BROADCAST_ROOMINFO:
                     this.viewComponent.show();
+                    this.viewComponent.initRoom(note.getBody());
                     break;
             }
         },

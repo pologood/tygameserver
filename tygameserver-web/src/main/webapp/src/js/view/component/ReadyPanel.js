@@ -2,17 +2,21 @@ puremvc.define({
 		name:'drawsomething.view.component.ReadyPanel',
 		constructor:function(event){
 			var _this=this;
-			this.container=$('#readyPanel');
-			this.container.find(".startBtn").click(function(){
+			this.container=document.querySelector( '#readyPanel');
+			this.$container=$('#readyPanel');
+			this.$container.find(".startBtn").click(function(){
 				_this.startGame();
 			})
-			this.container.click(function(e){
+			this.$container.click(function(e){
 				if($(e.target).hasClass("btn-ready")){
 					_this.setReady();
 				}else if($(e.target).hasClass("closeBtn")){
 					_this.kickPlayer();
 				}
 			})
+			this.items=[];
+			// var PlayerItem=drawsomething.view.component.PlayerItem;
+			// var p=new PlayerItem();
 		}
 	},
 	{
@@ -24,6 +28,16 @@ puremvc.define({
 		},
 		dispatchEvent:function(event){
 			drawsomething.view.event.AppEvents.dispatchEvent(this.container,event);
+		},
+		initRoom:function(data){
+			var members=data.info.members;
+			for(var i=0;i<members.length;i++){
+				var p=new drawsomething.view.component.PlayerItem();
+				p.update(members[i],data.info);
+				this.items.push(p);
+				this.$container.find(".item").eq(i).empty();
+				this.$container.find(".item").eq(i).append(p.el);
+			}
 		},
 		updateMembers:function(){
 			
@@ -38,10 +52,10 @@ puremvc.define({
 			console.log("踢人")
 		},
 		hide:function(){
-			this.container.hide();
+			this.$container.hide();
 		},
 		show:function(){
-			this.container.show();
+			this.$container.show();
 		}
 	},
 	{

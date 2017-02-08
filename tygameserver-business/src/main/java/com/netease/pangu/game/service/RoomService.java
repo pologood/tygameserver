@@ -190,8 +190,9 @@ public class RoomService {
     public static final String ROOM_BROADCAST = "/room/broadcast/";
     public static final String ROOM_PRIVATE = "/room/private/";
 
-    public static final String ROOM_INFO = "roomInfo";
-    public static final String ROOM_REMOVE_MEMBER = "removeMember";
+    public static final String ROOM_INFO = "info";
+    public static final String ROOM_JOIN = "join";
+    public static final String ROOM_REMOVE = "remove";
 
     public void broadcast(String path, long roomId, Object msg) {
         GameRoom room = getGameRoom(roomId);
@@ -316,9 +317,14 @@ public class RoomService {
     }
 
     public GameResult getMember(AvatarSession<Avatar> session){
+        GameRoom room = getGameRoom(session.getRoomId());
         Map<String, Object> payload = new HashMap<String, Object>();
         payload.put("avatar", SimpleAvatar.create(session));
         payload.put("avatarId", session.getAvatarId());
+        payload.put("id", room.getId());
+        payload.put("state", room.getStatus().ordinal());
+        payload.put("maxSize", room.getMaxSize());
+        payload.put("count", room.getSessionIds().size());
         GameResult result = ReturnUtils.succ(payload);
         return result;
     }

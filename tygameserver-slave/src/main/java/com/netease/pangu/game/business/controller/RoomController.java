@@ -61,7 +61,7 @@ public class RoomController {
         boolean isOk = roomService.joinRoom(session.getAvatarId(), roomId);
         GameResult result;
         if (isOk) {
-            roomService.broadcast(RoomService.ROOM_INFO, roomId, roomService.getMember(session));
+            roomService.broadcast(RoomService.ROOM_JOIN, roomId, roomService.getMember(session));
             result = ReturnUtils.succ(roomId);
         } else {
             result = ReturnUtils.failed(String.format("failed to join %d", roomId));
@@ -79,7 +79,7 @@ public class RoomController {
                 if (room.getStatus() == RoomStatus.IDLE) {
                     boolean isOk = roomService.exitRoom(avatarId);
                     if (isOk) {
-                        roomService.broadcast(RoomService.ROOM_REMOVE_MEMBER, room.getId(), ReturnUtils.succ(avatarId));
+                        roomService.broadcast(RoomService.ROOM_REMOVE, room.getId(), ReturnUtils.succ(avatarId));
                         result = ReturnUtils.succ(avatarId);
                     } else {
                         result = ReturnUtils.failed(String.format("failed to remove member %d", avatarId));
