@@ -9,7 +9,6 @@ import com.netease.pangu.game.http.annotation.HttpController;
 import com.netease.pangu.game.http.annotation.HttpRequestMapping;
 import com.netease.pangu.game.meta.Avatar;
 import com.netease.pangu.game.meta.DataCenterSimpleRoleInfo;
-import com.netease.pangu.game.meta.GuessQuestion;
 import com.netease.pangu.game.service.AvatarService;
 import com.netease.pangu.game.service.DataCenterApiService;
 import com.netease.pangu.game.service.GuessGameService;
@@ -133,10 +132,5 @@ public class MasterController {
             avatarObjList.add(avatarObj);
         }
         return avatarObjList;
-    }
-
-    @HttpRequestMapping("/questions")
-    public List<GuessQuestion> getQuestions() {
-        return guessGameService.getQuestions();
     }
 }
