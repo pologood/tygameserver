@@ -28,6 +28,9 @@ puremvc.define({
 			case drawsomething.AppConstants.CREATE_ROOM:
 				proxy.setRoomId(note.getBody());
 			break;
+			case drawsomething.AppConstants.READY:
+				proxy.ready();
+			break;
 		}
 	}
 })

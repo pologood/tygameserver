@@ -10,6 +10,7 @@ puremvc.define({
 			this.facade.registerCommand(drawsomething.AppConstants.ROLE_CONFIRM,drawsomething.controller.command.SocketCommand);
 			this.facade.registerCommand(drawsomething.AppConstants.JOIN_ROOM,drawsomething.controller.command.SocketCommand);
 			this.facade.registerCommand(drawsomething.AppConstants.CREATE_ROOM,drawsomething.controller.command.SocketCommand);
+			this.facade.registerCommand(drawsomething.AppConstants.READY,drawsomething.controller.command.SocketCommand);
 		}
 	}
 )

@@ -5,22 +5,24 @@ puremvc.define({
     {
         // Notifications this mediator is interested in 
         listNotificationInterests: function() {
-            return [drawsomething.AppConstants.BROADCAST_ROOMINFO];
+            return [drawsomething.AppConstants.BROADCAST_ROOMINFO,drawsomething.AppConstants.BROADCAST_JOIN];
         },
         
         // Code to be executed when the Mediator instance is registered with the View
         onRegister: function() {
             this.setViewComponent( new drawsomething.view.component.ReadyPanel);
-            this.viewComponent.addEventListener( drawsomething.view.event.AppEvents.CONNECT_SOCKET, this );
+            // this.viewComponent.addEventListener( drawsomething.view.event.AppEvents.CONNECT_SOCKET, this );
+            this.viewComponent.addEventListener(drawsomething.view.event.AppEvents.READY,this);
         },
         
         // Handle events from the view component
         handleEvent: function ( event ) {            
             switch( event.type ) {
-                case drawsomething.view.event.AppEvents.CONNECT_SOCKET:
+                // case drawsomething.view.event.AppEvents.CONNECT_SOCKET:
                     // this.sendNotification( drawsomething.AppConstants.CONNECT_SOCKET, event.msg );
-                break;
+                // break;
                 case drawsomething.view.event.AppEvents.READY:
+                    this.sendNotification(drawsomething.AppConstants.READY,event.msg);
                 break;
              }
             
@@ -32,7 +34,10 @@ puremvc.define({
                 case drawsomething.AppConstants.BROADCAST_ROOMINFO:
                     this.viewComponent.show();
                     this.viewComponent.initRoom(note.getBody());
-                    break;
+                break;
+                case drawsomething.AppConstants.BROADCAST_JOIN:
+                    this.viewComponent.addPlayer(note.getBody());
+                break;
             }
         },
     },

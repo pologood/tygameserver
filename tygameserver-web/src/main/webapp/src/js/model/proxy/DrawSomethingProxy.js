@@ -11,7 +11,8 @@ puremvc.define({
 		socket:null,
 		connectData:null,
 		roomId:0,//房间号
-		avatarId:0,
+		roominfo:null,
+		avatarId:0,//我是谁
 		player:{
 			roleName:''
 		},
@@ -55,6 +56,7 @@ puremvc.define({
 			var _this=this;
 			$.getJSON(this.host+"/master/init?callback=?&uuid="+this.gbId+"&roleName="+this.roleName+"&avatarImg="+encodeURIComponent(this.avatarImg)+"&gameId="+this.gameId+"&roomId="+this.roomId, function(msg){
                 _this.connectSocket(msg.payload);
+                _this.avatarId=msg.payload.avatarId;
             })
 		},
 		getLoginStatus:function(){
@@ -104,8 +106,9 @@ puremvc.define({
 
 	                if(data.rpcMethod.toLowerCase() == "/room/join"){
 	                    console.log(data.content.payload);
-	                    _this.roomId=data.content.payload;
-	                    // _this.sendNotification(drawsomething.AppConstants.CONNECT_SUCCESS,{});
+	                    // _this.roomId=data.content.payload;
+	                    _this.roominfo=data.content.payload;
+	                    _this.sendNotification(drawsomething.AppConstants.BROADCAST_ROOMINFO,{info:data.content.payload,roominfo:_this.roominfo,avatarId:_this.avatarId});
 	                }
 
 	                if(data.rpcMethod.toLowerCase() == "/room/info"){
@@ -117,12 +120,17 @@ puremvc.define({
             			console.log(data.content.payload);	
 	                    _this.ownerName = data.content.payload.ownerName;
 	                    _this.members = data.content.payload.members;
-	                    _this.sendNotification(drawsomething.AppConstants.BROADCAST_ROOMINFO,{info:data.content.payload});
+	                    _this.roominfo=data.content.payload;
+	                    _this.sendNotification(drawsomething.AppConstants.BROADCAST_ROOMINFO,{info:data.content.payload,roominfo:_this.roominfo,avatarId:_this.avatarId});
 	                    // _this.selfName = getName(_this.avatarId);
 	                }
 
 	                if(data.rpcMethod.toLowerCase() == "/room/broadcast/join"){
                   		console.log(data.content.payload);	
+                  		if(data.content.payload.avatar.avatarId==_this.avatarId){
+                  			return;
+                  		}
+                  		_this.sendNotification(drawsomething.AppConstants.BROADCAST_JOIN,{member:data.content.payload,roominfo:_this.roominfo,avatarId:_this.avatarId});
 	                }
 
 	                if(data.rpcMethod.toLowerCase() == "/room/broadcast/remove"){
@@ -235,9 +243,10 @@ puremvc.define({
 				params:{
 
 				},
-				gameId:this.player.gameId,
-				uuid:this.player.uuid
+				gameId:this.gameId,
+				uuid:this.gbId
 			}
+			this.socket.send(window.JSON.stringify(msg));
 		},
 		sendMsg:function(msg){
 			console.log('sendMsg')

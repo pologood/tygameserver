@@ -101,6 +101,7 @@
             </div>
         </div>
         <div id="readyPanel" class="readyPannel">
+            <h2 class="roomId"></h2>
             <div class="playerList f-cb">
                 <div class="item f-fl">
                     <span class="name">最多八个字八个字<span class="score f-fr">10分</span></span>
@@ -251,6 +252,7 @@
         {{/each}}
     </script>
     <script id="playerItems-template" type="text/x-handlebars-template">
+        <div>
         <span class="name">{{name}}<span class="score f-fr">10分</span></span>
         <div class="head">
             <img src="img/ready/head.png" width="72" height="72">
@@ -260,6 +262,7 @@
         <span class="btn btn-already">已准备<span class="icon-already"></span></span>
         <span class="btn btn-unready">未准备</span>
         <a href="javascript:;" class="closeBtn"></a>
+        </div>
     </script>
     <script type="text/javascript" src="js/lib/handlebars-v4.0.5.js"></script>
     <script type="text/javascript" src="js/lib/puremvc-1.0.1.min.js"></script>

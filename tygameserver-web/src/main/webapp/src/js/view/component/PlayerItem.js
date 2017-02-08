@@ -15,24 +15,26 @@ puremvc.define(
 		getElement:function(){
 
 		},
-		update:function(data,info){
+		update:function(data,info,avatarId){
 			this.data=data;
 			var html    = this.template(data);
 			this.el=$(html);
-			if(info.avatarId==data.avatarId){
+			if(avatarId==data.avatarId){
 				if(data.state=="READY"){
-					this.el.find(".btn-already").show();
+					this.el.find(".btn-already").css({"display":"block"});
 				}else{
-					this.el.find(".btn-ready").show();
+					this.el.find(".btn-ready").css({"display":"block"});
 				}
 			}else{
 				if(data.state=="READY"){
-					this.el.find(".btn-already").show();
+					this.el.find(".btn-already").css({"display":"block"});
 				}else{
-					this.el.find(".btn-unready").show();
-				}
+					this.el.find(".btn-unready").css({"display":"block"});
+				}				
 			}
-			console.log(data.state)
+			if(avatarId!=info.ownerId){
+				this.el.find(".closeBtn").hide();
+			}
 		}
 	},
 	{
