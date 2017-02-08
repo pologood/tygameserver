@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class GuessGameInfoDaoImpl extends AbstractMongoDao<GuessGameInfo> {
 
-    public GuessGameInfo getGuessGameByUUID(ObjectId id){
+    public GuessGameInfo getGuessGameById(ObjectId id){
         Criteria criteria = Criteria.where("_id").is(id);
         Query query = new Query(criteria);
         return super.findOne(query, GuessGameInfo.class);

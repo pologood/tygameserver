@@ -14,9 +14,25 @@ public class GuessGameInfo {
 
     @Field("_id")
     private ObjectId id;
-    private long creatorId;
-    private long creatorName;
 
+    public long getCreatorId() {
+        return creatorId;
+    }
+
+    public void setCreatorId(long creatorId) {
+        this.creatorId = creatorId;
+    }
+
+    public String getCreatorName() {
+        return creatorName;
+    }
+
+    public void setCreatorName(String creatorName) {
+        this.creatorName = creatorName;
+    }
+
+    private long creatorId;
+    private String creatorName;
     private Map<Integer, GuessGame.GameRound> infos;
 
     public ObjectId getId() {

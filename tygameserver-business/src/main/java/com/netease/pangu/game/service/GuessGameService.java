@@ -3,11 +3,8 @@ package com.netease.pangu.game.service;
 import com.netease.pangu.game.common.meta.AvatarSession;
 import com.netease.pangu.game.common.meta.GameRoom;
 import com.netease.pangu.game.dao.impl.GuessGameInfoDaoImpl;
-import com.netease.pangu.game.meta.Avatar;
-import com.netease.pangu.game.meta.GuessGame;
+import com.netease.pangu.game.meta.*;
 import com.netease.pangu.game.meta.GuessGame.Guess;
-import com.netease.pangu.game.meta.GuessGameState;
-import com.netease.pangu.game.meta.GuessQuestion;
 import com.netease.pangu.game.util.ObjectUtil;
 import com.netease.pangu.game.util.ReturnUtils;
 import io.netty.util.Timeout;
@@ -81,7 +78,79 @@ public class GuessGameService {
         }
     }
 
-    public boolean startGame(long roomId) {
+    public class GameTimerTask implements TimerTask{
+        private long roomId;
+        private GuessGameInfo guessGameInfo;
+
+        public  GameTimerTask(long roomId){
+            this.roomId = roomId;
+        }
+
+        public GuessGameInfo getGuessGameInfo() {
+            return guessGameInfo;
+        }
+
+        public void setGuessGameInfo(GuessGameInfo guessGameInfo) {
+            this.guessGameInfo = guessGameInfo;
+        }
+
+        public long getRoomId() {
+            return roomId;
+        }
+
+        public void setRoomId(long roomId) {
+            this.roomId = roomId;
+        }
+
+        @Override
+        public void run(Timeout timeout) throws Exception {
+            GuessGame game = gameMap.get(roomId);
+            synchronized (game) {
+                long current = System.currentTimeMillis();
+                long nextStartTime = current + ROUND_INTERVAL_TIME;
+                if (game.getState() == GuessGameState.START) {
+                    game.setDrawerId(generateDrawer(roomId));
+                    long startTime = System.currentTimeMillis();
+                    game.setStartTime(startTime);
+                    game.setNextStartTime(0);
+                    game.setEndTime(startTime + ROUNG_GAME_TIME);
+                    game.setRound(1);
+                    game.setState(GuessGameState.ROUND_GAMING);
+                } else if (game.getState() != GuessGameState.ROUND_GAMING) {
+                    if (current >= game.getEndTime()) {
+                        if (game.getRound() == TOTOAL_ROUND) {
+                            game.setState(GuessGameState.GAME_STATS);
+                            Map<String, Object> ret = new HashMap<String, Object>();
+                            roomService.broadcast("/guess/gameover", roomId, ReturnUtils.succ(ret));
+                        } else {
+                            game.setState(GuessGameState.ROUND_INTERNAL);
+
+                            game.setNextStartTime(nextStartTime);
+                            Map<String, Object> ret = new HashMap<String, Object>(getCurrentGameInfo(roomId));
+                            ret.put("answer", game.getQuestion().getAnswer());
+                            roomService.broadcast("/guess/roundover", roomId, ReturnUtils.succ());
+                        }
+                        getGuessGameInfo().getInfos().put(game.getRound(), new GuessGame.GameRound(game, roomService.getGameRoom(roomId).getOwnerId()));
+                    }
+                } else if (game.getState() == GuessGameState.ROUND_INTERNAL && game.getRound() < TOTOAL_ROUND) {
+                    if (current == game.getNextStartTime()) {
+                        game.setState(GuessGameState.ROUND_GAMING);
+                        long drawerId = generateDrawer(roomId);
+                        game.setDrawerId(drawerId);
+                        game.setStartTime(game.getNextStartTime());
+                        game.setEndTime(nextStartTime);
+                        game.setRound(game.getRound() + 1);
+                        Map<String, Object> ret = new HashMap<String, Object>(getCurrentGameInfo(roomId));
+                        roomService.broadcast("/guess/gaming", roomId, ReturnUtils.succ(ret));
+                    }
+                } else if (game.getState() == GuessGameState.GAME_STATS) {
+
+                }
+            }
+        }
+    }
+
+    public boolean startGame(long roomId, AvatarSession<Avatar> session) {
         long avatarId = generateDrawer(roomId);
         if (!gameMap.containsKey(roomId)) {
             GuessGame game = new GuessGame();
@@ -89,62 +158,20 @@ public class GuessGameService {
             game.setRoomId(roomId);
             game.setRound(0);
             game.setState(GuessGameState.START);
-            game.getTimer().newTimeout(new TimerTask() {
-                @Override
-                public void run(Timeout timeout) throws Exception {
-                    GuessGame game = gameMap.get(roomId);
-                    synchronized (game) {
-                        long current = System.currentTimeMillis();
-                        long nextStartTime = current + ROUND_INTERVAL_TIME;
-                        if (game.getState() == GuessGameState.START) {
-                            game.setDrawerId(generateDrawer(roomId));
-                            long startTime = System.currentTimeMillis();
-                            game.setStartTime(startTime);
-                            game.setNextStartTime(0);
-                            game.setEndTime(startTime + ROUNG_GAME_TIME);
-                            game.setRound(1);
-                            game.setState(GuessGameState.ROUND_GAMING);
-                        } else if (game.getState() != GuessGameState.ROUND_GAMING) {
-                            if (current >= game.getEndTime()) {
-                                if (game.getRound() == TOTOAL_ROUND) {
-                                    game.setState(GuessGameState.GAME_STATS);
-                                    Map<String, Object> ret = new HashMap<String, Object>();
-                                    roomService.broadcast("/guess/gameover", roomId, ReturnUtils.succ(ret));
-                                } else {
-                                    game.setState(GuessGameState.ROUND_INTERNAL);
-
-                                    game.setNextStartTime(nextStartTime);
-                                    Map<String, Object> ret = new HashMap<String, Object>(getCurrentGameInfo(roomId));
-                                    ret.put("answer", game.getQuestion().getAnswer());
-                                    roomService.broadcast("/guess/roundover", roomId, ReturnUtils.succ());
-                                }
-
-//                                if(guessGameInfoDao.save(game)){
-//                                    ObjectId id = game.getId();
-//                                }
-
-                                //save game data
-                            }
-                        } else if (game.getState() == GuessGameState.ROUND_INTERNAL && game.getRound() < TOTOAL_ROUND) {
-                            if (current == game.getNextStartTime()) {
-                                game.setState(GuessGameState.ROUND_GAMING);
-                                long drawerId = generateDrawer(roomId);
-                                game.setDrawerId(drawerId);
-                                game.setStartTime(game.getNextStartTime());
-                                game.setEndTime(nextStartTime);
-                                game.setRound(game.getRound() + 1);
-                                Map<String, Object> ret = new HashMap<String, Object>(getCurrentGameInfo(roomId));
-                                roomService.broadcast("/guess/gaming", roomId, ReturnUtils.succ(ret));
-                            }
-                        } else if (game.getState() == GuessGameState.GAME_STATS) {
-
-                        }
-                    }
-                }
-            }, 100, TimeUnit.MILLISECONDS);
-
+            GameTimerTask task = new GameTimerTask(roomId);
+            game.getTimer().newTimeout(task, 100, TimeUnit.MILLISECONDS);
             if (gameMap.putIfAbsent(roomId, game) == null) {
-                game.getTimer().start();
+                GameRoom room = roomService.getGameRoom(roomId);
+                GuessGameInfo gameInfo = new GuessGameInfo();
+                gameInfo.setCreatorId(room.getOwnerId());
+                gameInfo.setCreatorName(session.getName());
+                gameInfo.setInfos(new HashMap<Integer, GuessGame.GameRound>());
+                if(guessGameInfoDao.insertGuessGameInfo(gameInfo)) {
+                    game.setGameObjId(gameInfo.getId());
+                    task.setGuessGameInfo(gameInfo);
+                    game.getTimer().start();
+                    return true;
+                }
             }
         }
         return false;
