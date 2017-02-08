@@ -52,7 +52,6 @@ public class NettyHttpUtil {
         }
     }
 
-
     public static void sendWsResponse(@SuppressWarnings("rawtypes") GameContext context, Object content) {
         WsRpcResponse response = WsRpcResponse.create(context.getRpcMethod());
         response.setContent(content);

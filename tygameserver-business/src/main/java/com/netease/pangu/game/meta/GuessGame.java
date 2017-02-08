@@ -234,4 +234,121 @@ public class GuessGame {
             this.time = time;
         }
     }
+
+    public static class GameRound{
+        private int round;
+        private int ownerId;
+        private long startTime;
+        private long endTime;
+        private long nextStartTime;
+        private long drawerId;
+        private Question question;
+        private List<Guess> answers;
+        private boolean isFirstGuessed;
+        private Map<Long, Integer> scores;
+        private Map<Long, List<RULE>> operations;
+
+        public GameRound(GuessGame game, int ownerId){
+            this.setOwnerId(ownerId);
+            this.setRound(game.getRound());
+            this.setStartTime(game.getStartTime());
+            this.setEndTime(game.getEndTime());
+            this.setNextStartTime(game.getNextStartTime());
+            this.setDrawerId(game.getDrawerId());
+            this.setQuestion(game.getQuestion());
+            this.setAnswers(game.getAnswers());
+            this.setFirstGuessed(game.isFirstGuessed());
+            this.setScores(game.getScores());
+            this.setOperations(game.getOperations());
+        }
+
+        public int getOwnerId() {
+            return ownerId;
+        }
+
+        public void setOwnerId(int ownerId) {
+            this.ownerId = ownerId;
+        }
+
+
+        public int getRound() {
+            return round;
+        }
+
+        public void setRound(int round) {
+            this.round = round;
+        }
+
+        public long getStartTime() {
+            return startTime;
+        }
+
+        public void setStartTime(long startTime) {
+            this.startTime = startTime;
+        }
+
+        public long getEndTime() {
+            return endTime;
+        }
+
+        public void setEndTime(long endTime) {
+            this.endTime = endTime;
+        }
+
+        public long getNextStartTime() {
+            return nextStartTime;
+        }
+
+        public void setNextStartTime(long nextStartTime) {
+            this.nextStartTime = nextStartTime;
+        }
+
+        public long getDrawerId() {
+            return drawerId;
+        }
+
+        public void setDrawerId(long drawerId) {
+            this.drawerId = drawerId;
+        }
+
+        public Question getQuestion() {
+            return question;
+        }
+
+        public void setQuestion(Question question) {
+            this.question = question;
+        }
+
+        public List<Guess> getAnswers() {
+            return answers;
+        }
+
+        public void setAnswers(List<Guess> answers) {
+            this.answers = answers;
+        }
+
+        public boolean isFirstGuessed() {
+            return isFirstGuessed;
+        }
+
+        public void setFirstGuessed(boolean firstGuessed) {
+            isFirstGuessed = firstGuessed;
+        }
+
+        public Map<Long, Integer> getScores() {
+            return scores;
+        }
+
+        public void setScores(Map<Long, Integer> scores) {
+            this.scores = scores;
+        }
+
+        public Map<Long, List<RULE>> getOperations() {
+            return operations;
+        }
+
+        public void setOperations(Map<Long, List<RULE>> operations) {
+            this.operations = operations;
+        }
+    }
 }

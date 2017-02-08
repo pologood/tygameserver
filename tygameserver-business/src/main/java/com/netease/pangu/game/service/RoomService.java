@@ -325,6 +325,7 @@ public class RoomService {
         payload.put("state", room.getStatus().ordinal());
         payload.put("maxSize", room.getMaxSize());
         payload.put("count", room.getSessionIds().size());
+        payload.put("avatarId", session.getAvatarId());
         GameResult result = ReturnUtils.succ(payload);
         return result;
     }
