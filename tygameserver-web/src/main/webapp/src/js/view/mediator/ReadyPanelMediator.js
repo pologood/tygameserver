@@ -19,7 +19,9 @@ puremvc.define({
             switch( event.type ) {
                 case drawsomething.view.event.AppEvents.CONNECT_SOCKET:
                     // this.sendNotification( drawsomething.AppConstants.CONNECT_SOCKET, event.msg );
-                    break;
+                break;
+                case drawsomething.view.event.AppEvents.READY:
+                break;
              }
             
         },

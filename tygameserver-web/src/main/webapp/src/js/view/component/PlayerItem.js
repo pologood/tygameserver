@@ -20,18 +20,19 @@ puremvc.define(
 			var html    = this.template(data);
 			this.el=$(html);
 			if(info.avatarId==data.avatarId){
-				if(data.state==1){
+				if(data.state=="READY"){
 					this.el.find(".btn-already").show();
 				}else{
 					this.el.find(".btn-ready").show();
 				}
 			}else{
-				if(data.state==1){
+				if(data.state=="READY"){
 					this.el.find(".btn-already").show();
 				}else{
 					this.el.find(".btn-unready").show();
 				}
 			}
+			console.log(data.state)
 		}
 	},
 	{

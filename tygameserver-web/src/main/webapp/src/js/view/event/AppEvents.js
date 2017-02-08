@@ -14,6 +14,7 @@ puremvc.define(
 		CREATE_ROOM:'create_room',
 		JOIN_ROOM:'join_room',
 		GET_LOGIN_STATUS:'get_login_status',
+		READY:'ready',
 		createEvent:function(eventName){
 			var event;
 			if(document.createEvent){
