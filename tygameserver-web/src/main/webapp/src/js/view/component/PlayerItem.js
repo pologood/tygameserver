@@ -35,6 +35,12 @@ puremvc.define(
 			if(avatarId!=info.ownerId){
 				this.el.find(".closeBtn").hide();
 			}
+			this.avatarId=data.avatarId;
+		},
+		ready:function(){
+			this.el.find(".btn-unready").css({"display":"none"});
+			this.el.find(".btn-ready").css({"display":"none"});
+			this.el.find(".btn-already").css({"display":"block"});
 		}
 	},
 	{

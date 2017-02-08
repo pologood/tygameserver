@@ -16,6 +16,8 @@ puremvc.define({name:'drawsomething.AppConstants'},{},{
 	JOIN_ROOM:'join_room',
 	BROADCAST_ROOMINFO:'broadcast_roominfo',
 	BROADCAST_JOIN:'broadcast_join',
+	BROADCAST_READY:'broadcast_ready',//广播准备信息
 	READY:'ready',//准备
+
 
 })

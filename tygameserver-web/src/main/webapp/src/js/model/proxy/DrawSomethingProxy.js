@@ -128,9 +128,17 @@ puremvc.define({
 	                if(data.rpcMethod.toLowerCase() == "/room/broadcast/join"){
                   		console.log(data.content.payload);	
                   		if(data.content.payload.avatar.avatarId==_this.avatarId){
+                  			//加入房间的玩家自己的join信息不处理，包含在roominfo里面了
                   			return;
                   		}
                   		_this.sendNotification(drawsomething.AppConstants.BROADCAST_JOIN,{member:data.content.payload,roominfo:_this.roominfo,avatarId:_this.avatarId});
+	                }
+
+	                if(data.rpcMethod.toLowerCase() == "/room/broadcast/ready"){
+	                	_this.sendNotification(drawsomething.AppConstants.BROADCAST_READY,{
+	                		info:data.content.payload
+	                	})
+                  		console.log(data.content.payload);	
 	                }
 
 	                if(data.rpcMethod.toLowerCase() == "/room/broadcast/remove"){
@@ -264,12 +272,12 @@ puremvc.define({
 		startGame:function(){
 			console.log('startGame')
 	        var msg = {
-	            rpcMethod:"/guess/create", 
+	            rpcMethod:"/guess/start", 
 	            params:{
 	                roomId:this.roomId
 	            },
-	            gameId:this.player.gameId,
-	            uuid:this.player.uuid
+	            gameId:this.gameId,
+	            uuid:this.gbId
 	        };
 	        this.socket.send(window.JSON.stringify(msg));
 		},

@@ -50,11 +50,21 @@ puremvc.define({
 			this.$container.find(".item").eq(this.items.length-1).empty();
 			this.$container.find(".item").eq(this.items.length-1).append(p.el);
 		},
+		updateReadyInfo:function(data){
+			var readyAvatarId=data.info.avatar.avatarId;
+			for(var i=0;i<this.items.length;i++){
+				if(this.items[i].avatarId==readyAvatarId){
+					this.items[i].ready();
+				}
+			}
+		},
 		updateMembers:function(){
 			
 		},
 		startGame:function(){
-			console.log("startGame")
+			var e = this.createEvent( drawsomething.view.event.AppEvents.START_GAME);
+			e.msg={};
+			this.dispatchEvent(e);
 		},
 		setReady:function(){
 			var e = this.createEvent( drawsomething.view.event.AppEvents.READY);
