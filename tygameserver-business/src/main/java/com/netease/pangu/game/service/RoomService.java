@@ -311,7 +311,7 @@ public class RoomService {
         payload.put("count", room.getSessionIds().size());
         AvatarSession<Avatar> session = avatarSessionService.getSession(room.getOwnerId());
         payload.put("ownerName", session.getName());
-        payload.put("avatarId", session.getAvatarId());
+        payload.put("ownerId", room.getOwnerId());
         GameResult result = ReturnUtils.succ(payload);
         return result;
     }
@@ -320,7 +320,7 @@ public class RoomService {
         GameRoom room = getGameRoom(session.getRoomId());
         Map<String, Object> payload = new HashMap<String, Object>();
         payload.put("avatar", SimpleAvatar.create(session));
-        payload.put("avatarId", session.getAvatarId());
+        payload.put("ownerId", room.getOwnerId());
         payload.put("id", room.getId());
         payload.put("state", room.getStatus().ordinal());
         payload.put("maxSize", room.getMaxSize());
