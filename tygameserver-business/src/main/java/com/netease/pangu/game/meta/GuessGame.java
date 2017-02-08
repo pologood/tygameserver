@@ -32,7 +32,7 @@ public class GuessGame {
     public GuessGame() {
         this.answers = new ArrayList<Guess>();
         this.operations = new HashMap<Long, List<RULE>>();
-        this.timer = new HashedWheelTimer(1, TimeUnit.SECONDS);
+        this.timer = new HashedWheelTimer(10, TimeUnit.MILLISECONDS);
     }
 
     public long getRoomId() {
