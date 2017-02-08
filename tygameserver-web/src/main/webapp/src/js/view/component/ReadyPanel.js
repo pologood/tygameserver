@@ -25,6 +25,9 @@ puremvc.define({
 		dispatchEvent:function(event){
 			drawsomething.view.event.AppEvents.dispatchEvent(this.container,event);
 		},
+		updateMembers:function(){
+			
+		},
 		startGame:function(){
 			console.log("startGame")
 		},
