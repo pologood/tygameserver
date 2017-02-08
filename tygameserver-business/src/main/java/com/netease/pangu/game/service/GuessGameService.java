@@ -135,6 +135,7 @@ public class GuessGameService {
                                 roomService.broadcast(ROUND_OVER, roomId, ReturnUtils.succ(ret));
                             }
                             getGuessGameInfo().getInfos().put(game.getRound(), new GuessGame.GameRound(game, roomService.getGameRoom(roomId).getOwnerId()));
+                            guessGameInfoDao.save(getGuessGameInfo());
                         }
                     } else if (game.getState() == GuessGameState.ROUND_INTERNAL && game.getRound() < TOTOAL_ROUND) {
                         if (current == game.getNextStartTime()) {
