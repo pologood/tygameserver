@@ -47,9 +47,9 @@ public class GuessGameController {
 
     @WsRpcCall("/draw")
     public GameResult draw(long roomId, Map<String, Object> content, GameContext<AvatarSession<Avatar>> ctx) {
-        if (roomService.isReady(roomId) && guessGameService.isDrawer(roomId, ctx.getSession().getAvatarId())) {
+        if (guessGameService.isDrawer(roomId, ctx.getSession().getAvatarId())) {
             GuessGame game = guessGameService.getGuessGame(roomId);
-            if (game != null && ctx.getSession().getAvatarId() == game.getDrawerId()) {
+            if (game != null &&game.getState() == GuessGameState.ROUND_GAMING && ctx.getSession().getAvatarId() == game.getDrawerId()) {
                 roomService.broadcast(DRAW_GAME, roomId, ReturnUtils.succ(content));
                 return ReturnUtils.succ();
             } else {

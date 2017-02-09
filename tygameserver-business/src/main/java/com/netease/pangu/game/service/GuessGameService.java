@@ -77,7 +77,7 @@ public class GuessGameService {
 
     private final static String GAME_START = "guess/start";
     private final static String GAME_OVER = "guess/gameover";
-    private final static String ROUND_OVER = "guess/roundover";
+    private final static String GAME_ROUND_OVER = "guess/roundover";
     private final static String GAME_RUNNING = "guess/running";
     private final static String GAME_QUESTION= "guess/quesion";
     private final static String GAME_ANSWER = "guess/answer";
@@ -137,7 +137,7 @@ public class GuessGameService {
                                 game.setNextStartTime(nextStartTime);
                                 Map<String, Object> ret = new HashMap<String, Object>(getCurrentGameInfo(roomId));
                                 ret.put("answer", game.getQuestion().getAnswer());
-                                roomService.broadcast(ROUND_OVER, roomId, ReturnUtils.succ(ret));
+                                roomService.broadcast(GAME_ROUND_OVER, roomId, ReturnUtils.succ(ret));
                             }
                             getGuessGameInfo().getInfos().put(game.getRound(), new GuessGame.GameRound(game, roomService.getGameRoom(roomId).getOwnerId()));
                             guessGameInfoDao.save(getGuessGameInfo());
