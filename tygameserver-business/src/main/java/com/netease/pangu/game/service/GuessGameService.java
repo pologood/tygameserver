@@ -144,7 +144,7 @@ public class GuessGameService {
                 if (game != null) {
                     synchronized (game) {
                         long current = System.currentTimeMillis();
-                        long nextStartTime = current + ROUND_INTERVAL_TIME;
+
                         if (game.getState() == GuessGameState.START) {
                             game.setDrawerId(generateDrawer(roomId));
                             game.setStartTime(current);
@@ -170,6 +170,7 @@ public class GuessGameService {
                                     roomService.broadcast(GAME_OVER, roomId, ReturnUtils.succ(getCurrentGameInfo(roomId)));
                                 } else {
                                     game.setState(GuessGameState.ROUND_INTERNAL);
+                                    long nextStartTime = current + ROUND_INTERVAL_TIME;
                                     game.setNextStartTime(nextStartTime);
                                     Map<String, Object> ret = new HashMap<String, Object>(getCurrentGameInfo(roomId));
                                     ret.put("answer", game.getQuestion().getAnswer());
@@ -179,12 +180,13 @@ public class GuessGameService {
                                 guessGameInfoDao.save(getGuessGameInfo());
                             }
                         } else if (game.getState() == GuessGameState.ROUND_INTERNAL && game.getRound() < TOTOAL_ROUND) {
-                            if (current == game.getNextStartTime()) {
+                            if (isNearEqual(current, game.getNextStartTime())) {
                                 game.setState(GuessGameState.ROUND_GAMING);
                                 long drawerId = generateDrawer(roomId);
                                 game.setDrawerId(drawerId);
                                 game.setStartTime(game.getNextStartTime());
-                                game.setEndTime(nextStartTime);
+                                game.setNextStartTime(0);
+                                game.setEndTime(game.getNextStartTime() + ROUNG_GAME_TIME);
                                 game.setQuestion(generateQuestion());
                                 game.setRound(game.getRound() + 1);
                                 roomService.chatTo(GAME_QUESTION, roomId, Arrays.asList(game.getDrawerId()), ReturnUtils.succ(game.getQuestion()));
@@ -235,7 +237,7 @@ public class GuessGameService {
                 if (guessGameInfoDao.insertGuessGameInfo(gameInfo)) {
                     game.setGameObjId(gameInfo.getId());
                     task.setGuessGameInfo(gameInfo);
-                    game.getTimer().scheduleAtFixedRate(new GameTimerTask(roomId), 0, PERIOD_TIME);
+                    game.getTimer().scheduleAtFixedRate(task, 0, PERIOD_TIME);
                     return true;
                 }
             }
