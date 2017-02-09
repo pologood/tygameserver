@@ -20,6 +20,7 @@ puremvc.define({name:'drawsomething.AppConstants'},{},{
 	BROADCAST_READY:'broadcast_ready',//广播准备信息
 	READY:'ready',//准备
 	DRAWING:'drawing',//绘画中
+	DRAWING_HANDLE:'drawing_handle',
 
 
 })

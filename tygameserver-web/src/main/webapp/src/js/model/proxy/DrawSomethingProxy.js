@@ -177,23 +177,24 @@ puremvc.define({
 	                    self.questions = data.content.payload;
 	                }
 
-	                if(data.rpcMethod.toLowerCase() == "/room/broadcast/startgame"){
-	                    self.painterId = data.content.payload.avatarId;
-	                    self.gameState = data.content.payload.gameState;
-	                    self.router.push('draw');
-	                    if(self.border){
-	                        self.border.replay();
-	                    }
+	                // if(data.rpcMethod.toLowerCase() == "/room/broadcast/startgame"){
+	                //     self.painterId = data.content.payload.avatarId;
+	                //     self.gameState = data.content.payload.gameState;
+	                //     self.router.push('draw');
+	                //     if(self.border){
+	                //         self.border.replay();
+	                //     }
 	                    
-	                }
+	                // }
 
 	                if(data.rpcMethod.toLowerCase() == "/room/broadcast/drawgame"){
 	                    var info=data.content.payload;
-	                    if(info.type==1){
-	                        self.border.drawing(info.drawInfo);
-	                    }else if(info.type==2){
-	                        self.border.clear();
-	                    }
+	                    // if(info.type==1){
+	                    //     self.border.drawing(info.drawInfo);
+	                    // }else if(info.type==2){
+	                    //     self.border.clear();
+	                    // }
+	                    _this.sendNotification(drawsomething.AppConstants.DRAWING_HANDLE,info);
 	                    
 	                }
 

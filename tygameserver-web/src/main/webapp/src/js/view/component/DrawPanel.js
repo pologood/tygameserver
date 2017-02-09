@@ -2,6 +2,7 @@ puremvc.define({
 	name:'drawsomething.view.component.DrawPanel',
 	constructor:function(event){
 		var _this=this;
+        this.type=1;//1画笔，2橡皮
 		this.selectedColor=3;
         this.selectedBrush=1;
         this.colors=['','#ffffff','#322322','#bf5ebc','#6649b0','#3f71ae','#32c9e3','#9bea57','#eaca57','#e89054','#e85454'];
@@ -91,13 +92,34 @@ puremvc.define({
         _this.oldMidPt.y = midPoint.y;
         _this.stage.update();
 
-        _this.dispatchDrawing(drawInfo);
+        _this.dispatchDrawing({type:1,drawInfo:drawInfo});
 	},
-    dispatchDrawing:function(drawInfo){
+    drawingHandle:function(data){
+        if(this.isDrawer){
+            return;
+        }
+        var info=data.drawInfo;
+        if(data.type==1){
+            //绘画
+            this.drawingCanvas.graphics.setStrokeStyle(info.brush, "round", "round")
+                .beginStroke(info.color)
+                .moveTo(info.mtx, info.mty)
+                .curveTo(info.ctOldx, info.ctOldy, info.ctOldMidx, info.ctOldMidy); 
+            this.drawingCanvas.updateCache(info.type==2 ? "destination-out" : "source-over");
+            this.drawingCanvas.graphics.clear();
+            this.stage.update();
+            
+        }else if(data.type==2){
+            //清除
+            
+            
+        }
+        
+
+    },
+    dispatchDrawing:function(data){
         var e = this.createEvent( drawsomething.view.event.AppEvents.DRAWING);
-        e.msg={
-            drawInfo:drawInfo
-        };
+        e.msg=data;
         this.dispatchEvent(e);
     },
     roundStart:function(data){
