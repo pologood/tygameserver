@@ -5,6 +5,7 @@ puremvc.define({name:'drawsomething.AppConstants'},{},{
 	CONNECT_SOCKET:'connect_socket',//链接socket
 	CONNECT_SUCCESS:'connect_success',//socket链接成功
 	START_GAME:'start_game',//房主开启游戏
+	GAME_STARTING:'game_starting',//开始游戏
 	URS_LOGIN_SUCCESS:'urs_login_success',//urs登录成功
 	URS_UNLOGIN:'urs_unlogin',
 	GET_ROLELIST:'get_rolelist',
@@ -18,6 +19,7 @@ puremvc.define({name:'drawsomething.AppConstants'},{},{
 	BROADCAST_JOIN:'broadcast_join',
 	BROADCAST_READY:'broadcast_ready',//广播准备信息
 	READY:'ready',//准备
+	DRAWING:'drawing',//绘画中
 
 
 })

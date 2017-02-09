@@ -31,6 +31,9 @@ puremvc.define({
 			case drawsomething.AppConstants.READY:
 				proxy.ready();
 			break;
+			case drawsomething.AppConstants.DRAWING:
+				proxy.sendDrawingInfo(note.getBody());
+			break;
 		}
 	}
 })

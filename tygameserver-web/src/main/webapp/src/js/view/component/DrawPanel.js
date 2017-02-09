@@ -6,7 +6,8 @@ puremvc.define({
         this.selectedBrush=1;
         this.colors=['','#ffffff','#322322','#bf5ebc','#6649b0','#3f71ae','#32c9e3','#9bea57','#eaca57','#e89054','#e85454'];
         this.brushes=[,2,5,10,20,30];
-		this.app=document.querySelector( '#connectPanel');
+		this.container=document.querySelector( '#connectPanel');
+        this.$container=$("#drawPanel");
 		this.stage=new createjs.Stage("drawingBoard");
 		this.drawingCanvas=new createjs.Shape();	
         this.stage.addChild(this.drawingCanvas);
@@ -26,17 +27,18 @@ puremvc.define({
         })
         var scroll=new drawsomething.view.component.Scroll("nihao");
         scroll.getName();
+        this.isDrawer=false;
 	}
 },
 {
 	addEventListener:function(type,listener,useCapture){
-		drawsomething.view.event.AppEvents.addEventListener(this.app,type,listener,useCapture);
+		drawsomething.view.event.AppEvents.addEventListener(this.container,type,listener,useCapture);
 	},
 	createEvent:function(eventName){
 		return drawsomething.view.event.AppEvents.createEvent(eventName);
 	},
 	dispatchEvent:function(event){
-		drawsomething.view.event.AppEvents.dispatchEvent(this.app,event);
+		drawsomething.view.event.AppEvents.dispatchEvent(this.container,event);
 	},
 	handleMouseDown:function(_this){
 		_this.oldPt = new createjs.Point(_this.stage.mouseX, _this.stage.mouseY);
@@ -54,6 +56,9 @@ puremvc.define({
 
 	},
 	handleMouseMove:function(_this){
+        if(!_this.isDrawer){
+            return;
+        }
 		if (!_this.isDrawing) {
             return;
         }
@@ -85,7 +90,27 @@ puremvc.define({
         _this.oldMidPt.x = midPoint.x;
         _this.oldMidPt.y = midPoint.y;
         _this.stage.update();
+
+        _this.dispatchDrawing(drawInfo);
 	},
+    dispatchDrawing:function(drawInfo){
+        var e = this.createEvent( drawsomething.view.event.AppEvents.DRAWING);
+        e.msg={
+            drawInfo:drawInfo
+        };
+        this.dispatchEvent(e);
+    },
+    roundStart:function(data){
+        var gameInfo=data.gameInfo;
+        var avatarId=data.avatarId;
+        if(avatarId==gameInfo.drawerId){
+            this.$container.find(".colorDisc").show();
+            this.isDrawer=true;
+        }else{
+            this.$container.find(".colorDisc").hide();
+            this.isDrawer=false;
+        }
+    },
 	show:function(){
 		$("#drawPanel").show();
 	}

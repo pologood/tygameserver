@@ -16,6 +16,7 @@ puremvc.define(
 		GET_LOGIN_STATUS:'get_login_status',
 		READY:'ready',
 		START_GAME:'start_game',
+		DRAWING:'drawing',
 		createEvent:function(eventName){
 			var event;
 			if(document.createEvent){

@@ -13,6 +13,7 @@ puremvc.define({
 		roomId:0,//房间号
 		roominfo:null,
 		avatarId:0,//我是谁
+		gameInfo:null,
 		player:{
 			roleName:''
 		},
@@ -144,6 +145,20 @@ puremvc.define({
 	                if(data.rpcMethod.toLowerCase() == "/room/broadcast/remove"){
                   		console.log(data.content.payload);	
 	                }
+	                
+	                //开启游戏
+	                if(data.rpcMethod.toLowerCase() == "/room/broadcast/guess/start"){
+	                	console.log(data.content.payload);	
+	                	_this.gameInfo=data.content.payload;    
+	                	_this.sendNotification(drawsomething.AppConstants.GAME_STARTING,{
+	                		gameInfo:_this.gameInfo,avatarId:_this.avatarId
+	                	})
+	                }
+
+	                //问题答案
+	                if(data.rpcMethod.toLowerCase() == "/room/private/guess/quesion"){
+	                	console.log(data.content.payload);	
+	                }	                
 
 	                if(data.rpcMethod.toLowerCase() == "/avatar/ready"){
 	                    self.state=1;
@@ -281,15 +296,15 @@ puremvc.define({
 	        };
 	        this.socket.send(window.JSON.stringify(msg));
 		},
-		sendDrawingInfo:function(){
+		sendDrawingInfo:function(info){
 			var msg = {
            		rpcMethod:"/guess/draw", 
 	            params:{
 	                roomId:this.roomId,
 	                content:info
 	            },
-	            gameId:this.player.gameId,
-	            uuid:this.player.uuid
+	            gameId:this.gameId,
+	            uuid:this.gbId
 	        };
 	        this.socket.send(window.JSON.stringify(msg));
 		},
