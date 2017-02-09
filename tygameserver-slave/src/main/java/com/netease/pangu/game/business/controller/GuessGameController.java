@@ -80,6 +80,7 @@ public class GuessGameController {
         GuessGame.Guess guess = new GuessGame.Guess();
         guess.setAvatarId(ctx.getSession().getAvatarId());
         guess.setAnswer(answer);
+        guess.setAvatarName(ctx.getSession().getName());
         guess.setTime(System.currentTimeMillis());
         if (guessGameService.getGuessGameState(roomId) == GuessGameState.ROUND_GAMING) {
             guessGameService.answer(roomId, ctx.getSession(), guess);

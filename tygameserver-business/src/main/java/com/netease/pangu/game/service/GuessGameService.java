@@ -268,7 +268,7 @@ public class GuessGameService {
                     avatarSession.sendMessage(ReturnUtils.failed("you are game drawer"));
                     return;
                 } else {
-                    Map<String, Object> ret = new HashMap<String, Object>(getCurrentGameInfo(roomId));
+                    Map<String, Object> ret = new HashMap<String, Object>();
                     ret.put("fAnswer", filterAnswer(guess));
                     if (isCorrectAnswer(game, guess)) {
                         if (!game.isFirstGuessed()) {

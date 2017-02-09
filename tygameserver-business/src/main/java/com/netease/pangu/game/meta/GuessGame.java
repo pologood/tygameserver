@@ -156,6 +156,7 @@ public class GuessGame {
 
     public static class Guess {
         private long avatarId;
+        private String avatarName;
         private String answer;
         private long time;
         public Guess(){
@@ -166,6 +167,7 @@ public class GuessGame {
             this.setAnswer(guess.getAnswer());
             this.setAvatarId(guess.getAvatarId());
             this.setTime(guess.getTime());
+            this.setAvatarName(guess.getAvatarName());
         }
         public long getAvatarId() {
             return avatarId;
@@ -189,6 +191,14 @@ public class GuessGame {
 
         public void setTime(long time) {
             this.time = time;
+        }
+
+        public String getAvatarName() {
+            return avatarName;
+        }
+
+        public void setAvatarName(String avatarName) {
+            this.avatarName = avatarName;
         }
     }
 
