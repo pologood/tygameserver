@@ -1,14 +1,9 @@
 package com.netease.pangu.game.meta;
 
-import io.netty.util.HashedWheelTimer;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Transient;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
+import java.util.*;
 
 public class GuessGame {
     private ObjectId gameObjId;
@@ -27,12 +22,12 @@ public class GuessGame {
     private int round;
 
     @Transient
-    private HashedWheelTimer timer;
+    private java.util.Timer timer;
 
     public GuessGame() {
         this.answers = new ArrayList<Guess>();
         this.operations = new HashMap<Long, List<RULE>>();
-        this.timer = new HashedWheelTimer(10, TimeUnit.MILLISECONDS);
+        this.timer = new Timer();
     }
 
     public long getRoomId() {
@@ -123,7 +118,7 @@ public class GuessGame {
         isFirstGuessed = firstGuessed;
     }
 
-    public HashedWheelTimer getTimer() {
+    public Timer getTimer() {
         return timer;
     }
 
