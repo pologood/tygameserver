@@ -7,6 +7,7 @@ import com.netease.pangu.game.meta.*;
 import com.netease.pangu.game.meta.GuessGame.Guess;
 import com.netease.pangu.game.util.ObjectUtil;
 import com.netease.pangu.game.util.ReturnUtils;
+import io.netty.util.HashedWheelTimer;
 import io.netty.util.Timeout;
 import io.netty.util.TimerTask;
 import org.apache.commons.collections.CollectionUtils;
@@ -41,6 +42,23 @@ public class GuessGameService {
     private final static int ROUND_INTERVAL_TIME = 5000;
     private final static int ROUNG_GAME_TIME = 60000;
     private final static Map<GuessGame.RULE, Integer> RULE_SCORE;
+    private final HashedWheelTimer checkTimer = new HashedWheelTimer(10, TimeUnit.MILLISECONDS);
+    private final TimerTask checkGameStateTask = new TimerTask() {
+        @Override
+        public void run(Timeout timeout) throws Exception {
+            for(GuessGame game : gameMap.values()){
+                GameRoom room = roomService.getGameRoom(game.getRoomId());
+                if(room == null || game.getState() != GuessGameState.START && room.getSessionIds().size() == 0){
+                    game.getTimer().stop();
+                    gameMap.remove(game.getRoomId());
+                }
+            }
+        }
+    };
+
+    public void stop(){
+        checkTimer.stop();
+    }
 
     static {
         RULE_SCORE = new HashMap<GuessGame.RULE, Integer>();
@@ -69,6 +87,8 @@ public class GuessGameService {
                     questions.add(question);
                 }
             }
+            checkTimer.newTimeout(checkGameStateTask, 10, TimeUnit.MILLISECONDS);
+            checkTimer.start();
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -84,6 +104,9 @@ public class GuessGameService {
     private final static String GAME_LIKE = "guess/like";
     private final static String GAME_UNLIKE = "guess/unlike";
     private final static String GAME_EXIT = "guess/exit";
+    private final static String GAME_HINT1 = "guess/hint1";
+    private final static String GAME_HINT2 = "guess/hint2";
+
     public class GameTimerTask implements TimerTask{
 
         private long roomId;
@@ -129,6 +152,14 @@ public class GuessGameService {
                         roomService.broadcast(GAME_START, roomId, ReturnUtils.succ(getCurrentGameInfo(roomId)));
                     } else if (game.getState() != GuessGameState.ROUND_GAMING) {
                         if (current >= game.getEndTime()) {
+                            if(current == game.getStartTime() + 5000){
+                                roomService.broadcast(GAME_HINT1, roomId, ReturnUtils.succ(game.getQuestion().getHint1()));
+                            }
+
+                            if(current == game.getStartTime() + 15000){
+                                roomService.broadcast(GAME_HINT2, roomId, ReturnUtils.succ(game.getQuestion().getHint2()));
+                            }
+
                             if (game.getRound() == TOTOAL_ROUND) {
                                 game.setState(GuessGameState.GAME_STATS);
                                 roomService.broadcast(GAME_OVER, roomId, ReturnUtils.succ(getCurrentGameInfo(roomId)));
@@ -241,7 +272,7 @@ public class GuessGameService {
                         //答对减5s
                         updateGameTime(roomId, 5000);
                         ret.put("isCorrect",  true);
-                        ret.put("isCorrect",  true);
+                        ret.put("info", getCurrentGameInfo(roomId));
                         roomService.broadcast(GAME_ANSWER, roomId, ReturnUtils.succ(ret));
                     } else{
                         ret.put("isCorrect",  false);
