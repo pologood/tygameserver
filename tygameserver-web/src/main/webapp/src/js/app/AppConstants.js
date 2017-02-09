@@ -22,6 +22,6 @@ puremvc.define({name:'drawsomething.AppConstants'},{},{
 	DRAWING:'drawing',//绘画中
 	DRAWING_HANDLE:'drawing_handle',
 	DELETE:'delete',
-
+	ANSWER_INFO:'answer_info'
 
 })

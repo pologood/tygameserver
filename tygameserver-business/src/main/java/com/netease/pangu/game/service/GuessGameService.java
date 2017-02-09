@@ -194,7 +194,7 @@ public class GuessGameService {
                 gameInfo.setCreatorId(room.getOwnerId());
                 gameInfo.setCreatorName(session.getName());
                 gameInfo.setInfos(new HashMap<Integer, GuessGame.GameRound>());
-                if(guessGameInfoDao.insertGuessGameInfo(gameInfo)) {
+                if (guessGameInfoDao.insertGuessGameInfo(gameInfo)) {
                     game.setGameObjId(gameInfo.getId());
                     task.setGuessGameInfo(gameInfo);
                     game.getTimer().start();
@@ -360,6 +360,16 @@ public class GuessGameService {
     public GuessGameState getGuessGameState(long roomId) {
         GuessGame game = gameMap.get(roomId);
         return game.getState();
+    }
+
+    public void stopGame(long roomId){
+        GuessGame game = gameMap.get(roomId);
+        if(game != null) {
+            synchronized (game) {
+                gameMap.remove(roomId);
+                game.getTimer().stop();
+            }
+        }
     }
 
     public boolean isGameOver(GuessGame game) {

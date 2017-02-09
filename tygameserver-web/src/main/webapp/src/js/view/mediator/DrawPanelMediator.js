@@ -5,7 +5,11 @@ puremvc.define({
     {
         // Notifications this mediator is interested in 
         listNotificationInterests: function() {
-            return [drawsomething.AppConstants.GAME_STARTING,drawsomething.AppConstants.DRAWING_HANDLE];
+            return [
+                drawsomething.AppConstants.GAME_STARTING,
+                drawsomething.AppConstants.DRAWING_HANDLE,
+                drawsomething.AppConstants.ANSWER_INFO
+            ];
         },
         
         // Code to be executed when the Mediator instance is registered with the View
@@ -13,6 +17,7 @@ puremvc.define({
             this.setViewComponent( new drawsomething.view.component.DrawPanel);
             this.viewComponent.addEventListener( drawsomething.view.event.AppEvents.SEND_MSG, this );
             this.viewComponent.addEventListener(drawsomething.view.event.AppEvents.DRAWING,this);
+            this.viewComponent.addEventListener(drawsomething.view.event.AppEvents.DELETE,this);
         },
         
         // Handle events from the view component
@@ -40,6 +45,9 @@ puremvc.define({
                 break;
                 case drawsomething.AppConstants.DRAWING_HANDLE:
                     this.viewComponent.drawingHandle(note.getBody());
+                break;
+                case drawsomething.AppConstants.ANSWER_INFO:
+                    this.viewComponent.updateAnswerInfo(note.getBody());
                 break;
             }
         },

@@ -25,6 +25,7 @@ puremvc.define({
 		},
 		questions:[],
 		answerList:[],
+		answerInfo:null,//答案
 		gameState:0,
 		selfName:'',
 		host:'http://littlegame.tianyu.163.com:8090',
@@ -151,13 +152,15 @@ puremvc.define({
 	                	console.log(data.content.payload);	
 	                	_this.gameInfo=data.content.payload;    
 	                	_this.sendNotification(drawsomething.AppConstants.GAME_STARTING,{
-	                		gameInfo:_this.gameInfo,avatarId:_this.avatarId
+	                		gameInfo:_this.gameInfo,avatarId:_this.avatarId,roominfo:_this.roominfo
 	                	})
 	                }
 
 	                //问题答案
 	                if(data.rpcMethod.toLowerCase() == "/room/private/guess/quesion"){
 	                	console.log(data.content.payload);	
+	                	_this.answerInfo=data.content.payload;
+	                	_this.sendNotification(drawsomething.AppConstants.ANSWER_INFO,data.content.payload);
 	                }	                
 
 	                if(data.rpcMethod.toLowerCase() == "/avatar/ready"){

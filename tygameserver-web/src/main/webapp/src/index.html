@@ -239,7 +239,7 @@
             <div class="circleOverlayer"></div>
             <canvas id="drawingBoard" width="550" height="418" class="drawingBoard"></canvas>
             <div class="tools">
-                <p class="answer">作品：玉虚坐骑</p>
+                <p class="answer answerTxt">作品：玉虚坐骑</p>
                 <a href="javascript:;" class="eraser"></a>
                 <a href="javascript::" class="delete"></a>
             </div>
@@ -278,16 +278,32 @@
     </script>
     <script id="playerItems-template" type="text/x-handlebars-template">
         <div>
-        <span class="name">{{name}}<span class="score f-fr">10分</span></span>
-        <div class="head">
-            <img src="img/ready/head.png" width="72" height="72">
-            <span class="head_border"></span>
+            <span class="name">{{name}}<span class="score f-fr">10分</span></span>
+            <div class="head">
+                <img src="img/ready/head.png" width="72" height="72">
+                <span class="head_border"></span>
+            </div>
+            <a href="javascript:;" class="btn btn-ready">点击准备</a>
+            <span class="btn btn-already">已准备<span class="icon-already"></span></span>
+            <span class="btn btn-unready">未准备</span>
+            <a href="javascript:;" class="closeBtn"></a>
         </div>
-        <a href="javascript:;" class="btn btn-ready">点击准备</a>
-        <span class="btn btn-already">已准备<span class="icon-already"></span></span>
-        <span class="btn btn-unready">未准备</span>
-        <a href="javascript:;" class="closeBtn"></a>
+    </script>
+    <script id="drawingPlayerItem-template" type="text/x-handlebars-template">
+    {{#each rolesList}}
+        <div class="item f-fl">
+            <span class="head">
+                <img src="img/ready/head.png" width="43" heigth="43">
+                <span class="imgBorder"></span>
+            </span>
+            <span class="name">{{name}}</span>
+            <span class="score">
+                <span class="num">14分</span>
+                <span class="icon"></span>
+            </span>
+            <div class="current"></div>
         </div>
+    {{/each}}
     </script>
     <script type="text/javascript" src="js/lib/handlebars-v4.0.5.js"></script>
     <script type="text/javascript" src="js/lib/puremvc-1.0.1.min.js"></script>

@@ -27,7 +27,7 @@ puremvc.define({
             _this.selectedColor=index;
         })
         this.$container.find(".eraser").click(function(){
-            this.type=2;
+            _this.type=2;
         })
         this.$container.find(".delete").click(function(){
             _this.dispatchDelete();
@@ -139,11 +139,23 @@ puremvc.define({
         var avatarId=data.avatarId;
         if(avatarId==gameInfo.drawerId){
             this.$container.find(".colorDisc").show();
+            this.$container.find(".tools").show();
             this.isDrawer=true;
+
         }else{
             this.$container.find(".colorDisc").hide();
+            this.$container.find(".tools").hide();
             this.isDrawer=false;
         }
+        var source=$("#drawingPlayerItem-template").html();
+        var template = Handlebars.compile(source); 
+        console.log(data.roomInfo)
+        var html    = template({roleList:data.roomInfo.members});
+
+        this.$container.find(".members").html(html);
+    },
+    updateAnswerInfo:function(answerInfo){
+        this.$container.find(".answerTxt").html("作品："+answerInfo.answer);
     },
 	show:function(){
 		$("#drawPanel").show();
