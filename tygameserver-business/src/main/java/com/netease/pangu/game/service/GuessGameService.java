@@ -163,6 +163,21 @@ public class GuessGameService {
         }
     }
 
+    public boolean updateGameTime(long roomId, int minusMillis){
+        GuessGame game = gameMap.get(roomId);
+        if(game != null) {
+            synchronized (game) {
+                long currentTime = System.currentTimeMillis();
+                if(game.getEndTime() > currentTime + minusMillis){
+                    game.setEndTime(game.getEndTime() - minusMillis);
+                    game.setNextStartTime(game.getNextStartTime() - minusMillis);
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     public boolean startGame(long roomId, AvatarSession<Avatar> session) {
         if (!gameMap.containsKey(roomId)) {
             GuessGame game = new GuessGame();
@@ -172,7 +187,7 @@ public class GuessGameService {
             game.setDrawerId(0);
             game.setState(GuessGameState.START);
             GameTimerTask task = new GameTimerTask(roomId);
-            game.getTimer().newTimeout(task, 100, TimeUnit.MILLISECONDS);
+            game.getTimer().newTimeout(task, 10, TimeUnit.MILLISECONDS);
             if (gameMap.putIfAbsent(roomId, game) == null) {
                 GameRoom room = roomService.getGameRoom(roomId);
                 GuessGameInfo gameInfo = new GuessGameInfo();
@@ -193,7 +208,6 @@ public class GuessGameService {
     private Guess filterAnswer(Guess guess){
         return guess;
     }
-
 
     public Map<String, Object> getCurrentGameInfo(long roomId) {
         Map<String, Object> currentGame = new HashMap<String, Object>();
@@ -224,8 +238,13 @@ public class GuessGameService {
                             addScore(GuessGame.RULE.GUESSED, game, avatarSession.getAvatarId());
                         }
                         game.getAnswers().add(guess);
+                        //答对减5s
+                        updateGameTime(roomId, 5000);
+                        ret.put("isCorrect",  true);
+                        ret.put("isCorrect",  true);
                         roomService.broadcast(GAME_ANSWER, roomId, ReturnUtils.succ(ret));
                     } else{
+                        ret.put("isCorrect",  false);
                         roomService.broadcast(GAME_ANSWER, roomId, ReturnUtils.succ(ret));
                     }
                 }
@@ -235,7 +254,7 @@ public class GuessGameService {
 
     public ReturnUtils.GameResult like(long roomId, AvatarSession<Avatar> avatarSession){
         GuessGame game = gameMap.get(roomId);
-        if (game != null) {
+        if (game != null && game.getState() == GuessGameState.ROUND_INTERNAL) {
             synchronized (game) {
                 if(!containsRule(GuessGame.RULE.LIKE, roomId, avatarSession.getAvatarId())){
                     addScore(GuessGame.RULE.LIKE, game, avatarSession.getAvatarId());
@@ -249,7 +268,7 @@ public class GuessGameService {
 
     public ReturnUtils.GameResult unlike(long roomId, AvatarSession<Avatar> avatarSession){
         GuessGame game = gameMap.get(roomId);
-        if (game != null) {
+        if (game != null && game.getState() == GuessGameState.ROUND_INTERNAL) {
             synchronized (game) {
                 if(!containsRule(GuessGame.RULE.UNLIKE, roomId, avatarSession.getAvatarId())){
                     addScore(GuessGame.RULE.UNLIKE, game, avatarSession.getAvatarId());
