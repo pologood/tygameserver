@@ -75,12 +75,17 @@ public class GuessGameService {
         }
     }
 
+    private final static String GAME_START = "guess/start";
+    private final static String GAME_OVER = "guess/gameover";
+    private final static String ROUND_OVER = "guess/roundover";
+    private final static String GAME_RUNNING = "guess/running";
+    private final static String GAME_QUESTION= "guess/quesion";
+    private final static String GAME_ANSWER = "guess/answer";
+    private final static String GAME_LIKE = "guess/like";
+    private final static String GAME_UNLIKE = "guess/unlike";
+    private final static String GAME_EXIT = "guess/exit";
     public class GameTimerTask implements TimerTask{
-        private final static String GAME_START = "guess/start";
-        private final static String GAME_OVER = "guess/gameover";
-        private final static String ROUND_OVER = "guess/roundover";
-        private final static String GAME_RUNNING = "guess/running";
-        private final static String GAME_QUESTION= "guess/quesion";
+
         private long roomId;
         private GuessGameInfo guessGameInfo;
 
@@ -135,6 +140,7 @@ public class GuessGameService {
                                 roomService.broadcast(ROUND_OVER, roomId, ReturnUtils.succ(ret));
                             }
                             getGuessGameInfo().getInfos().put(game.getRound(), new GuessGame.GameRound(game, roomService.getGameRoom(roomId).getOwnerId()));
+                            guessGameInfoDao.save(getGuessGameInfo());
                         }
                     } else if (game.getState() == GuessGameState.ROUND_INTERNAL && game.getRound() < TOTOAL_ROUND) {
                         if (current == game.getNextStartTime()) {
@@ -218,11 +224,9 @@ public class GuessGameService {
                             addScore(GuessGame.RULE.GUESSED, game, avatarSession.getAvatarId());
                         }
                         game.getAnswers().add(guess);
-
-
-                        roomService.broadcast("/guess/answer/", roomId, ReturnUtils.succ(ret));
+                        roomService.broadcast(GAME_ANSWER, roomId, ReturnUtils.succ(ret));
                     } else{
-                        roomService.broadcast("/guess/answer/", roomId, ReturnUtils.succ(ret));
+                        roomService.broadcast(GAME_ANSWER, roomId, ReturnUtils.succ(ret));
                     }
                 }
             }
@@ -235,7 +239,7 @@ public class GuessGameService {
             synchronized (game) {
                 if(!containsRule(GuessGame.RULE.LIKE, roomId, avatarSession.getAvatarId())){
                     addScore(GuessGame.RULE.LIKE, game, avatarSession.getAvatarId());
-                    roomService.broadcast("/guess/like/", roomId, ReturnUtils.succ());
+                    roomService.broadcast(GAME_LIKE, roomId, ReturnUtils.succ());
                     return ReturnUtils.succ();
                 }
             }
@@ -249,7 +253,7 @@ public class GuessGameService {
             synchronized (game) {
                 if(!containsRule(GuessGame.RULE.UNLIKE, roomId, avatarSession.getAvatarId())){
                     addScore(GuessGame.RULE.UNLIKE, game, avatarSession.getAvatarId());
-                    roomService.broadcast("/guess/unlike/", roomId, ReturnUtils.succ());
+                    roomService.broadcast(GAME_UNLIKE, roomId, ReturnUtils.succ());
                     return ReturnUtils.succ();
                 }
             }
@@ -264,7 +268,7 @@ public class GuessGameService {
                 if(!containsRule(GuessGame.RULE.EXIT, roomId, avatarSession.getAvatarId())){
                     addScore(GuessGame.RULE.EXIT, game, avatarSession.getAvatarId());
                     if(roomService.exitRoom(avatarSession.getAvatarId())) {
-                        roomService.broadcast("/guess/exit/", roomId, ReturnUtils.succ());
+                        roomService.broadcast(GAME_EXIT, roomId, ReturnUtils.succ(avatarSession.getAvatarId()));
                         return ReturnUtils.succ();
                     }
                 }
