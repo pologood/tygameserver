@@ -187,7 +187,7 @@ public class GuessGameService {
             game.setDrawerId(0);
             game.setState(GuessGameState.START);
             GameTimerTask task = new GameTimerTask(roomId);
-            game.getTimer().newTimeout(task, 10, TimeUnit.MILLISECONDS);
+            game.getTimer().newTimeout(task, 50, TimeUnit.MILLISECONDS);
             if (gameMap.putIfAbsent(roomId, game) == null) {
                 GameRoom room = roomService.getGameRoom(roomId);
                 GuessGameInfo gameInfo = new GuessGameInfo();
