@@ -152,11 +152,11 @@ public class GuessGameService {
                         roomService.broadcast(GAME_START, roomId, ReturnUtils.succ(getCurrentGameInfo(roomId)));
                     } else if (game.getState() != GuessGameState.ROUND_GAMING) {
                         if (current >= game.getEndTime()) {
-                            if(current == game.getStartTime() + 5000){
+                            if(current >= game.getStartTime() + 5000 && current < game.getStartTime() + 5010){
                                 roomService.broadcast(GAME_HINT1, roomId, ReturnUtils.succ(game.getQuestion().getHint1()));
                             }
 
-                            if(current == game.getStartTime() + 15000){
+                            if(current >= game.getStartTime() + 15000 && current < game.getStartTime() + 15010){
                                 roomService.broadcast(GAME_HINT2, roomId, ReturnUtils.succ(game.getQuestion().getHint2()));
                             }
 
