@@ -37,6 +37,7 @@ public class GuessGameService {
     private final static int TOTOAL_ROUND = 8;
     private final static int ROUND_INTERVAL_TIME = 5000;
     private final static int ROUNG_GAME_TIME = 60000;
+    private final static int PERIOD_TIME = 10;
     private final static Map<GuessGame.RULE, Integer> RULE_SCORE;
     private final Timer checkTimer = new Timer();
     private final TimerTask checkGameStateTask = new TimerTask() {
@@ -88,7 +89,7 @@ public class GuessGameService {
                     questions.add(question);
                 }
             }
-            checkTimer.scheduleAtFixedRate(checkGameStateTask, 5, 10);
+            checkTimer.scheduleAtFixedRate(checkGameStateTask, 0, PERIOD_TIME);
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -106,6 +107,10 @@ public class GuessGameService {
     private final static String GAME_EXIT = "guess/exit";
     private final static String GAME_HINT1 = "guess/hint1";
     private final static String GAME_HINT2 = "guess/hint2";
+
+    public static boolean isNearEqual(long t1, long t2){
+        return t1 >= t2 && t1 < t2 + PERIOD_TIME;
+    }
 
     public class GameTimerTask extends TimerTask {
 
@@ -152,21 +157,14 @@ public class GuessGameService {
                             roomService.broadcast(GAME_START, roomId, ReturnUtils.succ(getCurrentGameInfo(roomId)));
                         } else if (game.getState() == GuessGameState.ROUND_GAMING) {
                             if (current < game.getEndTime()) {
-                                if (current >= game.getStartTime() + 5000 && current < game.getStartTime() + 5010) {
+                                if (isNearEqual(current, game.getStartTime() + 5000)){
                                     roomService.broadcast(GAME_HINT1, roomId, ReturnUtils.succ(game.getQuestion().getHint1()));
                                 }
 
-                                if (current >= game.getStartTime() + 15000 && current < game.getStartTime() + 15010) {
+                                if (isNearEqual(current, game.getStartTime() + 15000)) {
                                     roomService.broadcast(GAME_HINT2, roomId, ReturnUtils.succ(game.getQuestion().getHint2()));
                                 }
                             } else {
-                                if (current >= game.getStartTime() + 5000 && current < game.getStartTime() + 5010) {
-                                    roomService.broadcast(GAME_HINT1, roomId, ReturnUtils.succ(game.getQuestion().getHint1()));
-                                }
-
-                                if (current >= game.getStartTime() + 15000 && current < game.getStartTime() + 15010) {
-                                    roomService.broadcast(GAME_HINT2, roomId, ReturnUtils.succ(game.getQuestion().getHint2()));
-                                }
                                 if (game.getRound() == TOTOAL_ROUND) {
                                     game.setState(GuessGameState.GAME_STATS);
                                     roomService.broadcast(GAME_OVER, roomId, ReturnUtils.succ(getCurrentGameInfo(roomId)));
@@ -237,7 +235,7 @@ public class GuessGameService {
                 if(guessGameInfoDao.insertGuessGameInfo(gameInfo)) {
                     game.setGameObjId(gameInfo.getId());
                     task.setGuessGameInfo(gameInfo);
-                    game.getTimer().scheduleAtFixedRate(new GameTimerTask(roomId), 5, 10);
+                    game.getTimer().scheduleAtFixedRate(new GameTimerTask(roomId), 0, PERIOD_TIME);
                     return true;
                 }
             }
