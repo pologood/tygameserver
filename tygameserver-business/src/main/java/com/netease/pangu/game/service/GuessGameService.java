@@ -144,7 +144,6 @@ public class GuessGameService {
                 if (game != null) {
                     synchronized (game) {
                         long current = System.currentTimeMillis();
-
                         if (game.getState() == GuessGameState.START) {
                             game.setDrawerId(generateDrawer(roomId));
                             game.setStartTime(current);
@@ -184,9 +183,10 @@ public class GuessGameService {
                                 game.setState(GuessGameState.ROUND_GAMING);
                                 long drawerId = generateDrawer(roomId);
                                 game.setDrawerId(drawerId);
-                                game.setStartTime(game.getNextStartTime());
+                                long startTime = game.getNextStartTime();
+                                game.setStartTime(startTime);
                                 game.setNextStartTime(0);
-                                game.setEndTime(game.getNextStartTime() + ROUNG_GAME_TIME);
+                                game.setEndTime(startTime + ROUNG_GAME_TIME);
                                 game.setQuestion(generateQuestion());
                                 game.setRound(game.getRound() + 1);
                                 roomService.chatTo(GAME_QUESTION, roomId, Arrays.asList(game.getDrawerId()), ReturnUtils.succ(game.getQuestion()));
