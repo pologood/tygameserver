@@ -26,6 +26,12 @@ puremvc.define({
             _this.el.find(".cursor").addClass("cursor-"+index);
             _this.selectedColor=index;
         })
+        this.$container.find(".eraser").click(function(){
+            this.type=2;
+        })
+        this.$container.find(".delete").click(function(){
+            _this.dispatchDelete();
+        })
         var scroll=new drawsomething.view.component.Scroll("nihao");
         scroll.getName();
         this.isDrawer=false;
@@ -41,6 +47,13 @@ puremvc.define({
 	dispatchEvent:function(event){
 		drawsomething.view.event.AppEvents.dispatchEvent(this.container,event);
 	},
+    dispatchDelete:function(){
+        this.stage.clear();
+        this.drawingCanvas.cache(0,0,900,600);
+        var e = this.createEvent( drawsomething.view.event.AppEvents.DELETE);
+        e.msg={type:2,drawInfo:null};
+        this.dispatchEvent(e);
+    },
 	handleMouseDown:function(_this){
 		_this.oldPt = new createjs.Point(_this.stage.mouseX, _this.stage.mouseY);
         _this.oldMidPt = _this.oldPt;
@@ -108,14 +121,13 @@ puremvc.define({
             this.drawingCanvas.updateCache(info.type==2 ? "destination-out" : "source-over");
             this.drawingCanvas.graphics.clear();
             this.stage.update();
-            
+
         }else if(data.type==2){
-            //清除
-            
-            
+            //清除           
+            this.stage.clear();
+            this.drawingCanvas.cache(0,0,900,600);
         }
         
-
     },
     dispatchDrawing:function(data){
         var e = this.createEvent( drawsomething.view.event.AppEvents.DRAWING);

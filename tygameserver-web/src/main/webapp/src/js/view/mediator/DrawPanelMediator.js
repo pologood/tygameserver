@@ -24,6 +24,9 @@ puremvc.define({
                 case drawsomething.view.event.AppEvents.DRAWING:
                     this.sendNotification(drawsomething.AppConstants.DRAWING,event.msg);
                 break;
+                case drawsomething.view.event.AppEvents.DELETE:
+                    this.sendNotification(drawsomething.AppConstants.DRAWING,event.msg);
+                break;
              }
             
         },
