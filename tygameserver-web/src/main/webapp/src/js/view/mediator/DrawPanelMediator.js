@@ -8,7 +8,8 @@ puremvc.define({
             return [
                 drawsomething.AppConstants.GAME_STARTING,
                 drawsomething.AppConstants.DRAWING_HANDLE,
-                drawsomething.AppConstants.ANSWER_INFO
+                drawsomething.AppConstants.ANSWER_INFO,
+                drawsomething.AppConstants.RECEIVE_MSG
             ];
         },
         
@@ -24,7 +25,7 @@ puremvc.define({
         handleEvent: function ( event ) {
             switch( event.type ) {
                 case drawsomething.view.event.AppEvents.SEND_MSG:
-                    this.sendNotification( drawsomething.AppConstants.SEND_CHAT_MSG, event.msg );
+                    this.sendNotification( drawsomething.AppConstants.SEND_MSG, event.msg );
                 break;
                 case drawsomething.view.event.AppEvents.DRAWING:
                     this.sendNotification(drawsomething.AppConstants.DRAWING,event.msg);
@@ -48,6 +49,9 @@ puremvc.define({
                 break;
                 case drawsomething.AppConstants.ANSWER_INFO:
                     this.viewComponent.updateAnswerInfo(note.getBody());
+                break;
+                case drawsomething.AppConstants.RECEIVE_MSG:
+                    this.viewComponent.receiveMsg(note.getBody());
                 break;
             }
         },

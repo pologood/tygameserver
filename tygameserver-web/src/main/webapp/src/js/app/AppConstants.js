@@ -1,7 +1,6 @@
 puremvc.define({name:'drawsomething.AppConstants'},{},{
 	CORE_NAME:'DrawSomething',
 	STARTUP:'startup',
-	SEND_CHAT_MSG:'send_chat_msg',
 	CONNECT_SOCKET:'connect_socket',//链接socket
 	CONNECT_SUCCESS:'connect_success',//socket链接成功
 	START_GAME:'start_game',//房主开启游戏
@@ -22,6 +21,8 @@ puremvc.define({name:'drawsomething.AppConstants'},{},{
 	DRAWING:'drawing',//绘画中
 	DRAWING_HANDLE:'drawing_handle',
 	DELETE:'delete',
-	ANSWER_INFO:'answer_info'
+	ANSWER_INFO:'answer_info',
+	SEND_MSG:'send_msg',//回答问题
+	RECEIVE_MSG:'receive_msg',
 
 })

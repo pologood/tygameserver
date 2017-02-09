@@ -407,7 +407,7 @@ public class GuessGameService {
         if(game != null) {
             synchronized (game) {
                 gameMap.remove(roomId);
-                game.getTimer().stop();
+                game.getTimer().cancel();
             }
         }
     }

@@ -133,6 +133,7 @@ puremvc.define({
                   			//加入房间的玩家自己的join信息不处理，包含在roominfo里面了
                   			return;
                   		}
+                  		_this.roominfo.members.push(data.content.payload.avatar);
                   		_this.sendNotification(drawsomething.AppConstants.BROADCAST_JOIN,{member:data.content.payload,roominfo:_this.roominfo,avatarId:_this.avatarId});
 	                }
 
@@ -189,14 +190,9 @@ puremvc.define({
 	                //     }
 	                    
 	                // }
-
+	                
 	                if(data.rpcMethod.toLowerCase() == "/room/broadcast/drawgame"){
 	                    var info=data.content.payload;
-	                    // if(info.type==1){
-	                    //     self.border.drawing(info.drawInfo);
-	                    // }else if(info.type==2){
-	                    //     self.border.clear();
-	                    // }
 	                    _this.sendNotification(drawsomething.AppConstants.DRAWING_HANDLE,info);
 	                    
 	                }
@@ -206,9 +202,11 @@ puremvc.define({
 	                    self.gameState=data.content.payload.gameState;
 	                }
 
-	                if(data.rpcMethod.toLowerCase() == "/room/broadcast/answer"){
-	                    data.content.payload.name = getName(data.content.payload.avatarId);
-	                    self.answerList.push(data.content.payload);
+	                //聊天消息
+	                if(data.rpcMethod.toLowerCase() == "/room/broadcast/guess/answer"){
+	                    // data.content.payload.name = getName(data.content.payload.avatarId);
+	                    _this.answerList.push(data.content.payload);
+	                    _this.sendNotification(drawsomething.AppConstants.RECEIVE_MSG,data.content.payload);
 	                }
 
 	                if(data.rpcMethod.toLowerCase() == "/room/broadcast/correct"){
@@ -275,19 +273,18 @@ puremvc.define({
 			}
 			this.socket.send(window.JSON.stringify(msg));
 		},
-		sendMsg:function(msg){
-			console.log('sendMsg')
-	        var msg = {
-	            rpcMethod:"/room/chat", 
-	            params:{
-	                roomId:this.roomId,
-	                msg:msg
-	            },
-	            gameId:this.player.gameId,
-	            uuid:this.player.uuid
-	        };
-	        this.socket.send(window.JSON.stringify(msg));
-		},
+		// sendMsg:function(data){
+	 //        var msg = {
+	 //            rpcMethod:"/room/chat", 
+	 //            params:{
+	 //                roomId:this.roomId,
+	 //                msg:data.text
+	 //            },
+	 //            gameId:this.gameId,
+	 //            uuid:this.gbId
+	 //        };
+	 //        this.socket.send(window.JSON.stringify(msg));
+		// },
 		startGame:function(){
 			console.log('startGame')
 	        var msg = {
@@ -326,15 +323,15 @@ puremvc.define({
 	        };
 	        this.socket.send(window.JSON.stringify(msg));
 		},
-		sendAnswer:function(){
+		sendAnswer:function(message){
 			var msg = {
             	rpcMethod:"/guess/answer", 
 	            params:{
 	                roomId:this.roomId,
-	                answer:word
+	                answer:message.text
 	            },
-	            gameId:this.player.gameId,
-	            uuid:this.player.uuid
+	            gameId:this.gameId,
+	            uuid:this.gbId
 	        };
 	        this.socket.send(window.JSON.stringify(msg));
 		}

@@ -32,9 +32,16 @@ puremvc.define({
         this.$container.find(".delete").click(function(){
             _this.dispatchDelete();
         })
+        this.$container.find(".sendBtn").click(function(){
+            _this.dispatchMsg();
+        })
+        
+        this.isDrawer=false;
+        this.countDown=this.COUNT;
+
         var scroll=new drawsomething.view.component.Scroll("nihao");
         scroll.getName();
-        this.isDrawer=false;
+
 	}
 },
 {
@@ -47,6 +54,13 @@ puremvc.define({
 	dispatchEvent:function(event){
 		drawsomething.view.event.AppEvents.dispatchEvent(this.container,event);
 	},
+    dispatchMsg:function(){
+        var e = this.createEvent( drawsomething.view.event.AppEvents.SEND_MSG);
+        e.msg={
+            text:this.$container.find(".msgIpt").val()
+        };
+        this.dispatchEvent(e);
+    },
     dispatchDelete:function(){
         this.stage.clear();
         this.drawingCanvas.cache(0,0,900,600);
@@ -149,18 +163,24 @@ puremvc.define({
         }
         var source=$("#drawingPlayerItem-template").html();
         var template = Handlebars.compile(source); 
-        console.log(data.roomInfo)
-        var html    = template({roleList:data.roomInfo.members});
-
+        var html    = template({rolesList:data.roominfo.members});
         this.$container.find(".members").html(html);
     },
     updateAnswerInfo:function(answerInfo){
         this.$container.find(".answerTxt").html("作品："+answerInfo.answer);
+    },
+    receiveMsg:function(answerInfo){        
+        var msg='<p><span class="u-name">'+answerInfo.avatarId+'：</span>'+answerInfo.answer+'</p>';
+        this.$container.find(".chatBox").find(".content").append(msg);
+    },
+    startCountdown:function(){
+        
     },
 	show:function(){
 		$("#drawPanel").show();
 	}
 },
 {
-	NAME:'DrawPanel'
+	NAME:'DrawPanel',
+    COUNT:60
 })
