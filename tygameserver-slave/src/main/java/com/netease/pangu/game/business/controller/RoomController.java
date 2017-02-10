@@ -5,10 +5,7 @@ import com.netease.pangu.game.meta.Avatar;
 import com.netease.pangu.game.rpc.WsRpcResponse;
 import com.netease.pangu.game.rpc.annotation.WsRpcCall;
 import com.netease.pangu.game.rpc.annotation.WsRpcController;
-import com.netease.pangu.game.service.AvatarService;
-import com.netease.pangu.game.service.AvatarSessionService;
-import com.netease.pangu.game.service.GuessGameService;
-import com.netease.pangu.game.service.RoomService;
+import com.netease.pangu.game.service.*;
 import com.netease.pangu.game.util.ReturnUtils;
 import com.netease.pangu.game.util.ReturnUtils.GameResult;
 
@@ -40,7 +37,7 @@ public class RoomController {
         GameResult result;
         if (roomId > 0) {
             session.setAvatarStatus(AvatarStatus.READY);
-            roomService.broadcast(RoomService.ROOM_INFO, roomId, roomService.getRoomInfo(roomId));
+            roomService.broadcast(RoomBroadcastApi.ROOM_INFO, roomId, roomService.getRoomInfo(roomId));
             result = ReturnUtils.succ(roomId);
         } else {
             result = ReturnUtils.failed("create room failed");
@@ -61,7 +58,7 @@ public class RoomController {
         boolean isOk = roomService.joinRoom(session.getAvatarId(), roomId);
         GameResult result;
         if (isOk) {
-            roomService.broadcast(RoomService.ROOM_JOIN, roomId, roomService.getMember(session));
+            roomService.broadcast(RoomBroadcastApi.ROOM_JOIN, roomId, roomService.getMember(session));
             result = roomService.getRoomInfo(roomId);
         } else {
             result = ReturnUtils.failed(String.format("failed to join %d", roomId));
@@ -79,7 +76,7 @@ public class RoomController {
                 if (room.getStatus() == RoomStatus.IDLE) {
                     boolean isOk = roomService.exitRoom(avatarId);
                     if (isOk) {
-                        roomService.broadcast(RoomService.ROOM_REMOVE, room.getId(), ReturnUtils.succ(avatarId));
+                        roomService.broadcast(RoomBroadcastApi.ROOM_REMOVE, room.getId(), ReturnUtils.succ(avatarId));
                         result = ReturnUtils.succ(avatarId);
                     } else {
                         result = ReturnUtils.failed(String.format("failed to remove member %d", avatarId));

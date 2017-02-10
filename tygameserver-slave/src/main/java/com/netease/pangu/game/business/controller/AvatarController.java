@@ -10,6 +10,7 @@ import com.netease.pangu.game.rpc.annotation.WsRpcCall;
 import com.netease.pangu.game.rpc.annotation.WsRpcController;
 import com.netease.pangu.game.service.AvatarService;
 import com.netease.pangu.game.service.AvatarSessionService;
+import com.netease.pangu.game.service.RoomBroadcastApi;
 import com.netease.pangu.game.service.RoomService;
 import com.netease.pangu.game.util.ReturnUtils;
 import com.netease.pangu.game.util.ReturnUtils.GameResult;
@@ -46,7 +47,7 @@ public class AvatarController {
         GameResult result = ReturnUtils.failed();
         if (session.getAvatarStatus() != AvatarStatus.GAMING) {
             if (roomService.exitRoom(session.getAvatarId())) {
-                roomService.broadcast(RoomService.ROOM_EXIT, session.getRoomId(), roomService.getMember(session));
+                roomService.broadcast(RoomBroadcastApi.ROOM_EXIT, session.getRoomId(), roomService.getMember(session));
                 result = ReturnUtils.succ(session.getAvatarId());
             }
         }
@@ -58,7 +59,7 @@ public class AvatarController {
         AvatarSession<Avatar> session = ctx.getSession();
         if (session.getAvatarStatus() != AvatarStatus.READY) {
             session.setAvatarStatus(AvatarStatus.READY);
-            roomService.broadcast(RoomService.ROOM_READY, session.getRoomId(), roomService.getMember(session));
+            roomService.broadcast(RoomBroadcastApi.ROOM_READY, session.getRoomId(), roomService.getMember(session));
         }
         GameResult result = ReturnUtils.succ(session.getAvatarId());
         return result;
