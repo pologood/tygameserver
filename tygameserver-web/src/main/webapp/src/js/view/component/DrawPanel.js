@@ -35,11 +35,23 @@ puremvc.define({
         this.$container.find(".sendBtn").click(function(){
             _this.dispatchMsg();
         })
+        this.$container.find('.msgIpt').bind('keypress',function(event){  
+            if(event.keyCode == "13")
+            {  
+                _this.dispatchMsg();
+            }  
+        });
         
         this.isDrawer=false;
         this.countDown=60;
         this.$lineSet=this.$container.find(".lineSet");
         this.$endPop=this.$container.find(".endPop");
+        this.$endPop.find(".zanBtn").click(function(){
+            _this.sendLike();
+        })
+        this.$endPop.find(".caiBtn").click(function(){
+            _this.sendUnlike();
+        })
         var scroll=new drawsomething.view.component.Scroll("nihao");
         scroll.getName();
 
@@ -159,7 +171,6 @@ puremvc.define({
             this.$container.find(".tools").show();
             this.$container.find(".iptCnt").hide();
             this.isDrawer=true;
-
         }else{
             this.$container.find(".colorDisc").hide();
             this.$container.find(".tools").hide();
@@ -208,6 +219,8 @@ puremvc.define({
         }
     },
     roundOver:function(roundInfo){
+        var dataUrl=this.stage.toDataURL();
+        this.$endPop.find("img").attr("src",dataUrl);
         var _this=this;
         this.$endPop.show();
         this.$endPop.find(".title").html("答案："+roundInfo.answer);
@@ -226,17 +239,27 @@ puremvc.define({
     startCountdown:function(){
         this.countDown=60;
         function count(_this){            
-            _this.countDown--;
-            _this.$container.find(".roundCountDown").html(_this.countDown+"秒");
+            _this.countDown--;            
             if(_this.countDown>0){
+                _this.$container.find(".roundCountDown").html(_this.countDown+"秒");
                 setTimeout(function(){
                     count(_this);
                 },1000);
             }else{
-                _this.$endPop.hide();
+                _this.$container.find(".roundCountDown").html("此轮结束");
             }
         }
         count(this);
+    },
+    sendLike:function(){
+        var e = this.createEvent( drawsomething.view.event.AppEvents.LIKE);
+        e.msg={};
+        this.dispatchEvent(e);
+    },
+    sendUnlike:function(){
+        var e = this.createEvent( drawsomething.view.event.AppEvents.UNLIKE);
+        e.msg={};
+        this.dispatchEvent(e);
     },
 	show:function(){
 		$("#drawPanel").show();

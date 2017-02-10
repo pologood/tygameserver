@@ -19,6 +19,8 @@ puremvc.define(
 		START_GAME:'start_game',
 		DRAWING:'drawing',
 		DELETE:'delete',
+		LIKE:'like',
+		UNLIKE:'unlike',
 		createEvent:function(eventName){
 			var event;
 			if(document.createEvent){

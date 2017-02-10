@@ -322,18 +322,6 @@ puremvc.define({
 			}
 			this.socket.send(window.JSON.stringify(msg));
 		},
-		// sendMsg:function(data){
-	 //        var msg = {
-	 //            rpcMethod:"/room/chat", 
-	 //            params:{
-	 //                roomId:this.roomId,
-	 //                msg:data.text
-	 //            },
-	 //            gameId:this.gameId,
-	 //            uuid:this.gbId
-	 //        };
-	 //        this.socket.send(window.JSON.stringify(msg));
-		// },
 		startGame:function(){
 			console.log('startGame')
 	        var msg = {
@@ -378,6 +366,28 @@ puremvc.define({
 	            params:{
 	                roomId:this.roomId,
 	                answer:message.text
+	            },
+	            gameId:this.gameId,
+	            uuid:this.gbId
+	        };
+	        this.socket.send(window.JSON.stringify(msg));
+		},
+		like:function(){
+			var msg = {
+            	rpcMethod:"/guess/like", 
+	            params:{
+	                roomId:this.roomId
+	            },
+	            gameId:this.gameId,
+	            uuid:this.gbId
+	        };
+	        this.socket.send(window.JSON.stringify(msg));
+		},
+		unlike:function(){
+			var msg = {
+            	rpcMethod:"/guess/unlike", 
+	            params:{
+	                roomId:this.roomId
 	            },
 	            gameId:this.gameId,
 	            uuid:this.gbId

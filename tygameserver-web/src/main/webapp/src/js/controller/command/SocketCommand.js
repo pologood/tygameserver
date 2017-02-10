@@ -40,6 +40,12 @@ puremvc.define({
 			case drawsomething.AppConstants.REMOVE_PLAYER:
 				proxy.removePlayer(note.getBody());
 			break;
+			case drawsomething.AppConstants.SEND_LIKE:
+				proxy.like();
+			break;
+			case drawsomething.AppConstants.SEND_UNLIKE:
+				proxy.unlike();
+			break;
 		}
 	}
 })

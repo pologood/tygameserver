@@ -21,6 +21,8 @@ puremvc.define({
             this.viewComponent.addEventListener( drawsomething.view.event.AppEvents.SEND_MSG, this );
             this.viewComponent.addEventListener(drawsomething.view.event.AppEvents.DRAWING,this);
             this.viewComponent.addEventListener(drawsomething.view.event.AppEvents.DELETE,this);
+            this.viewComponent.addEventListener(drawsomething.view.event.AppEvents.LIKE,this);
+            this.viewComponent.addEventListener(drawsomething.view.event.AppEvents.UNLIKE,this);
         },
         
         // Handle events from the view component
@@ -34,6 +36,12 @@ puremvc.define({
                 break;
                 case drawsomething.view.event.AppEvents.DELETE:
                     this.sendNotification(drawsomething.AppConstants.DRAWING,event.msg);
+                break;
+                case drawsomething.view.event.AppEvents.LIKE:
+                    this.sendNotification(drawsomething.AppConstants.SEND_LIKE,event.msg);
+                break;
+                case drawsomething.view.event.AppEvents.UNLIKE:
+                    this.sendNotification(drawsomething.AppConstants.SEND_UNLIKE,event.msg);
                 break;
              }
             
