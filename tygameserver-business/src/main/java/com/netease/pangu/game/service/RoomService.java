@@ -187,14 +187,7 @@ public class RoomService {
         });
     }
 
-    public static final String ROOM_BROADCAST = "/room/broadcast/";
-    public static final String ROOM_PRIVATE = "/room/private/";
 
-    public static final String ROOM_INFO = "info";
-    public static final String ROOM_READY = "ready";
-    public static final String ROOM_JOIN = "join";
-    public static final String ROOM_EXIT = "exit";
-    public static final String ROOM_REMOVE = "remove";
 
     public void broadcast(String path, long roomId, Object msg) {
         GameRoom room = getGameRoom(roomId);
@@ -202,7 +195,7 @@ public class RoomService {
         Map<Long, AvatarSession<Avatar>> sessionMap = avatarSessionService.getAvatarSessions(sessionIds);
         for (AvatarSession<Avatar> session : sessionMap.values()) {
             if (session.getChannel() != null && session.getChannel().isActive()) {
-                NettyHttpUtil.sendWsResponse(ROOM_BROADCAST + path, session.getChannel(), msg);
+                NettyHttpUtil.sendWsResponse(RoomBroadcastApi.ROOM_BROADCAST + path, session.getChannel(), msg);
             }
 
         }
@@ -215,7 +208,7 @@ public class RoomService {
         for (Long avatarId : avatarIds) {
             AvatarSession<Avatar> session = sessionMap.get(avatarId);
             if (session != null && session.getChannel() != null && session.getChannel().isActive()) {
-                NettyHttpUtil.sendWsResponse(ROOM_PRIVATE + path, session.getChannel(), msg);
+                NettyHttpUtil.sendWsResponse(RoomBroadcastApi.ROOM_PRIVATE + path, session.getChannel(), msg);
             }
         }
     }
