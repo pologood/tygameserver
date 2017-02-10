@@ -24,5 +24,5 @@ puremvc.define({name:'drawsomething.AppConstants'},{},{
 	ANSWER_INFO:'answer_info',
 	SEND_MSG:'send_msg',//回答问题
 	RECEIVE_MSG:'receive_msg',
-
+	RECEIVE_HINT:'receive_hint',//接收提示
 })

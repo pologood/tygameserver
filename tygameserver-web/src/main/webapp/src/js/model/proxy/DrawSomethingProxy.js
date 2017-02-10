@@ -177,6 +177,10 @@ puremvc.define({
                     
                 	}
 
+                	if(data.rpcMethod.toLowerCase() ==  "/guess/answer"){
+
+                	}                	
+
                 	if(data.rpcMethod.toLowerCase() == "/room/private/startgame"){
 	                    self.questions = data.content.payload;
 	                }
@@ -190,7 +194,7 @@ puremvc.define({
 	                //     }
 	                    
 	                // }
-	                
+
 	                if(data.rpcMethod.toLowerCase() == "/room/broadcast/drawgame"){
 	                    var info=data.content.payload;
 	                    _this.sendNotification(drawsomething.AppConstants.DRAWING_HANDLE,info);
@@ -205,10 +209,32 @@ puremvc.define({
 	                //聊天消息
 	                if(data.rpcMethod.toLowerCase() == "/room/broadcast/guess/answer"){
 	                    // data.content.payload.name = getName(data.content.payload.avatarId);
-	                    _this.answerList.push(data.content.payload);
-	                    _this.sendNotification(drawsomething.AppConstants.RECEIVE_MSG,data.content.payload);
+	                    var answer=data.content.payload.fAnswer;
+	                    _this.answerList.push(answer);
+	                    _this.sendNotification(drawsomething.AppConstants.RECEIVE_MSG,answer);
 	                }
 
+	                //提示1
+	                if(data.rpcMethod.toLowerCase()=="/room/broadcast/guess/hint1"){
+
+	                	_this.sendNotification(drawsomething.AppConstants.RECEIVE_HINT,{type:1,hint:data.content.message});
+	                }
+
+	                //提示2
+	                if(data.rpcMethod.toLowerCase()=="/room/broadcast/guess/hint2"){
+
+	                	_this.sendNotification(drawsomething.AppConstants.RECEIVE_HINT,{type:2,hint:data.content.message});
+	                }
+
+	                //一轮结束
+	                if(data.rpcMethod.toLowerCase()=="/room/broadcast/guess/roundover"){
+	                	
+	                }
+	                
+	                if(data.rpcMethod.toLowerCase()=="/room/broadcast/guess/running"){
+	                	
+	                }
+	                
 	                if(data.rpcMethod.toLowerCase() == "/room/broadcast/correct"){
 	                    var answer = data.content.payload;
 	                    answer.name = getName(answer.avatarId);

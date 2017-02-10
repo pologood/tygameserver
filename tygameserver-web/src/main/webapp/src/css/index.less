@@ -98,11 +98,15 @@ body{
 		text-align: center;width: 100%;position: absolute;top: 20px;color: #fff;
 	}
 	.playerList{
-		width: 674px;margin: 0 auto;padding-top: 60px;
+		width: 674px;margin: 0 auto;padding-top: 60px;height: 544-60px;
 	}
 	.item{
 		width: 327px;height: 111px;background: url(../img/ready/item.png) no-repeat;margin-right: 10px;margin-bottom: 10px;
 		position: relative;font-size: 16px;color: #ffffe5;
+		.ownerIcon{
+			width: 25px;height: 30px;background: url(../img/ready/icon_owner.png) no-repeat;display: block;position: absolute;
+			left: 7px;top: -6px;display: none;
+		}
 		.name{
 			display: block;width: 260px;height: 31px;background: url(../img/ready/name_bg.png) no-repeat;line-height: 31px;text-indent: 54px;
 			position: absolute;top: 20px;left: 48px;
@@ -139,7 +143,7 @@ body{
 			}
 		}
 		.countDown{
-			color: #c58a56;position: absolute;top: 64px;left: 215px;
+			color: #c58a56;position: absolute;top: 64px;left: 135px;display: none;
 			.icon-time{
 				display: inline-block;width: 18px;height: 18px;background: url(../img/ready/icon_time.png) no-repeat;
 				vertical-align: middle;margin-right: 2px;
@@ -161,8 +165,8 @@ body{
 	}
 }
 .drawPanel{
-	width: 1109px;height: 627px;background: url(../img/draw/bg.jpg) no-repeat;position: absolute;top: 0;left: 0;border-radius: 10px;display: none;
-	
+	width: 1109px;height: 627px;background: url(../img/draw/bg.jpg) no-repeat;position: absolute;top: 0;left: 0;border-radius: 10px;
+	display: none;
 	.book{
 		width: 945px;height: 531px;background: url(../img/draw/book_bg.png) no-repeat;position: absolute;top: 0px;left: 0px;
 		font-size: 14px;
@@ -344,6 +348,24 @@ body{
 		.eraser{
 			display: block;position: absolute;background: url(../img/draw/eraser.png) no-repeat;
 			width: 26px;height: 35px;top: 0;right: 30px;
+		}
+		.lineSet{
+			position: absolute;top: 8px;left: 280px;
+			.subtractBtn{
+				display: block;width: 18px;height: 18px;background: url(../img/draw/subtract.png) no-repeat;
+				position: absolute;top: 0;
+			}
+			.plusBtn{
+				display: block;width: 18px;height: 18px;background: url(../img/draw/plus.png) no-repeat;
+				position: absolute;top: 0;left: 150px;
+			}
+			.slidebar{
+				height: 1px;width: 110px;border-top: 1px solid #000;position: absolute;left: 27px;top: 7px;
+				.circle{
+					display: block;width: 16px;height: 16px;border-radius: 50%;background: #fff;border: 1px solid #000;
+					margin-top: -8px;margin-left: -8px;cursor: pointer;
+				}
+			}
 		}
 	}
 }

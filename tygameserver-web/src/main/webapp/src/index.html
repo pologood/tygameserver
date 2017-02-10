@@ -103,7 +103,7 @@
         <div id="readyPanel" class="readyPannel">
             <h2 class="roomId"></h2>
             <div class="playerList f-cb">
-                <div class="item f-fl">
+                <!-- <div class="item f-fl">
                     <span class="name">最多八个字八个字<span class="score f-fr">10分</span></span>
                     <div class="head">
                         <img src="img/ready/head.png" width="72" height="72">
@@ -111,27 +111,28 @@
                     </div>
                     <a href="javascript:;" class="btn btn-ready">点击准备</a>
                     <a href="javascript:;" class="closeBtn"></a>
+                    <span class="ownerIcon"></span>
                 </div>
                 <div class="item f-fl">
-                    <!-- <span class="name">最多八个字八个字<span class="score f-fr">10分</span></span>
+                    <span class="name">最多八个字八个字<span class="score f-fr">10分</span></span>
                     <div class="head">
                         <img src="img/ready/head.png" width="72" height="72">
                         <span class="head_border"></span>
                     </div>
                     <span class="btn btn-already">已准备<span class="icon-already"></span></span>
-                    <a href="javascript:;" class="closeBtn"></a> -->
+                    <a href="javascript:;" class="closeBtn"></a>
                 </div>
                 <div class="item f-fl">
-                    <!-- <span class="name">最多八个字八个字<span class="score f-fr">10分</span></span>
+                    <span class="name">最多八个字八个字<span class="score f-fr">10分</span></span>
                     <div class="head">
                         <img src="img/ready/head.png" width="72" height="72">
                         <span class="head_border"></span>
                     </div>
                     <span class="btn btn-unready">未准备</span>
-                    <a href="javascript:;" class="closeBtn"></a> -->
+                    <a href="javascript:;" class="closeBtn"></a>
                 </div>
                 <div class="item f-fl">
-                    <!-- <span class="name">最多八个字八个字<span class="score f-fr">10分</span></span>
+                    <span class="name">最多八个字八个字<span class="score f-fr">10分</span></span>
                     <div class="head">
                         <img src="img/ready/head.png" width="72" height="72">
                         <span class="head_border"></span>
@@ -140,7 +141,7 @@
                         <span class="icon-time"></span>
                         <span class="second">59</span><span class="txt">/秒</span>                        
                     </span>
-                    <a href="javascript:;" class="closeBtn"></a> -->
+                    <a href="javascript:;" class="closeBtn"></a>
                 </div>
                 <div class="item f-fl">
 
@@ -153,7 +154,7 @@
                 </div>
                 <div class="item f-fl">
 
-                </div>
+                </div> -->
             </div>
             <a href="javascript:;" class="startBtn"></a>
         </div>
@@ -162,35 +163,19 @@
                 <div class="hintCnt">
                     <span class="title">回合开始</span>
                     <div class="info">
-                        <p>现在由<span class="u-name">小怪兽</span>画图</p>
-                        <p>提示1：<span>2个字</span></p>
-                        <p>提示1：<span>食物</span></p>
+                        <p>现在由<span class="u-name drawerName"></span>画图</p>
+                        <p class="hint1"></p>
+                        <p class="hint2"></p>
                     </div>
                     <div class="raccoon"></div>
                 </div>
                 <div class="chatBox">
                     <div class="wrap">
                         <div class="content">
-                            <p>
+                           <!--  <p>
                                 <span class="u-name">小怪兽：</span>
                                 哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈
-                            </p>
-                            <p>
-                                <span class="u-name">小怪兽：</span>
-                                哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈
-                            </p>
-                            <p>
-                                <span class="u-name">小怪兽：</span>
-                                哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈
-                            </p>
-                            <p>
-                                <span class="u-name">小怪兽：</span>
-                                哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈
-                            </p>
-                            <p>
-                                <span class="u-name">小怪兽：</span>
-                                哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈
-                            </p>
+                            </p> -->
                         </div>
                     </div>
                 </div>
@@ -242,9 +227,16 @@
                 <p class="answer answerTxt">作品：玉虚坐骑</p>
                 <a href="javascript:;" class="eraser"></a>
                 <a href="javascript::" class="delete"></a>
+                <div class="lineSet">
+                    <a class="subtractBtn" href="javascript:;"></a>
+                    <div class="slidebar">
+                        <span class="circle"></span>
+                    </div>
+                    <a class="plusBtn" href="javascript:;"></a>
+                </div>
             </div>
             <div class="members">
-                <div class="item f-fl">
+                <!-- <div class="item f-fl">
                     <span class="head">
                         <img src="img/ready/head.png" width="43" heigth="43">
                         <span class="imgBorder"></span>
@@ -255,13 +247,7 @@
                         <span class="icon"></span>
                     </span>
                     <div class="current"></div>
-                </div>
-                <div class="item f-fl"></div>
-                <div class="item f-fl"></div>
-                <div class="item f-fl"></div>
-                <div class="item f-fl"></div>
-                <div class="item f-fl"></div>
-                <div class="item f-fl"></div>
+                </div> -->
             </div>
         </div>
     </div>
@@ -277,7 +263,7 @@
         {{/each}}
     </script>
     <script id="playerItems-template" type="text/x-handlebars-template">
-        <div>
+        <div class="item f-fl">
             <span class="name">{{name}}<span class="score f-fr">10分</span></span>
             <div class="head">
                 <img src="img/ready/head.png" width="72" height="72">
@@ -286,7 +272,12 @@
             <a href="javascript:;" class="btn btn-ready">点击准备</a>
             <span class="btn btn-already">已准备<span class="icon-already"></span></span>
             <span class="btn btn-unready">未准备</span>
+            <span class="countDown">
+                <span class="icon-time"></span>
+                <span class="second">59</span><span class="txt">/秒</span>                        
+            </span>
             <a href="javascript:;" class="closeBtn"></a>
+            <span class="ownerIcon"></span>
         </div>
     </script>
     <script id="drawingPlayerItem-template" type="text/x-handlebars-template">

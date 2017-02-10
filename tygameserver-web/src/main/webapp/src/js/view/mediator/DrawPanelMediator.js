@@ -9,7 +9,8 @@ puremvc.define({
                 drawsomething.AppConstants.GAME_STARTING,
                 drawsomething.AppConstants.DRAWING_HANDLE,
                 drawsomething.AppConstants.ANSWER_INFO,
-                drawsomething.AppConstants.RECEIVE_MSG
+                drawsomething.AppConstants.RECEIVE_MSG,
+                drawsomething.AppConstants.RECEIVE_HINT,
             ];
         },
         
@@ -52,6 +53,9 @@ puremvc.define({
                 break;
                 case drawsomething.AppConstants.RECEIVE_MSG:
                     this.viewComponent.receiveMsg(note.getBody());
+                break;
+                case drawsomething.AppConstants.RECEIVE_HINT:
+                    this.viewComponent.receiveHint(note.getBody());
                 break;
             }
         },

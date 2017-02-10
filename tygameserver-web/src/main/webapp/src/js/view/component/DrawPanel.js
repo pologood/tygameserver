@@ -38,7 +38,7 @@ puremvc.define({
         
         this.isDrawer=false;
         this.countDown=this.COUNT;
-
+        this.$lineSet=this.$container.find(".lineSet");
         var scroll=new drawsomething.view.component.Scroll("nihao");
         scroll.getName();
 
@@ -55,11 +55,13 @@ puremvc.define({
 		drawsomething.view.event.AppEvents.dispatchEvent(this.container,event);
 	},
     dispatchMsg:function(){
+        var msgStr=this.$container.find(".msgIpt").val();
         var e = this.createEvent( drawsomething.view.event.AppEvents.SEND_MSG);
         e.msg={
-            text:this.$container.find(".msgIpt").val()
+            text:msgStr
         };
         this.dispatchEvent(e);
+        this.$container.find(".msgIpt").val("");
     },
     dispatchDelete:function(){
         this.stage.clear();
@@ -165,6 +167,18 @@ puremvc.define({
         var template = Handlebars.compile(source); 
         var html    = template({rolesList:data.roominfo.members});
         this.$container.find(".members").html(html);
+        var owner=this.getMember(data.roominfo.members,gameInfo.drawerId);
+        if(owner){
+            this.$container.find(".drawerName").html(owner.name);
+        }
+    },
+    getMember:function(members,avatarId){
+        for(var i=0;i<members.length;i++){
+            if(members[i].avatarId==avatarId){
+                return members[i];
+            }
+        }
+        return null;
     },
     updateAnswerInfo:function(answerInfo){
         this.$container.find(".answerTxt").html("作品："+answerInfo.answer);
@@ -173,8 +187,15 @@ puremvc.define({
         var msg='<p><span class="u-name">'+answerInfo.avatarId+'：</span>'+answerInfo.answer+'</p>';
         this.$container.find(".chatBox").find(".content").append(msg);
     },
+    receiveHint:function(hintInfo){
+        if(hintInfo.type==1){
+            this.$container.find(".hint1").html('提示1：<span>'+hintInfo.hint+'</span>');
+        }else{
+            this.$container.find(".hint2").html('提示2：<span>'+hintInfo.hint+'个字</span>');
+        }
+    },
     startCountdown:function(){
-        
+
     },
 	show:function(){
 		$("#drawPanel").show();

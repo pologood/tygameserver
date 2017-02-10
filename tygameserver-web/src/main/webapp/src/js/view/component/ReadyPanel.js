@@ -14,6 +14,9 @@ puremvc.define({
 					_this.kickPlayer();
 				}
 			})
+			this.$container.bind("countDown",function(){
+				_this.setReady();
+			})
 			this.items=[];
 		}
 	},
@@ -33,8 +36,11 @@ puremvc.define({
 				var p=new drawsomething.view.component.PlayerItem();
 				p.update(members[i],data.roominfo,data.avatarId);
 				this.items.push(p);
-				this.$container.find(".item").eq(i).empty();
-				this.$container.find(".item").eq(i).append(p.el);
+				this.$container.find(".playerList").append(p.el);
+				if(data.avatarId==members[i].avatarId&&data.avatarId!=data.roominfo.ownerId){
+					p.startCountDown();
+				}
+				
 			}
 			this.$container.find(".roomId").html("房间号："+data.info.id);
 			if(data.roominfo.ownerId==data.avatarId){
@@ -47,8 +53,7 @@ puremvc.define({
 			var p=new drawsomething.view.component.PlayerItem();
 			p.update(data.member.avatar,data.roominfo,data.avatarId);
 			this.items.push(p);
-			this.$container.find(".item").eq(this.items.length-1).empty();
-			this.$container.find(".item").eq(this.items.length-1).append(p.el);
+			this.$container.find(".playerList").append(p.el);
 		},
 		updateReadyInfo:function(data){
 			var readyAvatarId=data.info.avatar.avatarId;
