@@ -37,8 +37,9 @@ puremvc.define({
         })
         
         this.isDrawer=false;
-        this.countDown=this.COUNT;
+        this.countDown=60;
         this.$lineSet=this.$container.find(".lineSet");
+        this.$endPop=this.$container.find(".endPop");
         var scroll=new drawsomething.view.component.Scroll("nihao");
         scroll.getName();
 
@@ -156,11 +157,13 @@ puremvc.define({
         if(avatarId==gameInfo.drawerId){
             this.$container.find(".colorDisc").show();
             this.$container.find(".tools").show();
+            this.$container.find(".iptCnt").hide();
             this.isDrawer=true;
 
         }else{
             this.$container.find(".colorDisc").hide();
             this.$container.find(".tools").hide();
+            this.$container.find(".iptCnt").show();
             this.isDrawer=false;
         }
         var source=$("#drawingPlayerItem-template").html();
@@ -171,6 +174,9 @@ puremvc.define({
         if(owner){
             this.$container.find(".drawerName").html(owner.name);
         }
+        this.stage.clear();
+        this.drawingCanvas.cache(0,0,900,600);
+        this.startCountdown();
     },
     getMember:function(members,avatarId){
         for(var i=0;i<members.length;i++){
@@ -183,8 +189,15 @@ puremvc.define({
     updateAnswerInfo:function(answerInfo){
         this.$container.find(".answerTxt").html("作品："+answerInfo.answer);
     },
-    receiveMsg:function(answerInfo){        
-        var msg='<p><span class="u-name">'+answerInfo.avatarName+'：</span>'+answerInfo.answer+'</p>';
+    receiveMsg:function(answerInfo){   
+        var msg;
+        if(answerInfo.isCorrect){
+            msg='<p><span class="u-name">'+answerInfo.avatarName+'：</span>√</p>';
+            this.countDown-=5;
+            this.countDown=this.countDown>0?this.countDown:0;
+        }else{
+            msg='<p><span class="u-name">'+answerInfo.avatarName+'：</span>'+answerInfo.answer+'</p>';
+        }        
         this.$container.find(".chatBox").find(".content").append(msg);
     },
     receiveHint:function(hintInfo){
@@ -195,16 +208,40 @@ puremvc.define({
         }
     },
     roundOver:function(roundInfo){
-        alert("答案："+roundInfo.answer);
+        var _this=this;
+        this.$endPop.show();
+        this.$endPop.find(".title").html("答案："+roundInfo.answer);
+        var countDown=6;
+        function count(){            
+            countDown--;
+            _this.$endPop.find(".timeTips").html(countDown+"秒后自动关闭");
+            if(countDown>0){
+                setTimeout(count,1000);
+            }else{
+                _this.$endPop.hide();
+            }
+        }
+        count();
     },
     startCountdown:function(){
-
+        this.countDown=60;
+        function count(_this){            
+            _this.countDown--;
+            _this.$container.find(".roundCountDown").html(_this.countDown+"秒");
+            if(_this.countDown>0){
+                setTimeout(function(){
+                    count(_this);
+                },1000);
+            }else{
+                _this.$endPop.hide();
+            }
+        }
+        count(this);
     },
 	show:function(){
 		$("#drawPanel").show();
 	}
 },
 {
-	NAME:'DrawPanel',
-    COUNT:60
+	NAME:'DrawPanel'
 })

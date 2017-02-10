@@ -217,6 +217,7 @@ puremvc.define({
 	                if(data.rpcMethod.toLowerCase() == "/room/broadcast/guess/answer"){
 	                    // data.content.payload.name = getName(data.content.payload.avatarId);
 	                    var answer=data.content.payload.fAnswer;
+	                    answer.isCorrect=data.content.payload.isCorrect;
 	                    _this.answerList.push(answer);
 	                    _this.sendNotification(drawsomething.AppConstants.RECEIVE_MSG,answer);
 	                }
