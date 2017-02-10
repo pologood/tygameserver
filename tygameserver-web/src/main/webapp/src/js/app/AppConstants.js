@@ -28,4 +28,6 @@ puremvc.define({name:'drawsomething.AppConstants'},{},{
 	RECEIVE_MSG:'receive_msg',
 	RECEIVE_HINT:'receive_hint',//接收提示
 	ROUND_OVER:'round_over',//一局结束
+	SEND_LIKE:'send_like',//点赞
+	SEND_UNLIKE:'send_unlike',//踩
 })
