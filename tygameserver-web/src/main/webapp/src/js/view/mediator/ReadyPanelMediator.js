@@ -8,7 +8,8 @@ puremvc.define({
             return [
                 drawsomething.AppConstants.BROADCAST_ROOMINFO,
                 drawsomething.AppConstants.BROADCAST_JOIN,
-                drawsomething.AppConstants.BROADCAST_READY
+                drawsomething.AppConstants.BROADCAST_READY,
+                drawsomething.AppConstants.RECEIVE_REMOVE_PLAYER
             ];
         },
         
@@ -18,6 +19,7 @@ puremvc.define({
             // this.viewComponent.addEventListener( drawsomething.view.event.AppEvents.CONNECT_SOCKET, this );
             this.viewComponent.addEventListener(drawsomething.view.event.AppEvents.READY,this);
             this.viewComponent.addEventListener(drawsomething.view.event.AppEvents.START_GAME,this);
+            this.viewComponent.addEventListener(drawsomething.view.event.AppEvents.REMOVE_PLAYER,this);
         },
         
         // Handle events from the view component
@@ -28,6 +30,9 @@ puremvc.define({
                 break;
                 case drawsomething.view.event.AppEvents.START_GAME:
                     this.sendNotification(drawsomething.AppConstants.START_GAME,event.msg);
+                break;
+                case drawsomething.view.event.AppEvents.REMOVE_PLAYER:
+                    this.sendNotification(drawsomething.AppConstants.REMOVE_PLAYER,event.msg);
                 break;
              }
             
@@ -45,6 +50,9 @@ puremvc.define({
                 break;
                 case drawsomething.AppConstants.BROADCAST_READY:
                     this.viewComponent.updateReadyInfo(note.getBody());
+                break;
+                case drawsomething.AppConstants.RECEIVE_REMOVE_PLAYER:
+                    this.viewComponent.receiveRemovePlayer(note.getBody());
                 break;
             }
         },

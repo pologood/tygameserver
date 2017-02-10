@@ -184,7 +184,7 @@ puremvc.define({
         this.$container.find(".answerTxt").html("作品："+answerInfo.answer);
     },
     receiveMsg:function(answerInfo){        
-        var msg='<p><span class="u-name">'+answerInfo.avatarId+'：</span>'+answerInfo.answer+'</p>';
+        var msg='<p><span class="u-name">'+answerInfo.avatarName+'：</span>'+answerInfo.answer+'</p>';
         this.$container.find(".chatBox").find(".content").append(msg);
     },
     receiveHint:function(hintInfo){
@@ -193,6 +193,9 @@ puremvc.define({
         }else{
             this.$container.find(".hint2").html('提示2：<span>'+hintInfo.hint+'个字</span>');
         }
+    },
+    roundOver:function(roundInfo){
+        alert("答案："+roundInfo.answer);
     },
     startCountdown:function(){
 

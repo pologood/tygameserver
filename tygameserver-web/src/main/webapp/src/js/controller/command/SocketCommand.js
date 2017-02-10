@@ -37,6 +37,9 @@ puremvc.define({
 			case drawsomething.AppConstants.SEND_MSG:
 				proxy.sendAnswer(note.getBody());
 			break;
+			case drawsomething.AppConstants.REMOVE_PLAYER:
+				proxy.removePlayer(note.getBody());
+			break;
 		}
 	}
 })

@@ -2,7 +2,6 @@ puremvc.define(
 	{
 		name:'drawsomething.view.component.PlayerItem',
 		constructor:function(){
-			// this.$container=$('<div class="item f-fl"></div>');
 			this.el=null;
 			var source=$("#playerItems-template").html();
 			this.template = Handlebars.compile(source);	
@@ -25,7 +24,7 @@ puremvc.define(
 				_this.el.find(".second").html(countDown);
 				if(countDown>0){
 					setTimeout(count,1000);
-				}else if(!_this.ready){
+				}else if(!_this.isReady){
 					_this.el.trigger("countDown");
 					_this.el.find(".countDown").hide();
 				}
@@ -67,6 +66,10 @@ puremvc.define(
 			this.el.find(".btn-unready").css({"display":"none"});
 			this.el.find(".btn-ready").css({"display":"none"});
 			this.el.find(".btn-already").css({"display":"block"});
+		},
+		remove:function(){			
+			this.el.find(".btn-ready").unbind("click");
+			this.el.remove();
 		}
 	},
 	{

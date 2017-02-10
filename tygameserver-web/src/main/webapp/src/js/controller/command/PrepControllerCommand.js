@@ -15,6 +15,7 @@ puremvc.define({
 			this.facade.registerCommand(drawsomething.AppConstants.DRAWING,drawsomething.controller.command.SocketCommand);
 			this.facade.registerCommand(drawsomething.AppConstants.DELETE,drawsomething.controller.command.SocketCommand);
 			this.facade.registerCommand(drawsomething.AppConstants.SEND_MSG,drawsomething.controller.command.SocketCommand);
+			this.facade.registerCommand(drawsomething.AppConstants.REMOVE_PLAYER,drawsomething.controller.command.SocketCommand);
 		}
 	}
 )

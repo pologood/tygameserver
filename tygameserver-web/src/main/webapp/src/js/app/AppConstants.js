@@ -14,6 +14,8 @@ puremvc.define({name:'drawsomething.AppConstants'},{},{
 	UNLOGIN:'unlogin',
 	ROLE_CONFIRM:'role_confirm',//选择角色
 	JOIN_ROOM:'join_room',
+	REMOVE_PLAYER:'remove_player',
+	RECEIVE_REMOVE_PLAYER:'receive_remove_player',
 	BROADCAST_ROOMINFO:'broadcast_roominfo',
 	BROADCAST_JOIN:'broadcast_join',
 	BROADCAST_READY:'broadcast_ready',//广播准备信息
@@ -25,4 +27,5 @@ puremvc.define({name:'drawsomething.AppConstants'},{},{
 	SEND_MSG:'send_msg',//回答问题
 	RECEIVE_MSG:'receive_msg',
 	RECEIVE_HINT:'receive_hint',//接收提示
+	ROUND_OVER:'round_over',//一局结束
 })

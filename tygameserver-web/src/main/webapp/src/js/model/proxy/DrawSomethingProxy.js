@@ -185,6 +185,13 @@ puremvc.define({
 	                    self.questions = data.content.payload;
 	                }
 
+	                //踢出成员
+	                if(data.rpcMethod.toLowerCase() == "/room/broadcast/remove"){
+	                    var avatarId=data.content.payload;
+	                    _this.sendNotification(drawsomething.AppConstants.RECEIVE_REMOVE_PLAYER,{avatarId:avatarId});
+	                    
+	                }
+
 	                // if(data.rpcMethod.toLowerCase() == "/room/broadcast/startgame"){
 	                //     self.painterId = data.content.payload.avatarId;
 	                //     self.gameState = data.content.payload.gameState;
@@ -222,17 +229,21 @@ puremvc.define({
 
 	                //提示2
 	                if(data.rpcMethod.toLowerCase()=="/room/broadcast/guess/hint2"){
-
 	                	_this.sendNotification(drawsomething.AppConstants.RECEIVE_HINT,{type:2,hint:data.content.message});
 	                }
 
 	                //一轮结束
 	                if(data.rpcMethod.toLowerCase()=="/room/broadcast/guess/roundover"){
-	                	
+	                	var roundInfo=data.content.payload;	   
+	                	_this.sendNotification(drawsomething.AppConstants.ROUND_OVER,roundInfo);
 	                }
 	                
 	                if(data.rpcMethod.toLowerCase()=="/room/broadcast/guess/running"){
-	                	
+	                	var roundInfo=data.content.payload;
+	                	_this.gameInfo.drawerId=roundInfo.drawerId;
+	                	_this.sendNotification(drawsomething.AppConstants.GAME_STARTING,{
+	                		gameInfo:_this.gameInfo,avatarId:_this.avatarId,roominfo:_this.roominfo
+	                	})
 	                }
 	                
 	                if(data.rpcMethod.toLowerCase() == "/room/broadcast/correct"){
@@ -281,6 +292,17 @@ puremvc.define({
 				rpcMethod:"/room/join",
 				params:{
 					roomId:this.roomId
+				},
+				gameId:this.gameId,
+				uuid:this.gbId
+			}
+			this.socket.send(JSON.stringify(msg));
+		},
+		removePlayer:function(avatarInfo){
+			var msg={
+				rpcMethod:"/room/remove",
+				params:{
+					avatarId:avatarInfo.avatarId
 				},
 				gameId:this.gameId,
 				uuid:this.gbId

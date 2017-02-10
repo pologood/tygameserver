@@ -11,6 +11,7 @@ puremvc.define({
                 drawsomething.AppConstants.ANSWER_INFO,
                 drawsomething.AppConstants.RECEIVE_MSG,
                 drawsomething.AppConstants.RECEIVE_HINT,
+                drawsomething.AppConstants.ROUND_OVER,
             ];
         },
         
@@ -56,6 +57,9 @@ puremvc.define({
                 break;
                 case drawsomething.AppConstants.RECEIVE_HINT:
                     this.viewComponent.receiveHint(note.getBody());
+                break;
+                case drawsomething.AppConstants.ROUND_OVER:
+                    this.viewComponent.roundOver(note.getBody());
                 break;
             }
         },

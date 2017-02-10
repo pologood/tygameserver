@@ -13,6 +13,7 @@ puremvc.define(
 		ROLE_CONFIRM:'role_confirm',
 		CREATE_ROOM:'create_room',
 		JOIN_ROOM:'join_room',
+		REMOVE_PLAYER:'remove_player',
 		GET_LOGIN_STATUS:'get_login_status',
 		READY:'ready',
 		START_GAME:'start_game',

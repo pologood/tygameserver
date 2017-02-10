@@ -11,7 +11,8 @@ puremvc.define({
 				if($(e.target).hasClass("btn-ready")){
 					_this.setReady();
 				}else if($(e.target).hasClass("closeBtn")){
-					_this.kickPlayer();
+					var avatarId=$(e.target).attr("data-avatarId");
+					_this.kickPlayer(avatarId);
 				}
 			})
 			this.$container.bind("countDown",function(){
@@ -39,8 +40,7 @@ puremvc.define({
 				this.$container.find(".playerList").append(p.el);
 				if(data.avatarId==members[i].avatarId&&data.avatarId!=data.roominfo.ownerId){
 					p.startCountDown();
-				}
-				
+				}				
 			}
 			this.$container.find(".roomId").html("房间号："+data.info.id);
 			if(data.roominfo.ownerId==data.avatarId){
@@ -76,8 +76,20 @@ puremvc.define({
 			e.msg={};
 			this.dispatchEvent(e);
 		},
-		kickPlayer:function(){
-			console.log("踢人")
+		kickPlayer:function(avatarId){			
+			var e = this.createEvent( drawsomething.view.event.AppEvents.REMOVE_PLAYER);
+			e.msg={
+				avatarId:avatarId
+			};
+			this.dispatchEvent(e);
+		},
+		receiveRemovePlayer:function(removeInfo){
+			for(var i=this.items.length-1;i>0;i--){
+				if(removeInfo.avatarId==this.items[i].avatarId){
+					this.items[i].remove();
+					this.items.splice(i, 1);					
+				}
+			}
 		},
 		hide:function(){
 			this.$container.hide();
