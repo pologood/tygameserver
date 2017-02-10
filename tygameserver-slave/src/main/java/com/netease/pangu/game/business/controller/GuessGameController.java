@@ -62,7 +62,12 @@ public class GuessGameController {
 
     @WsRpcCall("/like")
     public GameResult like(long roomId, GameContext<AvatarSession<Avatar>> ctx){
-        return guessGameService.like(roomId, ctx.getSession());
+        long avatarId = ctx.getSession().getAvatarId();
+        if(guessGameService.containsRule(GuessGame.RULE.LIKE, roomId, avatarId)) {
+            return guessGameService.like(roomId, ctx.getSession());
+        }else{
+            return ReturnUtils.failed();
+        }
     }
 
     @WsRpcCall("/exit")
@@ -72,19 +77,29 @@ public class GuessGameController {
 
     @WsRpcCall("/unlike")
     public GameResult unlike(long roomId, GameContext<AvatarSession<Avatar>> ctx){
-        return guessGameService.unlike(roomId, ctx.getSession());
+        long avatarId = ctx.getSession().getAvatarId();
+        if(guessGameService.containsRule(GuessGame.RULE.UNLIKE, roomId, avatarId)) {
+            return guessGameService.unlike(roomId, ctx.getSession());
+        }else{
+            return ReturnUtils.failed();
+        }
     }
 
     @WsRpcCall("/answer")
     public GameResult setAnswer(long roomId, String answer, GameContext<AvatarSession<Avatar>> ctx) {
         GuessGame.Guess guess = new GuessGame.Guess();
-        guess.setAvatarId(ctx.getSession().getAvatarId());
+        long avatarId = ctx.getSession().getAvatarId();
+        guess.setAvatarId(avatarId);
         guess.setAnswer(answer);
         guess.setAvatarName(ctx.getSession().getName());
         guess.setTime(System.currentTimeMillis());
         if (guessGameService.getGuessGameState(roomId) == GuessGameState.ROUND_GAMING) {
-            guessGameService.answer(roomId, ctx.getSession(), guess);
-            return ReturnUtils.succ();
+            if(guessGameService.containsRule(GuessGame.RULE.GUESSED, roomId, avatarId) || guessGameService.containsRule(GuessGame.RULE.FIRST_GUESSED, roomId, avatarId)) {
+                guessGameService.answer(roomId, ctx.getSession(), guess);
+                return ReturnUtils.succ();
+            }else{
+                return ReturnUtils.failed();
+            }
         }else {
             return ReturnUtils.failed("not in gaming");
         }

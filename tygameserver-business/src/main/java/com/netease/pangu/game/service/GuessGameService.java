@@ -108,6 +108,7 @@ public class GuessGameService {
     private final static String GAME_HINT1 = "guess/hint1";
     private final static String GAME_HINT2 = "guess/hint2";
     private final static String GAME_COUNTDOWN = "guess/countdown";
+
     public static boolean isNearEqual(long t1, long t2){
         return t1 >= t2 && t1 < t2 + PERIOD_TIME;
     }
