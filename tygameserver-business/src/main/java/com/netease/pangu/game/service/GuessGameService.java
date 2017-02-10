@@ -245,9 +245,15 @@ public class GuessGameService {
         return false;
     }
 
-    private Guess filterAnswer(Guess guess){
-        return guess;
+    private Guess filterAnswer(Guess guess, String answer){
+        Guess newGuess = new Guess(guess);
+        String[] answerWords = answer.split("");
+        for(int i = 0; i < answerWords.length; i++){
+            newGuess.setAnswer(newGuess.getAnswer().replace(answerWords[i], "*"));
+        }
+        return newGuess;
     }
+
 
     public Map<String, Object> getCurrentGameInfo(long roomId) {
         Map<String, Object> currentGame = new HashMap<String, Object>();
@@ -269,7 +275,7 @@ public class GuessGameService {
                     return;
                 } else {
                     Map<String, Object> ret = new HashMap<String, Object>();
-                    ret.put("fAnswer", filterAnswer(guess));
+                    ret.put("fAnswer", filterAnswer(guess, game.getQuestion().getAnswer()));
                     if (isCorrectAnswer(game, guess)) {
                         if (!game.isFirstGuessed()) {
                             addScore(GuessGame.RULE.FIRST_GUESSED, game, avatarSession.getAvatarId());
@@ -355,13 +361,13 @@ public class GuessGameService {
                 }
                 List<GuessGame.RULE> drawerRuleList = operations.get(drawerId);
                 drawerRuleList.add(drawRule);
-                int drawerScore = MapUtils.getIntValue(scores, rule, 0) + RULE_SCORE.get(drawRule);
+                int drawerScore = MapUtils.getIntValue(scores, drawerId, 0) + RULE_SCORE.get(drawRule);
                 scores.put(avatarId, drawerScore > 0 ? drawerScore : 0);
             }
 
             List<GuessGame.RULE> ruleList = operations.get(avatarId);
             ruleList.add(rule);
-            int score = MapUtils.getIntValue(scores, rule, 0) + RULE_SCORE.get(rule);
+            int score = MapUtils.getIntValue(scores, drawerId, 0) + RULE_SCORE.get(rule);
             scores.put(avatarId, score > 0 ? score : 0);
     }
 
