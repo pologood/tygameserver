@@ -27,6 +27,7 @@ public class GuessGame {
     public GuessGame() {
         this.answers = new ArrayList<Guess>();
         this.operations = new HashMap<Long, List<RULE>>();
+        this.scores = new HashMap<Long, Integer>();
         this.timer = new Timer();
     }
 
