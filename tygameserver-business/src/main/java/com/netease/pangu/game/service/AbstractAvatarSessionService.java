@@ -128,7 +128,11 @@ public abstract class AbstractAvatarSessionService<A extends IAvatar> {
     }
 
     public <T> T updateAvatarSessionByChannelId(ChannelId channelId, SessionCallable<T, A> callable) {
-        long avatarId = channelIdAvatarIdMap.get(channelId);
-        return updateAvatarSession(avatarId, callable);
+       if(channelIdAvatarIdMap.containsKey(channelId)) {
+           long avatarId = channelIdAvatarIdMap.get(channelId);
+           return updateAvatarSession(avatarId, callable);
+       }else{
+           return null;
+       }
     }
 }
