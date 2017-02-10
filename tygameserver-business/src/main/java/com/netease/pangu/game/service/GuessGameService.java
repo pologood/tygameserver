@@ -155,7 +155,7 @@ public class GuessGameService {
                             roomService.chatTo(GAME_QUESTION, roomId, Arrays.asList(game.getDrawerId()), ReturnUtils.succ(game.getQuestion()));
                             roomService.broadcast(GAME_START, roomId, ReturnUtils.succ(getCurrentGameInfo(roomId)));
                         } else if (game.getState() == GuessGameState.ROUND_GAMING) {
-                            if (current < game.getEndTime()) {
+                            if (current <= game.getEndTime()) {
                                 if(isNearEqual(current, (current/1000)*1000)){
                                     roomService.broadcast(GAME_COUNTDOWN, roomId, ReturnUtils.succ(game.getEndTime()/1000 - current/1000));
                                 }
