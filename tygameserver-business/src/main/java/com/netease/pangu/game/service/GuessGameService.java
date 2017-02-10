@@ -107,7 +107,7 @@ public class GuessGameService {
     private final static String GAME_EXIT = "guess/exit";
     private final static String GAME_HINT1 = "guess/hint1";
     private final static String GAME_HINT2 = "guess/hint2";
-
+    private final static String GAME_COUNTDOWN = "guess/countdown";
     public static boolean isNearEqual(long t1, long t2){
         return t1 >= t2 && t1 < t2 + PERIOD_TIME;
     }
@@ -155,7 +155,11 @@ public class GuessGameService {
                             roomService.chatTo(GAME_QUESTION, roomId, Arrays.asList(game.getDrawerId()), ReturnUtils.succ(game.getQuestion()));
                             roomService.broadcast(GAME_START, roomId, ReturnUtils.succ(getCurrentGameInfo(roomId)));
                         } else if (game.getState() == GuessGameState.ROUND_GAMING) {
-                            if (current < game.getEndTime()) {
+                            if (current <= game.getEndTime()) {
+                                if(isNearEqual(current, (current/1000)*1000)){
+                                    roomService.broadcast(GAME_COUNTDOWN, roomId, ReturnUtils.succ(game.getEndTime()/1000 - current/1000));
+                                }
+
                                 if (isNearEqual(current, game.getStartTime() + 5000)){
                                     roomService.broadcast(GAME_HINT1, roomId, ReturnUtils.succ(game.getQuestion().getHint1()));
                                 }

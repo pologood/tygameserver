@@ -227,6 +227,7 @@ public class RoomService {
         private long avatarId;
         private String avatarImg;
         private long roomId;
+        private long totalScore;
         private AvatarStatus state;
 
         public String getName() {
@@ -285,6 +286,14 @@ public class RoomService {
             this.state = state;
         }
 
+        public long getTotalScore() {
+            return totalScore;
+        }
+
+        public void setTotalScore(long totalScore) {
+            this.totalScore = totalScore;
+        }
+
         public static SimpleAvatar create(AvatarSession<Avatar> session) {
             SimpleAvatar avatar = new SimpleAvatar();
             avatar.setAvatarId(session.getAvatarId());
@@ -294,6 +303,7 @@ public class RoomService {
             avatar.setState(session.getAvatarStatus());
             avatar.setUuid(session.getUuid());
             avatar.setGameId(session.getGameId());
+            avatar.setTotalScore(session.getAvatar().getTotalScore());
             return avatar;
         }
     }
