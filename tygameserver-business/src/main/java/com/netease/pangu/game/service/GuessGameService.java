@@ -309,7 +309,7 @@ public class GuessGameService {
             synchronized (game) {
                 if(!containsRule(GuessGame.RULE.LIKE, roomId, avatarSession.getAvatarId())){
                     addScore(GuessGame.RULE.LIKE, game, avatarSession.getAvatarId());
-                    roomService.broadcast(GAME_LIKE, roomId, ReturnUtils.succ());
+                    roomService.broadcast(GAME_LIKE, roomId, ReturnUtils.succ(getCurrentGameInfo(roomId)));
                     return ReturnUtils.succ();
                 }
             }
