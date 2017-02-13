@@ -313,6 +313,7 @@ puremvc.define({
         }
     },
     roundOver:function(roundInfo){
+        this.isDrawer=false;
         var dataUrl=this.stage.toDataURL();
         this.$endPop.find("img").attr("src",dataUrl);
         var _this=this;
@@ -362,7 +363,10 @@ puremvc.define({
     },
 	show:function(){
 		$("#drawPanel").show();
-	}
+	},
+    hide:function(){
+        this.$container.hide();
+    }
 },
 {
 	NAME:'DrawPanel'

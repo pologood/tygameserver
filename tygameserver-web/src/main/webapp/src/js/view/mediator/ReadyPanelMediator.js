@@ -9,7 +9,8 @@ puremvc.define({
                 drawsomething.AppConstants.BROADCAST_ROOMINFO,
                 drawsomething.AppConstants.BROADCAST_JOIN,
                 drawsomething.AppConstants.BROADCAST_READY,
-                drawsomething.AppConstants.RECEIVE_REMOVE_PLAYER
+                drawsomething.AppConstants.RECEIVE_REMOVE_PLAYER,
+                drawsomething.AppConstants.GAME_OVER,
             ];
         },
         
@@ -53,6 +54,9 @@ puremvc.define({
                 break;
                 case drawsomething.AppConstants.RECEIVE_REMOVE_PLAYER:
                     this.viewComponent.receiveRemovePlayer(note.getBody());
+                break;
+                case drawsomething.AppConstants.GAME_OVER:
+                    this.viewComponent.show();
                 break;
             }
         },

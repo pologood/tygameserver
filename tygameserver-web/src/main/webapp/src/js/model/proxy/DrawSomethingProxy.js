@@ -98,7 +98,7 @@ puremvc.define({
 			}
 
 			this.socket.onmessage=function(event){
-				// console.log("Client received a message",event.data);
+				console.log("Client received a message",event.data);
 				data=JSON.parse(event.data);
 
 				if(data.content.code==1){
@@ -116,7 +116,6 @@ puremvc.define({
 	                }
 
 	                if(data.rpcMethod.toLowerCase() == "/room/broadcast/info"){
-            			console.log(data.content.payload);	
 	                    _this.ownerName = data.content.payload.ownerName;
 	                    _this.members = data.content.payload.members;
 	                    _this.roominfo=data.content.payload;
@@ -264,7 +263,9 @@ puremvc.define({
 	                }
 	                //大轮游戏结束
 	                if(data.rpcMethod.toLowerCase()=="/room/broadcast/guess/gameover"){
-
+	                	_this.sendNotification(drawsomething.AppConstants.GAME_OVER);
+	                	_this.sendNotification(drawsomething.AppConstants.BROADCAST_ROOMINFO,{info:_this.roominfo,roominfo:_this.roominfo,avatarId:_this.avatarId});
+	                	
 	                }
 	                
 	                if(data.rpcMethod.toLowerCase() == "/room/broadcast/correct"){

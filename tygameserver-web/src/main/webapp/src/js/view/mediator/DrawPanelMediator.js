@@ -15,6 +15,7 @@ puremvc.define({
                 drawsomething.AppConstants.COUNTDOWN,
                 drawsomething.AppConstants.RECEIVE_SCORES,
                 drawsomething.AppConstants.RECEIVE_LIKE_INFO,
+                drawsomething.AppConstants.GAME_OVER
             ];
         },
         
@@ -107,6 +108,10 @@ puremvc.define({
                 break;
                 case drawsomething.AppConstants.RECEIVE_LIKE_INFO:
                     this.viewComponent.receiveLikeInfo(note.getBody());
+                break;
+                case drawsomething.AppConstants.GAME_OVER:
+                    this.viewComponent.isDrawer=false;
+                    this.viewComponent.hide();
                 break;
             }
         },
