@@ -182,10 +182,8 @@ public class GuessGameService {
                                 }
                             }
                         } else if (game.getState() == GuessGameState.ROUND_INTERNAL && game.getRound() < TOTOAL_ROUND) {
-                            if (current <= game.getNextStartTime()) {
-                                if (isNearEqual(current, (current / 1000) * 1000)) {
-                                    roomService.broadcast(RoomBroadcastApi.GAME_INTERVAL_COUNTDOWN, roomId, ReturnUtils.succ(game.getNextStartTime() / 1000 - current / 1000));
-                                }
+                            if (isNearEqual(current, (current / 1000) * 1000)) {
+                                roomService.broadcast(RoomBroadcastApi.GAME_INTERVAL_COUNTDOWN, roomId, ReturnUtils.succ(game.getNextStartTime() / 1000 - current / 1000));
                             }
 
                             if (current > game.getNextStartTime()) {
