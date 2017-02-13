@@ -1,7 +1,9 @@
 package com.netease.pangu.game.service;
 
 import com.netease.pangu.game.common.meta.AvatarSession;
+import com.netease.pangu.game.common.meta.AvatarStatus;
 import com.netease.pangu.game.common.meta.GameRoom;
+import com.netease.pangu.game.common.meta.RoomStatus;
 import com.netease.pangu.game.dao.impl.GuessGameInfoDaoImpl;
 import com.netease.pangu.game.meta.*;
 import com.netease.pangu.game.meta.GuessGame.Guess;
@@ -201,6 +203,7 @@ public class GuessGameService {
                                 roomService.broadcast(RoomBroadcastApi.GAME_RUNNING, roomId, ReturnUtils.succ(ret));
                             }
                         } else if (game.getState() == GuessGameState.GAME_STATS) {
+                            roomService.setRoomState(roomId, RoomStatus.IDLE, AvatarStatus.IDLE);
 
                         }
                     }

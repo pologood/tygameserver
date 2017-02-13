@@ -34,7 +34,7 @@ public class GuessGameController {
     @WsRpcCall("/start")
     public GameResult startGuessGame(long roomId, GameContext<AvatarSession<Avatar>> ctx) {
         if (roomService.isReady(roomId) && roomService.isRoomOwner(roomId, ctx.getSession().getAvatarId())) {
-            roomService.setRoomState(roomId, RoomStatus.GAMEING);
+            roomService.setRoomState(roomId, RoomStatus.GAMEING, AvatarStatus.GAMING);
             if (guessGameService.startGame(roomId, ctx.getSession())) {
                 return ReturnUtils.succ();
             } else {

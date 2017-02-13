@@ -114,12 +114,12 @@ public class RoomService {
                 && room.getSessionIds().size() < room.getMaxSize() ? true : false;
     }
 
-    public void setRoomState(long roomId, RoomStatus status) {
+    public void setRoomState(long roomId, RoomStatus status, AvatarStatus avatarStatus) {
         GameRoom room = getGameRoom(roomId);
         Set<Long> sessionIds = room.getSessionIds();
         Map<Long, AvatarSession<Avatar>> sessionMap = avatarSessionService.getAvatarSessions(sessionIds);
         for (AvatarSession<Avatar> session : sessionMap.values()) {
-            session.setAvatarStatus(AvatarStatus.GAMING);
+            session.setAvatarStatus(avatarStatus);
         }
         room.setStatus(status);
     }
