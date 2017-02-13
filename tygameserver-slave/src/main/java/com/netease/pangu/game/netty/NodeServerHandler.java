@@ -105,7 +105,8 @@ public class NodeServerHandler extends ChannelInboundHandlerAdapter {
         }
 
         if (request.method() == HttpMethod.GET) {
-            if (request.uri().equalsIgnoreCase(webSocketPath)) {
+            URI uri = URI.create(request.uri());
+            if (uri.getPath().equalsIgnoreCase(webSocketPath)) {
                 WebSocketServerHandshakerFactory wsFactory = new WebSocketServerHandshakerFactory(
                         NettyHttpUtil.getWebSocketLocation(request, webSocketPath), null, true);
                 WebSocketServerHandshaker handshaker = wsFactory.newHandshaker(request);
@@ -123,7 +124,6 @@ public class NodeServerHandler extends ChannelInboundHandlerAdapter {
                 }
                 Double dGameId = NumberUtils.toDouble(params.get("gameId").toString());
                 long gameId = dGameId.longValue();
-                URI uri = URI.create(request.uri());
                 FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.CONTINUE);
                 if (httpRequestInvoker.containsURIPath(gameId, uri.getPath())) {
                     httpRequestInvoker.invoke(gameId, uri.getPath(), params, request, response);

@@ -76,7 +76,8 @@ public class MasterServerHandler extends ChannelInboundHandlerAdapter {
         }
 
         if (request.method() == HttpMethod.GET) {
-            if (request.uri().equalsIgnoreCase(webSocketPath)) {
+            URI uri = URI.create(request.uri());
+            if (uri.getPath().equalsIgnoreCase(webSocketPath)) {
                 WebSocketServerHandshakerFactory wsFactory = new WebSocketServerHandshakerFactory(
                         NettyHttpUtil.getWebSocketLocation(request, webSocketPath), null, true);
                 WebSocketServerHandshaker handshaker = wsFactory.newHandshaker(request);
@@ -93,7 +94,7 @@ public class MasterServerHandler extends ChannelInboundHandlerAdapter {
                                     Unpooled.copiedBuffer("parameter gameId not exist!", Charset.forName("UTF-8"))));
                     return;
                 }
-                URI uri = URI.create(request.uri());
+
                 Double tmp = NumberUtils.toDouble(params.get("gameId").toString());
                 long gameId = tmp.longValue();
                 FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.CONTINUE);

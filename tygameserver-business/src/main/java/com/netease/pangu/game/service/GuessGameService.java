@@ -37,7 +37,7 @@ public class GuessGameService {
     private final static int TOTOAL_ROUND = 3;
     private final static int ROUND_INTERVAL_TIME = 5000;
     private final static int ROUNG_GAME_TIME = 60000;
-    private final static int PERIOD_TIME = 5;
+    private final static int PERIOD_TIME = 20;
     private final static Map<GuessGame.RULE, Integer> RULE_SCORE;
     private final Timer checkTimer = new Timer();
     private final TimerTask checkGameStateTask = new TimerTask() {
@@ -361,12 +361,12 @@ public class GuessGameService {
                 List<GuessGame.RULE> drawerRuleList = operations.get(drawerId);
                 drawerRuleList.add(drawRule);
                 int drawerScore = MapUtils.getIntValue(scores, drawerId, 0) + RULE_SCORE.get(drawRule);
-                scores.put(avatarId, drawerScore > 0 ? drawerScore : 0);
+                scores.put(drawerId, drawerScore > 0 ? drawerScore : 0);
             }
 
             List<GuessGame.RULE> ruleList = operations.get(avatarId);
             ruleList.add(rule);
-            int score = MapUtils.getIntValue(scores, drawerId, 0) + RULE_SCORE.get(rule);
+            int score = MapUtils.getIntValue(scores, avatarId, 0) + RULE_SCORE.get(rule);
             scores.put(avatarId, score > 0 ? score : 0);
     }
 
