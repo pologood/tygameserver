@@ -35,7 +35,7 @@ public class NodeServerInitializer extends ChannelInitializer<SocketChannel> {
         pipeline.addLast(new HttpObjectAggregator(65536));
         pipeline.addLast(new WebSocketServerCompressionHandler());
         pipeline.addLast(new WebSocketServerProtocolHandler(GameServerConst.WEB_SOCKET_PATH, null, true));
-        pipeline.addLast(beanFactory.getBean(NodeServerHandler.class));
+        pipeline.addLast("loginHandler", beanFactory.getBean(LoginHandler.class));
     }
 
     public SslContext getSslCtx() {

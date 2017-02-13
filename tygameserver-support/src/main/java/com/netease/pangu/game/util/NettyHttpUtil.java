@@ -37,7 +37,9 @@ public class NettyHttpUtil {
                 }
             }
         }finally {
-            res.content().release();
+            if(res.content().refCnt() > 0) {
+                res.content().release();
+            }
         }
     }
 
