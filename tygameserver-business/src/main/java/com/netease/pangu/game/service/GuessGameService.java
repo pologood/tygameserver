@@ -42,7 +42,7 @@ public class GuessGameService {
     public final static long gameId = 1;
     private final static int TOTOAL_ROUND = 3;
     private final static int ROUND_INTERVAL_TIME = 5000;
-    private final static int ROUNG_GAME_TIME = 30000;
+    private final static int ROUNG_GAME_TIME = 20000;
     private final static int PERIOD_TIME = 20;
     private final static Map<GuessGame.RULE, Integer> RULE_SCORE;
     private final Timer checkTimer = new Timer();
@@ -179,7 +179,7 @@ public class GuessGameService {
                                 Map<Long, AvatarSession<Avatar>> members = roomService.getMembers(roomId);
                                 for (AvatarSession<Avatar> member : members.values()) {
                                     int score = member.getAvatar().getTotalScore();
-                                    member.getAvatar().setTotalScore(score + game.getScores().get(member.getAvatarId()));
+                                    member.getAvatar().setTotalScore(score +  MapUtils.getInteger(game.getScores(), member.getAvatarId(), 0));
                                     avatarService.save(member.getAvatar());
                                 }
                             }
@@ -203,8 +203,11 @@ public class GuessGameService {
                                 roomService.broadcast(RoomBroadcastApi.GAME_RUNNING, roomId, ReturnUtils.succ(ret));
                             }
                         } else if (game.getState() == GuessGameState.GAME_STATS) {
-                            roomService.setRoomState(roomId, RoomStatus.IDLE, AvatarStatus.IDLE);
-
+                            GameRoom room = roomService.getGameRoom(roomId);
+                            if(room.getStatus() == RoomStatus.GAMEING) {
+                                roomService.setRoomState(roomId, RoomStatus.IDLE, AvatarStatus.IDLE, AvatarStatus.READY);
+                                this.cancel();
+                            }
                         }
                     }
                 }
@@ -230,29 +233,32 @@ public class GuessGameService {
     }
 
     public boolean startGame(long roomId, AvatarSession<Avatar> session) {
-        if (!gameMap.containsKey(roomId)) {
-            GuessGame game = new GuessGame();
+        GuessGame game = gameMap.get(roomId);
+        if(game == null){
+            game = new GuessGame();
             game.setGameId(gameId);
             game.setRoomId(roomId);
             game.setRound(0);
             game.setDrawerId(0);
             game.setState(GuessGameState.START);
-            GameTimerTask task = new GameTimerTask(roomId);
-            if (gameMap.putIfAbsent(roomId, game) == null) {
-                GameRoom room = roomService.getGameRoom(roomId);
-                GuessGameInfo gameInfo = new GuessGameInfo();
-                gameInfo.setCreatorId(room.getOwnerId());
-                gameInfo.setCreatorName(session.getName());
-                gameInfo.setInfos(new HashMap<Integer, GuessGame.GameRound>());
-                if (guessGameInfoDao.insertGuessGameInfo(gameInfo)) {
-                    game.setGameObjId(gameInfo.getId());
-                    task.setGuessGameInfo(gameInfo);
-                    game.getTimer().scheduleAtFixedRate(task, 0, PERIOD_TIME);
-                    return true;
-                }
-            }
+            gameMap.put(roomId, game);
+        }else{
+            game.setTimer(new Timer());
         }
-        return false;
+        GameTimerTask task = new GameTimerTask(roomId);
+        GameRoom room = roomService.getGameRoom(roomId);
+        GuessGameInfo gameInfo = new GuessGameInfo();
+        gameInfo.setCreatorId(room.getOwnerId());
+        gameInfo.setCreatorName(session.getName());
+        gameInfo.setInfos(new HashMap<Integer, GuessGame.GameRound>());
+        if (guessGameInfoDao.insertGuessGameInfo(gameInfo)) {
+            game.setGameObjId(gameInfo.getId());
+            task.setGuessGameInfo(gameInfo);
+            game.getTimer().scheduleAtFixedRate(task, 0, PERIOD_TIME);
+            return true;
+        }else {
+            return false;
+        }
     }
 
     private Guess filterAnswer(Guess guess, String answer) {

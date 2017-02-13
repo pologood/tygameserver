@@ -21,6 +21,8 @@ public class GuessGame {
     private GuessGameState state;
     private int round;
 
+
+
     @Transient
     private java.util.Timer timer;
 
@@ -29,6 +31,10 @@ public class GuessGame {
         this.operations = new HashMap<Long, List<RULE>>();
         this.scores = new HashMap<Long, Integer>();
         this.timer = new Timer();
+    }
+
+    public void setTimer(Timer timer) {
+        this.timer = timer;
     }
 
     public long getRoomId() {

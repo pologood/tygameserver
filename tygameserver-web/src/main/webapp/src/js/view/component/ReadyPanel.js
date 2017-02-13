@@ -41,6 +41,7 @@ puremvc.define({
 			drawsomething.view.event.AppEvents.dispatchEvent(this.container,event);
 		},
 		initRoom:function(data){
+			this.$container.find(".playerList").empty();
 			var members=data.info.members;
 			for(var i=0;i<members.length;i++){
 				var p=new drawsomething.view.component.PlayerItem();
