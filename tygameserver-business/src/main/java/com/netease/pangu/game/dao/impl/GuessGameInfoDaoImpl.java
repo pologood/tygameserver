@@ -30,10 +30,9 @@ public class GuessGameInfoDaoImpl extends AbstractMongoDao<GuessGameInfo> {
 
     public boolean saveGuessGameInfo(GuessGameInfo game) {
         try {
-            this.save(game);
+           return this.save(game);
         } catch (Exception e) {
             return false;
         }
-        return true;
     }
 }

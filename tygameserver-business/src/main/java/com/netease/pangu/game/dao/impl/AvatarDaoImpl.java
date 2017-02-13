@@ -32,15 +32,6 @@ public class AvatarDaoImpl extends AbstractMongoDao<Avatar> implements AvatarDao
         return this.find(query, Avatar.class);
     }
 
-    public boolean insertAvatar(Avatar avatar) {
-        try {
-            this.insert(avatar);
-        } catch (Exception e) {
-            return false;
-        }
-        return true;
-    }
-
     @Override
     public boolean removeAvatar(Avatar avatar) {
         WriteResult result = this.remove(avatar);

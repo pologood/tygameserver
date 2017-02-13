@@ -16,7 +16,7 @@ public class AvatarService extends AbstractAvatarService<Avatar> {
     protected Avatar put(long avatarId, Avatar avatar) {
         Avatar p = avatarDao.getAvatarByAvatarId(avatarId);
         if (p == null) {
-            if (avatarDao.insertAvatar(avatar)) {
+            if (avatarDao.insert(avatar)) {
                 p = avatarDao.getAvatarByAvatarId(avatarId);
             }
         }
@@ -42,7 +42,7 @@ public class AvatarService extends AbstractAvatarService<Avatar> {
     }
 
     public boolean insert(Avatar avatar) {
-        return avatarDao.insertAvatar(avatar);
+        return avatarDao.insert(avatar);
     }
 
     public boolean save(Avatar avatar) {

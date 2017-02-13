@@ -66,6 +66,13 @@ public class RoomService {
         return true;
     }
 
+    public  Map<Long, AvatarSession<Avatar>> getMembers(long roomId){
+        GameRoom room = getGameRoom(roomId);
+        Set<Long> avatarIds = room.getSessionIds();
+        return avatarSessionService.getAvatarSessions(avatarIds);
+    }
+
+
     /**
      * @param gameId
      * @param avatarId
