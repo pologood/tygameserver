@@ -30,7 +30,7 @@ puremvc.define({
         },
         startTimer:function(){
             var _this=this;
-            var fps=10;
+            var fps= 10;
             function timer(){
                 _this.sendPos();
                 // _this.drawPos();

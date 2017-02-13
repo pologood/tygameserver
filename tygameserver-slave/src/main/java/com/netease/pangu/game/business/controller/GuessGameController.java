@@ -94,12 +94,8 @@ public class GuessGameController {
         guess.setAvatarName(ctx.getSession().getName());
         guess.setTime(System.currentTimeMillis());
         if (guessGameService.getGuessGameState(roomId) == GuessGameState.ROUND_GAMING) {
-            if(guessGameService.containsRule(GuessGame.RULE.GUESSED, roomId, avatarId) || guessGameService.containsRule(GuessGame.RULE.FIRST_GUESSED, roomId, avatarId)) {
-                guessGameService.answer(roomId, ctx.getSession(), guess);
-                return ReturnUtils.succ();
-            }else{
-                return ReturnUtils.failed();
-            }
+            guessGameService.answer(roomId, ctx.getSession(), guess);
+            return ReturnUtils.succ();
         }else {
             return ReturnUtils.failed("not in gaming");
         }
