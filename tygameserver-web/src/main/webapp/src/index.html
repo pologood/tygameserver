@@ -256,12 +256,13 @@
                     <img src="" width="440" height="240">
                 </div>
                 <div class="btns">
-                    <a href="javascripr:;" class="caiBtn f-fl"></a>
-                    <a href="javascripr:;" class="zanBtn f-fr"></a>
+                    <a href="javascripr:;" class="caiBtn f-fl">(0)</a>
+                    <a href="javascripr:;" class="zanBtn f-fr">(0)</a>
                 </div>
             </div>
             <div class="roundCountDown">
-                60秒
+                <span>倒计时</span>
+                <span class="num">60</span>
             </div>
         </div>
     </div>
@@ -278,7 +279,7 @@
     </script>
     <script id="playerItems-template" type="text/x-handlebars-template">
         <div class="item f-fl">
-            <span class="name">{{name}}<span class="score f-fr">10分</span></span>
+            <span class="name">{{name}}<span class="score f-fr">{{totalScore}}分</span></span>
             <div class="head">
                 <img src="img/ready/head.png" width="72" height="72">
                 <span class="head_border"></span>
@@ -303,7 +304,11 @@
             </span>
             <span class="name">{{name}}</span>
             <span class="score">
-                <span class="num">14分</span>
+                {{#if localScore}}
+                <span class="num">{{localScore}}分</span>
+                {{else}}
+                <span class="num">0分</span>
+                {{/if}}
                 <span class="icon"></span>
             </span>
             <div class="current"></div>

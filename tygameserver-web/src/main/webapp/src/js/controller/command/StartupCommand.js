@@ -7,7 +7,6 @@ puremvc.define({
 			this.addSubCommand(drawsomething.controller.command.PrepControllerCommand);
 			this.addSubCommand(drawsomething.controller.command.PrepModelCommand);
 			this.addSubCommand(drawsomething.controller.command.PrepViewCommand);
-			
 		}
 	}
 )

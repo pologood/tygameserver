@@ -47,7 +47,6 @@ puremvc.define({
         }
 
         $(document).bind('keypress',function(event){
-            console.log(event.keyCode)
             if(event.keyCode == "119"){
                 //W
                 if(_this.selectedColor<10){
@@ -64,9 +63,10 @@ puremvc.define({
 
             }else if(event.keyCode=="97"){
                 //A
-
+                _this.$lineSet.find(".subtractBtn").click();
             }else if(event.keyCode=="100"){
                 //D
+                _this.$lineSet.find(".plusBtn").click();
             }
         })
         
@@ -94,7 +94,6 @@ puremvc.define({
     receivePos:function(info){
         this.receivePosArray=info.list;
         this.drawPos();
-        console.log("receive"+info.list.length)
     },
     drawPos:function(){
         if(this.isDrawer) return;
@@ -106,6 +105,7 @@ puremvc.define({
     initLineSet:function(){
         var _this=this;
         var _move=false;
+        var posX=0;
         var $circle=this.$lineSet.find(".circle");
         $circle.mousedown(function(){
             _move=true;
@@ -113,15 +113,27 @@ puremvc.define({
 
         $(document).mousemove(function(e){  
             if(_move){  
-                var posX=e.pageX-_this.$lineSet.find(".slidebar").offset().left
-                posX=posX>110?110:posX;
-                posX=posX<0?0:posX;
-                _this.selectedBrush = 2+_this.MAX_BRUSH*posX/110;
-                $circle.css({left:posX});
+                posX=e.pageX-_this.$lineSet.find(".slidebar").offset().left;
+                setLine(posX);
             }
         }).mouseup(function(){  
             _move=false; 
         });
+        this.$lineSet.find(".subtractBtn").click(function(){
+            posX-=10;
+            setLine(posX);
+        })
+        this.$lineSet.find(".plusBtn").click(function(){
+            posX+=10;
+            setLine(posX);
+        })
+
+        function setLine(posX){
+            posX=posX>110?110:posX;
+            posX=posX<0?0:posX;
+            _this.selectedBrush = 2+_this.MAX_BRUSH*posX/110;
+            $circle.css({left:posX});
+        }
 
     },
 	addEventListener:function(type,listener,useCapture){
@@ -253,7 +265,7 @@ puremvc.define({
         }
         this.stage.clear();
         this.drawingCanvas.cache(0,0,900,600);
-        this.startCountdown();
+        // this.startCountdown();
     },
     getMember:function(members,avatarId){
         for(var i=0;i<members.length;i++){
@@ -276,6 +288,22 @@ puremvc.define({
             msg='<p><span class="u-name">'+answerInfo.avatarName+'：</span>'+answerInfo.answer+'</p>';
         }        
         this.$container.find(".chatBox").find(".content").append(msg);
+    },
+    receiveScores:function(data){
+        var members=data.members;
+        var scores=data.scores;
+        for(var i in scores){
+            var avatarId=i;
+            this.getMember(members,avatarId).localScore=scores[i];
+        }
+        var source=$("#drawingPlayerItem-template").html();
+        var template = Handlebars.compile(source); 
+        var html    = template({rolesList:members});
+        this.$container.find(".members").html(html);
+    },
+    receiveLikeInfo:function(info){
+        this.$endPop.find(".zanBtn").html("("+info.like+")");
+        this.$endPop.find(".caiBtn").html("("+info.unlike+")");
     },
     receiveHint:function(hintInfo){
         if(hintInfo.type==1){
@@ -301,6 +329,9 @@ puremvc.define({
             }
         }
         count();
+    },
+    updateCountDown:function(left){
+        this.$container.find(".roundCountDown").find(".num").html(left);
     },
     startCountdown:function(){
         this.countDown=60;

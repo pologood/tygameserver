@@ -12,7 +12,9 @@ puremvc.define({
                 drawsomething.AppConstants.RECEIVE_MSG,
                 drawsomething.AppConstants.RECEIVE_HINT,
                 drawsomething.AppConstants.ROUND_OVER,
-                drawsomething.AppConstants.COUNTDOWN
+                drawsomething.AppConstants.COUNTDOWN,
+                drawsomething.AppConstants.RECEIVE_SCORES,
+                drawsomething.AppConstants.RECEIVE_LIKE_INFO,
             ];
         },
         
@@ -33,7 +35,6 @@ puremvc.define({
             var fps=10;
             function timer(){
                 _this.sendPos();
-                // _this.drawPos();
                 setTimeout(function(){
                     // requestAnimationFrame(timer);
                     timer();
@@ -63,6 +64,7 @@ puremvc.define({
                 case drawsomething.view.event.AppEvents.SEND_POS:
                     // this.sendNotification(drawsomething.AppConstants.DRAWING,event.msg);
                 break;
+
              }
             
         },
@@ -73,12 +75,6 @@ puremvc.define({
                 this.sendNotification(drawsomething.AppConstants.DRAWING,{list:copyArr});
                 
             }   
-        },
-        drawPos:function(){
-            if(!this.viewComponent.isDrawer){
-                this.viewComponent.drawPos();
-            }
-            
         },
         // Handle notifications from other PureMVC actors
         handleNotification: function( note ) {
@@ -104,7 +100,13 @@ puremvc.define({
                     this.viewComponent.roundOver(note.getBody());
                 break;
                 case drawsomething.AppConstants.COUNTDOWN:
-                    // this.viewComponent.
+                    this.viewComponent.updateCountDown(note.getBody());
+                break;
+                case drawsomething.AppConstants.RECEIVE_SCORES:
+                    this.viewComponent.receiveScores(note.getBody())
+                break;
+                case drawsomething.AppConstants.RECEIVE_LIKE_INFO:
+                    this.viewComponent.receiveLikeInfo(note.getBody());
                 break;
             }
         },

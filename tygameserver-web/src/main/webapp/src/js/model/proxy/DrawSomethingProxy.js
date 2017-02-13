@@ -28,6 +28,8 @@ puremvc.define({
 		answerInfo:null,//答案
 		gameState:0,
 		selfName:'',
+		likeCount:0,
+		unlikeCount:0,
 		host:'http://littlegame.tianyu.163.com:8090',
 		onRegister:function(){
 			this.getLoginStatus();
@@ -186,15 +188,6 @@ puremvc.define({
 	                    
 	                }
 
-	                // if(data.rpcMethod.toLowerCase() == "/room/broadcast/startgame"){
-	                //     self.painterId = data.content.payload.avatarId;
-	                //     self.gameState = data.content.payload.gameState;
-	                //     self.router.push('draw');
-	                //     if(self.border){
-	                //         self.border.replay();
-	                //     }
-	                // }
-
 	                if(data.rpcMethod.toLowerCase() == "/room/broadcast/drawgame"){
 	                    var info=data.content.payload;
 	                    _this.sendNotification(drawsomething.AppConstants.DRAWING_HANDLE,info);
@@ -213,6 +206,13 @@ puremvc.define({
 	                    answer.isCorrect=data.content.payload.isCorrect;
 	                    _this.answerList.push(answer);
 	                    _this.sendNotification(drawsomething.AppConstants.RECEIVE_MSG,answer);
+	                    if(data.content.payload.info&&data.content.payload.info.scores){
+	                    	_this.sendNotification(drawsomething.AppConstants.RECEIVE_SCORES,{
+	                    		scores:data.content.payload.info.scores,
+	                    		members:_this.roominfo.members
+	                    	});
+	                    }
+	                    
 	                }
 
 	                //提示1
@@ -228,13 +228,21 @@ puremvc.define({
 
 	                if(data.rpcMethod.toLowerCase()=="/room/broadcast/guess/countdown"){
 	                	var left=data.content.payload;
-	                	_this.sendNotification(drawsomething.AppConstants.COUNTDOWN,{left:left});
+	                	_this.sendNotification(drawsomething.AppConstants.COUNTDOWN,left);
 	                }
 
 	                //一轮结束
 	                if(data.rpcMethod.toLowerCase()=="/room/broadcast/guess/roundover"){
 	                	var roundInfo=data.content.payload;	   
 	                	_this.sendNotification(drawsomething.AppConstants.ROUND_OVER,roundInfo);
+	                }
+
+	                if(data.rpcMethod.toLowerCase()=="/room/broadcast/guess/like"){
+	                	_this.sendNotification(drawsomething.AppConstants.RECEIVE_LIKE_INFO,{like:_this.like,unlike:_this.unlike});
+	                }
+
+	                if(data.rpcMethod.toLowerCase()=="/room/broadcast/guess/unlike"){
+	                	_this.sendNotification(drawsomething.AppConstants.RECEIVE_LIKE_INFO,{like:_this.like,unlike:_this.unlike});
 	                }
 	                
 	                if(data.rpcMethod.toLowerCase()=="/room/broadcast/guess/running"){
@@ -243,6 +251,12 @@ puremvc.define({
 	                	_this.sendNotification(drawsomething.AppConstants.GAME_STARTING,{
 	                		gameInfo:_this.gameInfo,avatarId:_this.avatarId,roominfo:_this.roominfo
 	                	})
+	                	_this.like=0;
+	                	_this.unlike=0;
+	                }
+	                //大轮游戏结束
+	                if(data.rpcMethod.toLowerCase()=="/room/broadcast/guess/gameover"){
+
 	                }
 	                
 	                if(data.rpcMethod.toLowerCase() == "/room/broadcast/correct"){

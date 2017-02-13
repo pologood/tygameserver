@@ -26,10 +26,13 @@ puremvc.define({name:'drawsomething.AppConstants'},{},{
 	ANSWER_INFO:'answer_info',
 	SEND_MSG:'send_msg',//回答问题
 	RECEIVE_MSG:'receive_msg',
+	RECEIVE_SCORES:'receive_scores',
 	RECEIVE_HINT:'receive_hint',//接收提示
 	ROUND_OVER:'round_over',//一局结束
 	SEND_LIKE:'send_like',//点赞
 	SEND_UNLIKE:'send_unlike',//踩
 	COUNTDOWN:'countDown',//倒计时
+	RECEIVE_LIKE_INFO:'receive_like_info',
+
 
 })
