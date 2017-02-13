@@ -157,9 +157,10 @@ puremvc.define({
     dispatchDelete:function(){
         this.stage.clear();
         this.drawingCanvas.cache(0,0,900,600);
-        var e = this.createEvent( drawsomething.view.event.AppEvents.DELETE);
-        e.msg={type:2,drawInfo:null};
-        this.dispatchEvent(e);
+        // var e = this.createEvent( drawsomething.view.event.AppEvents.DELETE);
+        // e.msg={type:2,drawInfo:null};
+        // this.dispatchEvent(e);
+        this.sendPosArray.push({type:2,drawInfo:null});
     },
 	handleMouseDown:function(_this){
 		_this.oldPt = new createjs.Point(_this.stage.mouseX, _this.stage.mouseY);
@@ -317,6 +318,7 @@ puremvc.define({
         this.$endPop.find("img").attr("src",dataUrl);
         var _this=this;
         this.$endPop.show();
+        this.$container.find(".mask").show();
         this.$endPop.find(".title").html("答案："+roundInfo.answer);
         var countDown=6;
         function count(){            
@@ -326,6 +328,7 @@ puremvc.define({
                 setTimeout(count,1000);
             }else{
                 _this.$endPop.hide();
+                _this.$container.find(".mask").hide();
             }
         }
         count();

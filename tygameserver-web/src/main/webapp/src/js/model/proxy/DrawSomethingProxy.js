@@ -238,11 +238,11 @@ puremvc.define({
 	                }
 
 	                if(data.rpcMethod.toLowerCase()=="/room/broadcast/guess/like"){
-	                	_this.sendNotification(drawsomething.AppConstants.RECEIVE_LIKE_INFO,{like:_this.like,unlike:_this.unlike});
+	                	_this.sendNotification(drawsomething.AppConstants.RECEIVE_LIKE_INFO,{like:_this.likeCount,unlike:_this.unlikeCount});
 	                }
 
 	                if(data.rpcMethod.toLowerCase()=="/room/broadcast/guess/unlike"){
-	                	_this.sendNotification(drawsomething.AppConstants.RECEIVE_LIKE_INFO,{like:_this.like,unlike:_this.unlike});
+	                	_this.sendNotification(drawsomething.AppConstants.RECEIVE_LIKE_INFO,{like:_this.likeCount,unlike:_this.unlikeCount});
 	                }
 	                
 	                if(data.rpcMethod.toLowerCase()=="/room/broadcast/guess/running"){

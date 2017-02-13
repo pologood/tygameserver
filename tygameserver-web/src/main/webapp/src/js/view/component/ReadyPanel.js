@@ -2,6 +2,7 @@ puremvc.define({
 		name:'drawsomething.view.component.ReadyPanel',
 		constructor:function(event){
 			var _this=this;
+			this.kickPlayerId;
 			this.container=document.querySelector( '#readyPanel');
 			this.$container=$('#readyPanel');
 			this.$container.find(".startBtn").click(function(){
@@ -12,13 +13,21 @@ puremvc.define({
 					_this.setReady();
 				}else if($(e.target).hasClass("closeBtn")){
 					var avatarId=$(e.target).attr("data-avatarId");
-					_this.kickPlayer(avatarId);
+					_this.kickPlayerId=avatarId;
+					_this.$confirmPop.show();
 				}
 			})
 			this.$container.bind("countDown",function(){
 				_this.setReady();
 			})
 			this.items=[];
+			this.$confirmPop=this.$container.find(".confirmPop");
+			this.$confirmPop.find(".cancelBtn").click(function(){
+				_this.$confirmPop.hide();
+			})
+			this.$confirmPop.find(".confirmBtn").click(function(){
+				_this.kickPlayer(_this.kickPlayerId);
+			})
 		}
 	},
 	{
