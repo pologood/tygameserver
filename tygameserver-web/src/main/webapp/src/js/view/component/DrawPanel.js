@@ -87,7 +87,6 @@ puremvc.define({
         // scroll.getName();
         this.sendPosArray=[];
         this.receivePosArray=[];
-
 	}
 },
 {

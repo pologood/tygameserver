@@ -238,10 +238,18 @@ puremvc.define({
 	                }
 
 	                if(data.rpcMethod.toLowerCase()=="/room/broadcast/guess/like"){
+	                	console.log(data.content.payload)
+	                	_this.likeCount++;
 	                	_this.sendNotification(drawsomething.AppConstants.RECEIVE_LIKE_INFO,{like:_this.likeCount,unlike:_this.unlikeCount});
+	                	_this.sendNotification(drawsomething.AppConstants.RECEIVE_SCORES,{
+                    		scores:data.content.payload.scores,
+                    		members:_this.roominfo.members
+                    	});
 	                }
 
 	                if(data.rpcMethod.toLowerCase()=="/room/broadcast/guess/unlike"){
+	                	console.log(data.content.payload)
+	                	_this.unlikeCount++;
 	                	_this.sendNotification(drawsomething.AppConstants.RECEIVE_LIKE_INFO,{like:_this.likeCount,unlike:_this.unlikeCount});
 	                }
 	                
@@ -251,8 +259,8 @@ puremvc.define({
 	                	_this.sendNotification(drawsomething.AppConstants.GAME_STARTING,{
 	                		gameInfo:_this.gameInfo,avatarId:_this.avatarId,roominfo:_this.roominfo
 	                	})
-	                	_this.like=0;
-	                	_this.unlike=0;
+	                	_this.likeCount=0;
+	                	_this.unlikeCount=0;
 	                }
 	                //大轮游戏结束
 	                if(data.rpcMethod.toLowerCase()=="/room/broadcast/guess/gameover"){
