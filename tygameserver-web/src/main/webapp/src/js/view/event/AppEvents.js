@@ -21,6 +21,7 @@ puremvc.define(
 		DELETE:'delete',
 		LIKE:'like',
 		UNLIKE:'unlike',
+		SEND_POS:'send_pos',
 		createEvent:function(eventName){
 			var event;
 			if(document.createEvent){

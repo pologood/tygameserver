@@ -96,26 +96,21 @@ puremvc.define({
 			}
 
 			this.socket.onmessage=function(event){
-				console.log("Client received a message",event.data);
+				// console.log("Client received a message",event.data);
 				data=JSON.parse(event.data);
 
 				if(data.content.code==1){
 					if(data.rpcMethod.toLowerCase() == "/room/create"){
-	                    console.log(data.content.payload);
-	                    _this.roomId=data.content.payload;	
-	                    // _this.sendNotification(drawsomething.AppConstants.CONNECT_SUCCESS,{});			
+	                    _this.roomId=data.content.payload;			
 	                }
 
 	                if(data.rpcMethod.toLowerCase() == "/room/join"){
-	                    console.log(data.content.payload);
-	                    // _this.roomId=data.content.payload;
 	                    _this.roominfo=data.content.payload;
 	                    _this.sendNotification(drawsomething.AppConstants.BROADCAST_ROOMINFO,{info:data.content.payload,roominfo:_this.roominfo,avatarId:_this.avatarId});
 	                }
 
 	                if(data.rpcMethod.toLowerCase() == "/room/info"){
-	                    console.log(data.content.payload);					
-	                    // self.members = data.content.payload.members;
+
 	                }
 
 	                if(data.rpcMethod.toLowerCase() == "/room/broadcast/info"){
@@ -124,7 +119,6 @@ puremvc.define({
 	                    _this.members = data.content.payload.members;
 	                    _this.roominfo=data.content.payload;
 	                    _this.sendNotification(drawsomething.AppConstants.BROADCAST_ROOMINFO,{info:data.content.payload,roominfo:_this.roominfo,avatarId:_this.avatarId});
-	                    // _this.selfName = getName(_this.avatarId);
 	                }
 
 	                if(data.rpcMethod.toLowerCase() == "/room/broadcast/join"){
@@ -199,7 +193,6 @@ puremvc.define({
 	                //     if(self.border){
 	                //         self.border.replay();
 	                //     }
-	                    
 	                // }
 
 	                if(data.rpcMethod.toLowerCase() == "/room/broadcast/drawgame"){
@@ -231,6 +224,11 @@ puremvc.define({
 	                //提示2
 	                if(data.rpcMethod.toLowerCase()=="/room/broadcast/guess/hint2"){
 	                	_this.sendNotification(drawsomething.AppConstants.RECEIVE_HINT,{type:2,hint:data.content.message});
+	                }
+
+	                if(data.rpcMethod.toLowerCase()=="/room/broadcast/guess/countdown"){
+	                	var left=data.content.payload;
+	                	_this.sendNotification(drawsomething.AppConstants.COUNTDOWN,{left:left});
 	                }
 
 	                //一轮结束

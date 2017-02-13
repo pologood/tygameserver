@@ -30,4 +30,6 @@ puremvc.define({name:'drawsomething.AppConstants'},{},{
 	ROUND_OVER:'round_over',//一局结束
 	SEND_LIKE:'send_like',//点赞
 	SEND_UNLIKE:'send_unlike',//踩
+	COUNTDOWN:'countDown',//倒计时
+
 })

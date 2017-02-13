@@ -3,7 +3,8 @@ puremvc.define({
 	constructor:function(event){
 		var _this=this;
         this.type=1;//1画笔，2橡皮
-		this.selectedColor=3;
+		this.selectedColor=10;
+        this.MAX_BRUSH=30;
         this.selectedBrush=1;
         this.colors=['','#ffffff','#322322','#bf5ebc','#6649b0','#3f71ae','#32c9e3','#9bea57','#eaca57','#e89054','#e85454'];
         this.brushes=[,2,5,10,20,30];
@@ -22,9 +23,7 @@ puremvc.define({
         this.el=$("#drawPanel");
         this.el.find(".colorcard").find(".circle").click(function(){
             var index=$(this).parent().index();
-            _this.el.find(".cursor").removeClass("cursor-1 cursor-2 cursor-3 cursor-4 cursor-5 cursor-6 cursor-7 cursor-8 cursor-9 cursor-10");
-            _this.el.find(".cursor").addClass("cursor-"+index);
-            _this.selectedColor=index;
+            setColor(index);
         })
         this.$container.find(".eraser").click(function(){
             _this.type=2;
@@ -36,15 +35,47 @@ puremvc.define({
             _this.dispatchMsg();
         })
         this.$container.find('.msgIpt').bind('keypress',function(event){  
-            if(event.keyCode == "13")
-            {  
+            if(event.keyCode == "13"){  
                 _this.dispatchMsg();
             }  
         });
+
+        function setColor(index){
+            _this.el.find(".cursor").removeClass("cursor-1 cursor-2 cursor-3 cursor-4 cursor-5 cursor-6 cursor-7 cursor-8 cursor-9 cursor-10");
+            _this.el.find(".cursor").addClass("cursor-"+index);
+            _this.selectedColor=index;
+        }
+
+        $(document).bind('keypress',function(event){
+            console.log(event.keyCode)
+            if(event.keyCode == "119"){
+                //W
+                if(_this.selectedColor<10){
+                    _this.selectedColor++;
+                    setColor(_this.selectedColor);
+                }                
+
+            }else if(event.keyCode=="115"){
+                //S
+                if(_this.selectedColor>1){
+                    _this.selectedColor--;
+                    setColor(_this.selectedColor);
+                }
+
+            }else if(event.keyCode=="97"){
+                //A
+
+            }else if(event.keyCode=="100"){
+                //D
+            }
+        })
         
         this.isDrawer=false;
         this.countDown=60;
         this.$lineSet=this.$container.find(".lineSet");
+        
+        this.initLineSet();         
+
         this.$endPop=this.$container.find(".endPop");
         this.$endPop.find(".zanBtn").click(function(){
             _this.sendLike();
@@ -52,12 +83,47 @@ puremvc.define({
         this.$endPop.find(".caiBtn").click(function(){
             _this.sendUnlike();
         })
-        var scroll=new drawsomething.view.component.Scroll("nihao");
-        scroll.getName();
+        // var scroll=new drawsomething.view.component.Scroll("nihao");
+        // scroll.getName();
+        this.sendPosArray=[];
+        this.receivePosArray=[];
 
 	}
 },
 {
+    receivePos:function(info){
+        this.receivePosArray=info.list;
+        this.drawPos();
+        console.log("receive"+info.list.length)
+    },
+    drawPos:function(){
+        if(this.isDrawer) return;
+        for(var i=0;i<this.receivePosArray.length;i++){
+            this.drawingHandle(this.receivePosArray[i]);
+        }
+        this.receivePosArray=[];
+    },
+    initLineSet:function(){
+        var _this=this;
+        var _move=false;
+        var $circle=this.$lineSet.find(".circle");
+        $circle.mousedown(function(){
+            _move=true;
+        })
+
+        $(document).mousemove(function(e){  
+            if(_move){  
+                var posX=e.pageX-_this.$lineSet.find(".slidebar").offset().left
+                posX=posX>110?110:posX;
+                posX=posX<0?0:posX;
+                _this.selectedBrush = 2+_this.MAX_BRUSH*posX/110;
+                $circle.css({left:posX});
+            }
+        }).mouseup(function(){  
+            _move=false; 
+        });
+
+    },
 	addEventListener:function(type,listener,useCapture){
 		drawsomething.view.event.AppEvents.addEventListener(this.container,type,listener,useCapture);
 	},
@@ -108,7 +174,7 @@ puremvc.define({
 
         var midPoint = new createjs.Point(_this.oldPt.x + _this.stage.mouseX >> 1, _this.oldPt.y + _this.stage.mouseY >> 1);
         var color = _this.colors[_this.selectedColor];
-        var brush = _this.brushes[_this.selectedBrush];
+        var brush = _this.selectedBrush;
         _this.drawingCanvas.graphics.setStrokeStyle(brush, "round", "round")
                 .beginStroke(color)
                 .moveTo(midPoint.x, midPoint.y)
@@ -133,8 +199,8 @@ puremvc.define({
         _this.oldMidPt.x = midPoint.x;
         _this.oldMidPt.y = midPoint.y;
         _this.stage.update();
-
-        _this.dispatchDrawing({type:1,drawInfo:drawInfo});
+        _this.sendPosArray.push({type:1,drawInfo:drawInfo});
+        // _this.dispatchDrawing({type:1,drawInfo:drawInfo});
 	},
     drawingHandle:function(data){
         if(this.isDrawer){
