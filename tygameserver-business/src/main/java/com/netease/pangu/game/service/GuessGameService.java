@@ -34,10 +34,10 @@ public class GuessGameService {
     private final List<GuessQuestion> questions = new ArrayList<GuessQuestion>();
 
     public final static long gameId = 1;
-    private final static int TOTOAL_ROUND = 8;
+    private final static int TOTOAL_ROUND = 3;
     private final static int ROUND_INTERVAL_TIME = 5000;
     private final static int ROUNG_GAME_TIME = 60000;
-    private final static int PERIOD_TIME = 10;
+    private final static int PERIOD_TIME = 5;
     private final static Map<GuessGame.RULE, Integer> RULE_SCORE;
     private final Timer checkTimer = new Timer();
     private final TimerTask checkGameStateTask = new TimerTask() {
@@ -98,7 +98,7 @@ public class GuessGameService {
 
 
     public static boolean isNearEqual(long t1, long t2){
-        return t1 >= t2 && t1 < t2 + PERIOD_TIME;
+        return t1 >= t2 - PERIOD_TIME && t1 < t2 + PERIOD_TIME;
     }
 
     public class GameTimerTask extends TimerTask {
@@ -275,7 +275,7 @@ public class GuessGameService {
                 } else {
                     Map<String, Object> ret = new HashMap<String, Object>();
                     ret.put("fAnswer", filterAnswer(guess, game.getQuestion().getAnswer()));
-                    if (isCorrectAnswer(game, guess)) {
+                    if (isCorrectAnswer(game, guess) && !hasGuessed(roomId, avatarSession.getAvatarId())) {
                         if (!game.isFirstGuessed()) {
                             addScore(GuessGame.RULE.FIRST_GUESSED, game, avatarSession.getAvatarId());
                             game.setFirstGuessed(true);
@@ -377,12 +377,14 @@ public class GuessGameService {
             List<GuessGame.RULE> ruleList = operations.get(avatarId);
             if (CollectionUtils.isNotEmpty(ruleList)) {
                 return ruleList.contains(rule);
-            } else {
-                return true;
             }
-        } else {
-            return false;
         }
+        return false;
+
+    }
+
+    public boolean hasGuessed(long roomId, long avatarId){
+        return containsRule(GuessGame.RULE.FIRST_GUESSED, roomId, avatarId) || containsRule(GuessGame.RULE.GUESSED, roomId, avatarId);
     }
 
     public boolean isDrawer(long roomId, long avatarId) {
