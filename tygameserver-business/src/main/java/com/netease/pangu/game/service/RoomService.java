@@ -115,17 +115,26 @@ public class RoomService {
     }
 
     public void setRoomState(long roomId, RoomStatus status, AvatarStatus avatarStatus, AvatarStatus ownerStatus) {
-        GameRoom room = getGameRoom(roomId);
-        Set<Long> sessionIds = room.getSessionIds();
-        Map<Long, AvatarSession<Avatar>> sessionMap = avatarSessionService.getAvatarSessions(sessionIds);
-        for (AvatarSession<Avatar> session : sessionMap.values()) {
-            if(session.getAvatarId() == room.getOwnerId()){
-                session.setAvatarStatus(ownerStatus);
-            }else {
-                session.setAvatarStatus(avatarStatus);
+        final GameRoom room = getGameRoom(roomId);
+        synchronized (room) {
+            Set<Long> sessionIds = room.getSessionIds();
+            Map<Long, AvatarSession<Avatar>> sessionMap = avatarSessionService.getAvatarSessions(sessionIds);
+            for (AvatarSession<Avatar> session : sessionMap.values()) {
+                avatarSessionService.updateAvatarSession(session.getAvatarId(), new SessionCallable<Void, Avatar>() {
+                    @Override
+                    public Void call(AvatarSession<Avatar> playerSession) {
+                        if (playerSession.getAvatarId() == room.getOwnerId()) {
+                            playerSession.setAvatarStatus(ownerStatus);
+                        } else {
+                            playerSession.setAvatarStatus(avatarStatus);
+                        }
+                        return null;
+                    };
+                });
+
             }
+            room.setStatus(status);
         }
-        room.setStatus(status);
     }
 
     /**
