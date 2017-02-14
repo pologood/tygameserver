@@ -204,8 +204,6 @@ public class RoomService {
                     }
                     playerSession.setRoomId(0L);
                     playerSession.setAvatarStatus(AvatarStatus.IDLE);
-                    playerSession.getChannel().flush();
-                    playerSession.getChannel().close();
                     broadcast(RoomBroadcastApi.ROOM_EXIT, room.getId(), ReturnUtils.succ(ret));
                     return true;
                 }
