@@ -26,7 +26,9 @@ public class AvatarSessionService extends AbstractAvatarSessionService<Avatar> {
                     if (room != null && room.getSessionIds().size() == 0) {
                         guessGameService.stopGame(room.getId());
                     }
-                    roomService.broadcast(RoomBroadcastApi.ROOM_EXIT, room.getId(), ReturnUtils.succ(playerSession.getAvatarId()));
+                    if(result.getCode() == ReturnUtils.FAILED) {
+                        roomService.broadcast(RoomBroadcastApi.ROOM_REMOVE, room.getId(), ReturnUtils.succ(playerSession.getAvatarId()));
+                    }
                 }
                 return null;
             }
