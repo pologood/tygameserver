@@ -189,9 +189,13 @@ public class RoomService {
                     GameRoom room = getGameRoom(playerSession.getRoomId());
                     room.getSessionIds().remove(avatarId);
                     roomAllocationService.deleteRoomByAvatarId(room.getGameId(), avatarId);
+                    Map<String, Object> ret = new HashMap<String, Object>();
+                    ret.put("exit", avatarId);
                     if (room.getSessionIds().size() > 0) {
                         if (room.getOwnerId() == avatarId) {
-                            room.setOwnerId(room.getSessionIds().toArray(new Long[0])[0]);
+                            long owner = room.getSessionIds().toArray(new Long[0])[0];
+                            room.setOwnerId(owner);
+                            ret.put("owner", owner);
                         }
                     } else {
                         room.setOwnerId(0L);
@@ -200,6 +204,7 @@ public class RoomService {
                     }
                     playerSession.setRoomId(0L);
                     playerSession.setAvatarStatus(AvatarStatus.IDLE);
+                    broadcast(RoomBroadcastApi.ROOM_EXIT, playerSession.getRoomId(), ReturnUtils.succ(ret));
                     return true;
                 }
                 return false;
