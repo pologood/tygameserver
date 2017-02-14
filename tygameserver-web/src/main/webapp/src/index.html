@@ -121,67 +121,6 @@
             </div>
         </div>
         <div id="drawPanel" class="drawPanel">
-            <div class="book">
-                <div class="hintCnt">
-                    <span class="title">回合开始</span>
-                    <div class="info">
-                        <p>现在由<span class="u-name drawerName"></span>画图</p>
-                        <p class="hint1"></p>
-                        <p class="hint2"></p>
-                    </div>
-                    <div class="raccoon"></div>
-                </div>
-                <div class="chatBox">
-                    <div class="wrap">
-                        <div class="content">
-                            <!-- <p>
-                                <span class="u-name">小怪兽：</span>
-                                哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈
-                            </p>
-                            <p>
-                                <span class="u-name">小怪兽：</span>
-                                哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈
-                            </p>
-                            <p>
-                                <span class="u-name">小怪兽：</span>
-                                哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈
-                            </p>
-                            <p>
-                                <span class="u-name">小怪兽：</span>
-                                哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈
-                            </p>
-                            <p>
-                                <span class="u-name">小怪兽：</span>
-                                哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈
-                            </p>
-                            <p>
-                                <span class="u-name">小怪兽：</span>
-                                哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈
-                            </p>
-                            <p>
-                                <span class="u-name">小怪兽：</span>
-                                哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈
-                            </p>
-                            <p>
-                                <span class="u-name">小怪兽：</span>
-                                哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈
-                            </p>
-                            <p>
-                                <span class="u-name">小怪兽：</span>
-                                哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈
-                            </p>
-                            <p>
-                                <span class="u-name">小怪兽：</span>
-                                哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈
-                            </p> -->
-                        </div>
-                    </div>
-                </div>
-                <div class="iptCnt">
-                    <input type="text" class="msgIpt">
-                    <a href="javascript:;" class="sendBtn"></a>
-                </div>
-            </div>
             <div class="colorDisc">
                 <div class="pen">
                     <div class="selected"></div>
@@ -220,6 +159,28 @@
                 <div class="cursor cursor-10"></div>
             </div>
             <div class="circleOverlayer"></div>
+            <div class="book">
+                <div class="hintCnt">
+                    <span class="title">回合开始</span>
+                    <div class="info">
+                        <p>现在由<span class="u-name drawerName"></span>画图</p>
+                        <p class="hint1"></p>
+                        <p class="hint2"></p>
+                    </div>
+                    <div class="raccoon"></div>
+                </div>
+                <div class="chatBox">
+                    <div class="wrap">
+                        <div class="content">
+
+                        </div>
+                    </div>
+                </div>
+                <div class="iptCnt">
+                    <input type="text" class="msgIpt">
+                    <a href="javascript:;" class="sendBtn"></a>
+                </div>
+            </div>
             <canvas id="drawingBoard" width="550" height="418" class="drawingBoard"></canvas>
             <div class="tools">
                 <p class="answer answerTxt">作品：玉虚坐骑</p>
@@ -314,7 +275,8 @@
         </div>
     {{/each}}
     </script>
-    <script type="text/javascript" src="js/jquery.mousewheel.js"></script>
+    <script type="text/javascript" src="js/lib/jquery.mousewheel.js"></script>
+    <script type="text/javascript" src="js/lib/jquery.jscrollpane.min.js"></script>
     <script type="text/javascript" src="js/lib/handlebars-v4.0.5.js"></script>
     <script type="text/javascript" src="js/lib/puremvc-1.0.1.min.js"></script>
     <script type="text/javascript" src="js/view/event/AppEvents.js"></script>

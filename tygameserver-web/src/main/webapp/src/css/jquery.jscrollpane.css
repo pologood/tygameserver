@@ -21,7 +21,7 @@
     position: absolute;
     top: 0;
     right: 0;
-    width: 22px;
+    width: 24px;
     height: 100%;
 }
 
@@ -54,28 +54,28 @@
 
 .jspTrack
 {
-    background: url(http://res.nie.netease.com/tianyu/qt/16/gameinfo_0815/img/scroll.png) repeat-y -48px 0 ;
+    background: url(../img/draw/scoller_bg.jpg) repeat-y center;
     position: relative;
 }
 
 
 .jspDrag
 {
-    background: url(http://res.nie.netease.com/tianyu/qt/16/gameinfo_0815/img/scroll.png) repeat-y -61px ;
+    background: url(../img/draw/scollerBar_bg.jpg) repeat-y center;
     position: relative;
     top: 0;
     left: 0;
     cursor: pointer;  }
 .jspDragTop{
     height: 10px;
-    background:url(http://res.nie.netease.com/tianyu/qt/16/gameinfo_0815/img/scroll.png) -79px 0 no-repeat;
+    background:url(../img/draw/top.png) no-repeat top center;
 }
 .jspDragBottom{
     position: absolute;
     bottom: 0;
-    width: 22px;
+    width: 24px;
     height: 10px;
-    background:url(http://res.nie.netease.com/tianyu/qt/16/gameinfo_0815/img/scroll.png) -79px 0 no-repeat;
+    background:url(../img/draw/bottom.png) no-repeat center;
 }
 .jspHorizontalBar .jspTrack,
 .jspHorizontalBar .jspDrag
@@ -90,8 +90,8 @@
     text-indent: -20000px;
     display: block;
     cursor: pointer;
-    width: 22px;
-    height: 12px;
+    width: 24px;
+    height: 15px;
 }
 
 .jspArrow.jspDisabled
@@ -126,9 +126,9 @@
 }
 .jspArrow.jspArrowUp
 {
-    background: url(http://res.nie.netease.com/tianyu/qt/16/gameinfo_0815/img/scroll.png) -20px 0;
+    background: url(../img/draw/scoller_up.png);
 }
 .jspArrow.jspArrowDown
 {
-    background: url(http://res.nie.netease.com/tianyu/qt/16/gameinfo_0815/img/scroll.png) -20px -22px;
+    background: url(../img/draw/scoller_down.png);
 }

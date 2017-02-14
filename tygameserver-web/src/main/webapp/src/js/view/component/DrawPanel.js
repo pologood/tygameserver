@@ -32,7 +32,7 @@ puremvc.define({
             _this.dispatchDelete();
         })
         this.$container.find(".sendBtn").click(function(){
-            _this.dispatchMsg();
+            _this.dispatchMsg();          
         })
         this.$container.find('.msgIpt').bind('keypress',function(event){  
             if(event.keyCode == "13"){  
@@ -87,6 +87,9 @@ puremvc.define({
         // scroll.getName();
         this.sendPosArray=[];
         this.receivePosArray=[];
+        this.pane=$('.chatBox').jScrollPane({showArrows:true, scrollbarWidth: 15, arrowSize: 16,autoReinitialise:true,autoReinitialiseDelay:0,verticalDragMaxHeight:170});
+        this.paneApi = this.pane.data('jsp');
+        
 	}
 },
 {
@@ -279,6 +282,7 @@ puremvc.define({
         this.$container.find(".answerTxt").html("作品："+answerInfo.answer);
     },
     receiveMsg:function(answerInfo){   
+        var _this=this;
         var msg;
         if(answerInfo.isCorrect){
             msg='<p><span class="u-name">'+answerInfo.avatarName+'：</span>√</p>';
@@ -288,6 +292,9 @@ puremvc.define({
             msg='<p><span class="u-name">'+answerInfo.avatarName+'：</span>'+answerInfo.answer+'</p>';
         }        
         this.$container.find(".chatBox").find(".content").append(msg);
+        setTimeout(function(){
+            _this.paneApi.scrollToBottom();
+        },0)
     },
     receiveScores:function(data){
         var members=data.members;
@@ -362,7 +369,7 @@ puremvc.define({
         this.dispatchEvent(e);
     },
 	show:function(){
-		$("#drawPanel").show();
+		this.$container.show();
 	},
     hide:function(){
         this.$container.hide();
