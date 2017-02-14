@@ -427,8 +427,7 @@ public class GuessGameService {
         GuessGame game = gameMap.get(roomId);
         if (game != null) {
             synchronized (game) {
-                gameMap.remove(roomId);
-                game.getTimer().cancel();
+                game.setState(GuessGameState.GAME_STATS);
             }
         }
     }
