@@ -348,7 +348,6 @@ public class GuessGameService {
             synchronized (game) {
                 if (game.getState() != GuessGameState.END && !containsRule(GuessGame.RULE.EXIT, roomId, avatarSession.getAvatarId())) {
                     addScore(GuessGame.RULE.EXIT, game, avatarSession.getAvatarId());
-                    roomService.broadcast(RoomBroadcastApi.GAME_EXIT, roomId, ReturnUtils.succ(avatarSession.getAvatarId()));
                     return ReturnUtils.succ();
                 }
             }
@@ -428,8 +427,7 @@ public class GuessGameService {
         GuessGame game = gameMap.get(roomId);
         if (game != null) {
             synchronized (game) {
-                gameMap.remove(roomId);
-                game.getTimer().cancel();
+                game.setState(GuessGameState.GAME_STATS);
             }
         }
     }
