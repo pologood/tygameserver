@@ -101,7 +101,6 @@ puremvc.define({
 				}
 			}
 			this.$container.find(".confirmPop").hide();
-
 		},
 		hide:function(){
 			this.$container.hide();
