@@ -145,6 +145,7 @@ public class GuessGameService {
                             game.setNextStartTime(0);
                             game.setEndTime(current + ROUNG_GAME_TIME);
                             game.setRound(1);
+                            game.setFirstGuessed(false);
                             game.setState(GuessGameState.ROUND_GAMING);
                             game.setQuestion(generateQuestion());
                             roomService.chatTo(RoomBroadcastApi.GAME_QUESTION, roomId, Arrays.asList(game.getDrawerId()), ReturnUtils.succ(game.getQuestion()));
@@ -208,6 +209,7 @@ public class GuessGameService {
                                 roomService.setRoomState(roomId, RoomStatus.IDLE, AvatarStatus.IDLE, AvatarStatus.READY);
                                 game.getTimer().cancel();
                             }
+                            System.out.println("111");
                         }
                     }
                 }
@@ -238,13 +240,12 @@ public class GuessGameService {
             game = new GuessGame();
             game.setGameId(gameId);
             game.setRoomId(roomId);
-            game.setRound(0);
-            game.setDrawerId(0);
-            game.setState(GuessGameState.START);
             gameMap.put(roomId, game);
         }else{
             game.setTimer(new Timer());
         }
+        game.setDrawerId(0);
+        game.setState(GuessGameState.START);
         GameTimerTask task = new GameTimerTask(roomId);
         GameRoom room = roomService.getGameRoom(roomId);
         GuessGameInfo gameInfo = new GuessGameInfo();
