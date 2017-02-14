@@ -17,13 +17,13 @@ public class AuthService {
     @Resource
     private CommonRedisDao commonRedisDao;
 
-    public String generateAuthCode(String gbId, long expireTime) {
-        String authCode = DigestUtils.md5Hex(gbId + expireTime + SALT_SEGMENT);
+    public String generateToken(String uuid, long expireTime) {
+        String authCode = DigestUtils.md5Hex(uuid + expireTime + SALT_SEGMENT);
         commonRedisDao.putWithTTL(authCode, expireTime, expireTime + 10 * 60 * 1000, TimeUnit.MILLISECONDS);
         return authCode;
     }
 
-    public ReturnUtils.GameResult checkAuthCode(String authCode) {
+    public ReturnUtils.GameResult checkToken(String authCode) {
         Long expireTime = (Long) commonRedisDao.get(authCode);
         if (expireTime != null) {
             if (expireTime > System.currentTimeMillis()) {

@@ -13,11 +13,11 @@ import com.netease.pangu.game.service.AvatarService;
 import com.netease.pangu.game.service.DataCenterApiService;
 import com.netease.pangu.game.service.GuessGameService;
 import com.netease.pangu.game.service.RoomAllocationService;
-import com.netease.pangu.game.util.JSONPUtil;
-import com.netease.pangu.game.util.ReturnUtils;
-import com.netease.pangu.game.util.UrsAuthUtils;
+import com.netease.pangu.game.util.*;
 import io.netty.handler.codec.http.FullHttpRequest;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.HttpStatus;
+import org.springframework.beans.factory.annotation.Value;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
@@ -40,50 +40,66 @@ public class MasterController {
     @Resource
     private DataCenterApiService dataCenterApiService;
 
-    @HttpRequestMapping("/init")
-    public String getNode(String uuid, String roleName, String avatarImg, long gameId, long roomId, String callback) {
-        Node node = null;
-        Avatar avatar = avatarService.getAvatarByUUID(gameId, uuid);
+    @Value("${auth.url}")
+    private String authBaseUrl;
+    private final String GENERATE_URL = "/auth/generate";
 
-        if (avatar != null) {
-            avatar.setAvatarImg(avatarImg);
-            avatar.setName(roleName);
-            avatarService.save(avatar);
-            String server = avatar.getServer();
-            long roomIdInGame = roomAllocationService.getRoomByAvatarId(gameId, avatar.getAvatarId());
-            if (roomIdInGame > 0) {
-                node = nodeManager.getNode(roomAllocationService.getServerByRoomId(gameId, roomIdInGame));
-            } else if (roomId > 0) {
-                node = nodeManager.getNode(roomAllocationService.getServerByRoomId(gameId, roomId));
-            } else if (StringUtils.isNotEmpty(server)) {
-                node = nodeManager.getNode(server);
+    @HttpRequestMapping("/init")
+    public String getNode(String uuid, String roleName, String avatarImg, long gameId, long roomId, String callback, FullHttpRequest request) {
+        String urs = UrsAuthUtils.getLoginedUserName(request);
+        if (StringUtils.isNotEmpty(urs)) {
+            Node node = null;
+            Avatar avatar = avatarService.getAvatarByUUID(gameId, uuid);
+
+            if (avatar != null) {
+                avatar.setAvatarImg(avatarImg);
+                avatar.setName(roleName);
+                avatarService.save(avatar);
+                String server = avatar.getServer();
+                long roomIdInGame = roomAllocationService.getRoomByAvatarId(gameId, avatar.getAvatarId());
+                if (roomIdInGame > 0) {
+                    node = nodeManager.getNode(roomAllocationService.getServerByRoomId(gameId, roomIdInGame));
+                } else if (roomId > 0) {
+                    node = nodeManager.getNode(roomAllocationService.getServerByRoomId(gameId, roomId));
+                } else if (StringUtils.isNotEmpty(server)) {
+                    node = nodeManager.getNode(server);
+                } else {
+                    node = appWorkerScheduleService.getNodeByScheduled();
+                }
             } else {
+                avatar = new Avatar();
+                avatar.setAvatarImg(avatarImg);
+                avatar.setGameId(gameId);
+                avatar.setLastLoginTime(System.currentTimeMillis());
+                avatar.setName(roleName);
                 node = appWorkerScheduleService.getNodeByScheduled();
+                if (node != null) {
+                    avatar.setServer(node.getName());
+                    avatar.setUuid(uuid);
+                    avatar.setWriteToDbTime(System.currentTimeMillis());
+                    avatar = avatarService.createAvatar(avatar);
+                    avatarService.insert(avatar);
+                }
             }
-        } else {
-            avatar = new Avatar();
-            avatar.setAvatarImg(avatarImg);
-            avatar.setGameId(gameId);
-            avatar.setLastLoginTime(System.currentTimeMillis());
-            avatar.setName(roleName);
-            node = appWorkerScheduleService.getNodeByScheduled();
             if (node != null) {
-                avatar.setServer(node.getName());
-                avatar.setUuid(uuid);
-                avatar.setWriteToDbTime(System.currentTimeMillis());
-                avatar = avatarService.createAvatar(avatar);
-                avatarService.insert(avatar);
+                Map<String, Object> params = new HashMap<String, Object>();
+                params.put("uuid", uuid);
+                params.put("gameId", GameConst.SYSTEM);
+                HttpClientUtils.HttpResult result = HttpClientUtils.get(authBaseUrl + GENERATE_URL, params);
+                if (result.getStatusCode() == HttpStatus.SC_OK) {
+                    Map<String, Object> workerInfo = new HashMap<String, Object>();
+                    workerInfo.put("token", result.getContentAsString());
+                    workerInfo.put("ip", node.getIp());
+                    workerInfo.put("port", node.getPort());
+                    workerInfo.put("name", node.getName());
+                    workerInfo.put("avatarId", avatar.getAvatarId());
+                    return JSONPUtil.getJSONP(callback, ReturnUtils.succ(workerInfo));
+                }
             }
+            return JSONPUtil.getJSONP(callback, ReturnUtils.failed());
+        }else{
+            return JSONPUtil.getJSONP(callback, ReturnUtils.failed("not logined"));
         }
-        if (node != null) {
-            Map<String, Object> workerInfo = new HashMap<String, Object>();
-            workerInfo.put("ip", node.getIp());
-            workerInfo.put("port", node.getPort());
-            workerInfo.put("name", node.getName());
-            workerInfo.put("avatarId", avatar.getAvatarId());
-            return JSONPUtil.getJSONP(callback , ReturnUtils.succ(workerInfo));
-        }
-        return JSONPUtil.getJSONP(callback , ReturnUtils.failed());
     }
 
     @HttpRequestMapping("/avatar")
@@ -102,8 +118,12 @@ public class MasterController {
     @HttpRequestMapping("/avatar/roles")
     public String getRolesByUrs(String callback, FullHttpRequest request){
         String urs = UrsAuthUtils.getLoginedUserName(request);
-        Map<String, List<DataCenterSimpleRoleInfo>> roles = dataCenterApiService.getSimpleAvatarsInfoByUrs(urs);
-        return JSONPUtil.getJSONP(callback , ReturnUtils.succ(roles));
+        if(StringUtils.isNotEmpty(urs)) {
+            Map<String, List<DataCenterSimpleRoleInfo>> roles = dataCenterApiService.getSimpleAvatarsInfoByUrs(urs);
+            return JSONPUtil.getJSONP(callback , ReturnUtils.succ(roles));
+        }else{
+            return JSONPUtil.getJSONP(callback, ReturnUtils.failed());
+        }
     }
 
     @Anonymous

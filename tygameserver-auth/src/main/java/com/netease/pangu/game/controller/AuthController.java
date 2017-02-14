@@ -20,15 +20,15 @@ public class AuthController {
     private final static long AUTH_TIME = 10*60*1000;
 
     @HttpRequestMapping("/generate")
-    public String generateAuthCode(String gbId){
+    public String generateToken(String uuid){
         long expireTime = System.currentTimeMillis() + AUTH_TIME;
-        return authService.generateAuthCode(gbId, expireTime);
+        return authService.generateToken(uuid, expireTime);
     }
 
 
     @HttpRequestMapping("/validate")
-    public ReturnUtils.GameResult validateAuthCode(String authCode){
-        return authService.checkAuthCode(authCode);
+    public ReturnUtils.GameResult validateToken(String token){
+        return authService.checkToken(token);
     }
 
 
