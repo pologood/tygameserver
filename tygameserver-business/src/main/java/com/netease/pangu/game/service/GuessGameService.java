@@ -165,7 +165,6 @@ public class GuessGameService {
                             } else {
                                 if (game.getRound() == TOTOAL_ROUND) {
                                     game.setState(GuessGameState.GAME_STATS);
-                                    roomService.broadcast(RoomBroadcastApi.GAME_OVER, roomId, ReturnUtils.succ(getCurrentGameInfo(roomId)));
                                 } else {
                                     game.setState(GuessGameState.ROUND_INTERNAL);
                                     long nextStartTime = current + ROUND_INTERVAL_TIME;
@@ -205,6 +204,7 @@ public class GuessGameService {
                         } else if (game.getState() == GuessGameState.GAME_STATS) {
                             GameRoom room = roomService.getGameRoom(roomId);
                             if(room.getStatus() == RoomStatus.GAMEING) {
+                                roomService.broadcast(RoomBroadcastApi.GAME_OVER, roomId, ReturnUtils.succ(getCurrentGameInfo(roomId)));
                                 roomService.setRoomState(roomId, RoomStatus.IDLE, AvatarStatus.IDLE, AvatarStatus.READY);
                                 game.getTimer().cancel();
                             }
