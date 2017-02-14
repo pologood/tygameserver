@@ -198,6 +198,12 @@ puremvc.define({
 	                    self.gameState=data.content.payload.gameState;
 	                }
 
+	                //玩家退出
+	                if(data.rpcMethod.toLowerCase() == "/room/broadcast/exit"){
+	                	var avatarId=data.content.payload.exit;
+	                	_this.sendNotification(drawsomething.AppConstants.RECEIVE_REMOVE_PLAYER,{avatarId:avatarId});
+	                }
+
 	                //聊天消息
 	                if(data.rpcMethod.toLowerCase() == "/room/broadcast/guess/answer"){
 	                    // data.content.payload.name = getName(data.content.payload.avatarId);
@@ -291,6 +297,7 @@ puremvc.define({
 
 			this.socket.onclose=function(event){
 				console.log("Client notified socket has closed",event.data);
+				window.location.reload();
 			}
 
 		},
