@@ -74,12 +74,16 @@ public class RoomController {
             GameRoom room = roomService.getGameRoom(session.getRoomId());
             if (session.getAvatarId() == room.getOwnerId()) {
                 if (room.getStatus() == RoomStatus.IDLE) {
-                    boolean isOk = roomService.exitRoom(avatarId);
-                    if (isOk) {
-                        result = ReturnUtils.succ(avatarId);
-                    } else {
-                        result = ReturnUtils.failed(String.format("failed to remove member %d", avatarId));
-                    }
+                    avatarSessionService.updateAvatarSession(avatarId, new AbstractAvatarSessionService.SessionCallable<Boolean, Avatar>() {
+                        @Override
+                        public Boolean call(AvatarSession<Avatar> playerSession) {
+                            playerSession.setAvatarStatus(AvatarStatus.REMOVE);
+                            playerSession.close();
+                            return true;
+                        }
+                    });
+
+                    result = ReturnUtils.succ(avatarId);
                 } else {
                     result = ReturnUtils.failed(String.format("room is not idle %d", avatarId));
                 }

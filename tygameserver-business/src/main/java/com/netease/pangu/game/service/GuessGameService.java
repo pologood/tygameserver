@@ -346,12 +346,10 @@ public class GuessGameService {
         GuessGame game = gameMap.get(roomId);
         if (game != null) {
             synchronized (game) {
-                if (!containsRule(GuessGame.RULE.EXIT, roomId, avatarSession.getAvatarId())) {
+                if (game.getState() != GuessGameState.END && !containsRule(GuessGame.RULE.EXIT, roomId, avatarSession.getAvatarId())) {
                     addScore(GuessGame.RULE.EXIT, game, avatarSession.getAvatarId());
-                    if (roomService.exitRoom(avatarSession.getAvatarId())) {
-                        roomService.broadcast(RoomBroadcastApi.GAME_EXIT, roomId, ReturnUtils.succ(avatarSession.getAvatarId()));
-                        return ReturnUtils.succ();
-                    }
+                    roomService.broadcast(RoomBroadcastApi.GAME_EXIT, roomId, ReturnUtils.succ(avatarSession.getAvatarId()));
+                    return ReturnUtils.succ();
                 }
             }
         }
