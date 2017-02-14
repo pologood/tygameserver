@@ -76,7 +76,6 @@ public class RoomController {
                 if (room.getStatus() == RoomStatus.IDLE) {
                     boolean isOk = roomService.exitRoom(avatarId);
                     if (isOk) {
-                        roomService.broadcast(RoomBroadcastApi.ROOM_REMOVE, room.getId(), ReturnUtils.succ(avatarId));
                         result = ReturnUtils.succ(avatarId);
                     } else {
                         result = ReturnUtils.failed(String.format("failed to remove member %d", avatarId));

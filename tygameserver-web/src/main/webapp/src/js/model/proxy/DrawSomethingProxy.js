@@ -330,7 +330,6 @@ puremvc.define({
 				uuid:this.gbId
 			}
 			this.socket.send(JSON.stringify(msg));
-			console.log("remove:"+avatarInfo.avatarId)
 		},
 		ready:function(){
 			console.log("ready");
