@@ -1,0 +1,1 @@
+puremvc.define({name:"drawsomething.view.component.Scroll",constructor:function(o){console.log(o)}},{getName:function(){console.log("ScrollName")}},{NAME:"Scroll"});

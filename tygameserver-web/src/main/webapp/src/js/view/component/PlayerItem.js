@@ -31,38 +31,48 @@ puremvc.define(
 			}
 			count();
 		},
-		update:function(data,info,avatarId){
+		update:function(data,info,userAvatarId){
 			var _this=this;
 			this.selfData=data;
 			this.roomInfo=info;
+			this.avatarId=data.avatarId;
+			this.userAvatarId=userAvatarId;
 			var html    = this.template(data);
 			this.el=$(html);
-			if(avatarId==data.avatarId){
-				if(data.state=="READY"){
+			this.updateState();			
+			
+			this.el.find(".btn-ready").click(function(){
+				_this.el.find(".countDown").hide();
+				_this.isReady=true;
+			})
+		},
+		updateState:function(){
+			if(this.userAvatarId==this.selfData.avatarId){
+				if(this.selfData.state=="READY"){
 					this.el.find(".btn-already").css({"display":"block"});
 					this.isReady=true;
 				}else{
 					this.el.find(".btn-ready").css({"display":"block"});
 				}
 			}else{
-				if(data.state=="READY"){
+				if(this.selfData.state=="READY"){
 					this.el.find(".btn-already").css({"display":"block"});
 					this.isReady=true;
 				}else{
 					this.el.find(".btn-unready").css({"display":"block"});
-				}				
+				}			
 			}
-			if(avatarId!=info.ownerId){
+
+			//当前用户不是房主
+			if(this.userAvatarId!=this.roomInfo.ownerId){
 				this.el.find(".closeBtn").hide();
 			}
-			if(data.avatarId==info.ownerId){
+
+			//列表用户是房主
+			if(this.selfData.avatarId==this.roomInfo.ownerId){
 				this.el.find(".ownerIcon").css({"display":"block"});
+				this.el.find(".closeBtn").hide();
 			}
-			this.avatarId=data.avatarId;
-			this.el.find(".btn-ready").click(function(){
-				_this.el.find(".countDown").hide();
-				_this.isReady=true;
-			})
 		},
 		ready:function(){
 			this.el.find(".btn-unready").css({"display":"none"});

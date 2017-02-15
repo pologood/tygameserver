@@ -11,6 +11,7 @@ puremvc.define({
                 drawsomething.AppConstants.BROADCAST_READY,
                 drawsomething.AppConstants.RECEIVE_REMOVE_PLAYER,
                 drawsomething.AppConstants.GAME_OVER,
+                drawsomething.AppConstants.CHANGE_OWNER,
             ];
         },
         
@@ -57,6 +58,9 @@ puremvc.define({
                 break;
                 case drawsomething.AppConstants.GAME_OVER:
                     this.viewComponent.show();
+                break;
+                case drawsomething.AppConstants.CHANGE_OWNER:
+                    
                 break;
             }
         },

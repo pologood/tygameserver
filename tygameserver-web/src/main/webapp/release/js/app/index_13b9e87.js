@@ -1,0 +1,1 @@
+var Index=function(){new drawsomething.Application}();

@@ -2,7 +2,7 @@
     //修改cdn的绝对路径（测试环境）
     fis.set('cdn-path','$cdn-path$');
     //修改cdn的绝对路径（正式环境）
-    fis.set('cdn-path-release','$cdn-path-release$');
+    fis.set('cdn-path-release','http://littlegame.tianyu.163.com');
     //修改雪碧图放大缩小倍数，默认是1，iphone是0.5
     fis.set('css-scale',1);
     //修改include文件的域名

@@ -5,12 +5,12 @@ puremvc.define({
     {
         // Notifications this mediator is interested in 
         listNotificationInterests: function() {
-            return [];
+            return [drawsomething.AppConstants.SHOW_ALERT];
         },
         
         // Code to be executed when the Mediator instance is registered with the View
         onRegister: function() {
-            this.setViewComponent( new drawsomething.view.component.ConnectPanel);
+            this.setViewComponent( new drawsomething.view.component.CommonAlert);
         },
         
         // Handle events from the view component
@@ -24,7 +24,9 @@ puremvc.define({
         // Handle notifications from other PureMVC actors
         handleNotification: function( note ) {
             switch ( note.getName() ) {
-                
+                case drawsomething.AppConstants.SHOW_ALERT:
+                    this.viewComponent.show(note.getBody());
+                break;
             }
         },
     },

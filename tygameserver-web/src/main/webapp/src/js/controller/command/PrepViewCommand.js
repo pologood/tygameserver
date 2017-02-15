@@ -9,6 +9,7 @@ puremvc.define({
 			this.facade.registerMediator(new drawsomething.view.mediator.DrawPanelMediator);
 			this.facade.registerMediator(new drawsomething.view.mediator.ReadyPanelMediator);
 			this.facade.registerMediator(new drawsomething.view.mediator.LoginPanelMediator);
+			this.facade.registerMediator(new drawsomething.view.mediator.CommonAlertMediator);
 		}
 	}
 

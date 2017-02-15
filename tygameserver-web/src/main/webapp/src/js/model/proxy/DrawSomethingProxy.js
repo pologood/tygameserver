@@ -54,6 +54,9 @@ puremvc.define({
 				    }
 				}
 				_this.sendNotification(drawsomething.AppConstants.GET_ROLELIST_SUCCESS,{rolesList:_this.rolesList})
+				if(_this.rolesList.length==0){
+					_this.sendNotification(drawsomething.AppConstants.SHOW_ALERT,{txt:"你还没有天谕游戏角色？创建一个角色就可以玩你画我猜啦",code:0});
+				}
 			})
 		},
 		getConnectData:function(){
@@ -154,10 +157,15 @@ puremvc.define({
 
 	                //问题答案
 	                if(data.rpcMethod.toLowerCase() == "/room/private/guess/quesion"){
-	                	console.log(data.content.payload);	
 	                	_this.answerInfo=data.content.payload;
 	                	_this.sendNotification(drawsomething.AppConstants.ANSWER_INFO,data.content.payload);
-	                }	                
+	                }	         
+
+	                // 被房主踢出去
+	                if(data.rpcMethod.toLowerCase() == "/room/private/remove"){
+	                	_this.sendNotification(drawsomething.AppConstants.SHOW_ALERT,{code:1,txt:"你被房主请出了房间，去其他房间看看吧"});
+	                }
+	                       
 
 	                if(data.rpcMethod.toLowerCase() == "/avatar/ready"){
 	                    self.state=1;
@@ -280,12 +288,20 @@ puremvc.define({
 	                	_this.likeCount=0;
 	                	_this.unlikeCount=0;
 	                }
+	                
 	                //大轮游戏结束
 	                if(data.rpcMethod.toLowerCase()=="/room/broadcast/guess/gameover"){
 	                	_this.sendNotification(drawsomething.AppConstants.GAME_OVER);
 	                	_this.sendNotification(drawsomething.AppConstants.BROADCAST_ROOMINFO,{info:_this.roominfo,roominfo:_this.roominfo,avatarId:_this.avatarId});
 	                	
 	                }
+
+	                // 更换房主
+	                if(data.rpcMethod.toLowerCase()=="/room/broadcast/changeowner"){
+	                	var avatarId = data.content.payload;
+	                	_this.roominfo.ownerId=avatarId;
+	                	_this.sendNotification(drawsomething.AppConstants.CHANGE_OWNER,avatarId);             	
+	                }	                
 	                
 	                if(data.rpcMethod.toLowerCase() == "/room/broadcast/correct"){
 	                    var answer = data.content.payload;
@@ -310,7 +326,7 @@ puremvc.define({
 
 			this.socket.onclose=function(event){
 				console.log("Client notified socket has closed",event.data);
-				window.location.reload();
+				// window.location.reload();
 			}
 
 		},
