@@ -62,36 +62,42 @@ public class NodeServerHandler extends ChannelInboundHandlerAdapter {
 
     private void handleWebSocketFrame(ChannelHandlerContext ctx, WebSocketFrame frame) {
         if (frame instanceof TextWebSocketFrame) {
-            String dataStr = ((TextWebSocketFrame) frame).text();
-            Map<String, Object> data = JsonUtil.fromJson(dataStr);
-            String rpcMethod = (String) data.get("rpcMethod");
+            try {
+                String dataStr = ((TextWebSocketFrame) frame).text();
+                Map<String, Object> data = JsonUtil.fromJson(dataStr);
+                String rpcMethod = (String) data.get("rpcMethod");
 
-            String uuid = (String) data.get("uuid");
-            Double tmp = NumberUtils.toDouble(data.get("gameId").toString());
-            long gameId = tmp.longValue();
-            if(!wsRpcCallInvoker.containsURIPath(gameId, rpcMethod)) {
-                NettyHttpUtil.sendWsResponse(rpcMethod, ctx.channel(), "rpcMethod not exist!");
-            }
-            @SuppressWarnings("unchecked")
-            Map<String, Object> args = (Map<String, Object>) data.get("params");
-            GameContext<AvatarSession<Avatar>> context = null;
-            //TODO need to optimize
-            Avatar avatar = avatarSessionService.getAvatarFromCache(gameId, uuid);
-            if (avatar == null) {
-                avatar = avatarService.getAvatarByUUID(gameId, uuid);
-            }
-            if (avatar != null) {
-                AvatarSession<Avatar> session = avatarSessionService.getSession(avatar.getAvatarId());
-                if (session == null) {
-                    session = avatarSessionService.createAvatarSession(avatar, ctx.channel());
+                String uuid = (String) data.get("uuid");
+                Double tmp = NumberUtils.toDouble(data.get("gameId").toString());
+                long gameId = tmp.longValue();
+                if (!wsRpcCallInvoker.containsURIPath(gameId, rpcMethod)) {
+                    NettyHttpUtil.sendWsResponse(rpcMethod, ctx.channel(), "rpcMethod not exist!");
                 }
-                if (session.getChannel() == null || !session.getChannel().isActive()) {
-                    session.setChannel(ctx.channel());
+                @SuppressWarnings("unchecked")
+                Map<String, Object> args = (Map<String, Object>) data.get("params");
+                GameContext<AvatarSession<Avatar>> context = null;
+                //TODO need to optimize
+                Avatar avatar = avatarSessionService.getAvatarFromCache(gameId, uuid);
+                if (avatar == null) {
+                    avatar = avatarService.getAvatarByUUID(gameId, uuid);
                 }
-                context = new GameContext<AvatarSession<Avatar>>(ctx, session, rpcMethod, frame);
-                wsRpcCallInvoker.invoke(gameId, rpcMethod, args, context);
-            } else {
-                NettyHttpUtil.sendWsResponse(rpcMethod, ctx.channel(), "avatar not init");
+                if (avatar != null) {
+                    AvatarSession<Avatar> session = avatarSessionService.getSession(avatar.getAvatarId());
+                    if (session == null) {
+                        session = avatarSessionService.createAvatarSession(avatar, ctx.channel());
+                    }
+                    if (session.getChannel() == null || !session.getChannel().isActive()) {
+                        session.setChannel(ctx.channel());
+                    }
+                    context = new GameContext<AvatarSession<Avatar>>(ctx, session, rpcMethod, frame);
+                    wsRpcCallInvoker.invoke(gameId, rpcMethod, args, context);
+                } else {
+                    NettyHttpUtil.sendWsResponse(rpcMethod, ctx.channel(), "avatar not init");
+                }
+            }finally {
+                if(frame.refCnt() > 0){
+                    frame.release();
+                }
             }
         }
     }
