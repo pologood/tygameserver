@@ -10,6 +10,7 @@ import com.netease.pangu.game.util.ReturnUtils;
 import com.netease.pangu.game.util.ReturnUtils.GameResult;
 
 import javax.annotation.Resource;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -78,6 +79,7 @@ public class RoomController {
                         @Override
                         public Boolean call(AvatarSession<Avatar> playerSession) {
                             playerSession.setAvatarStatus(AvatarStatus.REMOVE);
+                            roomService.chatTo(RoomBroadcastApi.ROOM_REMOVE, room.getId(), Arrays.asList(avatarId), ReturnUtils.succ());
                             playerSession.close();
                             return true;
                         }

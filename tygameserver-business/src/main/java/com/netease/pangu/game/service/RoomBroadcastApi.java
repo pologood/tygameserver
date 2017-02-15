@@ -9,6 +9,7 @@ public class RoomBroadcastApi{
 
     public static final String ROOM_INFO = "info";
     public static final String ROOM_READY = "ready";
+    public static final String ROOM_CHANGE_OWNER = "changeowner";
     public static final String ROOM_JOIN = "join";
     public static final String ROOM_EXIT = "exit";
     public static final String ROOM_REMOVE = "remove";

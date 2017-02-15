@@ -8,7 +8,7 @@ import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import java.util.Map;
 
 public class AvatarSession<A extends IAvatar> implements IAvatar {
-    private final static int WAIT_MILLIS = 5 * 1000;
+    private final static int WAIT_MILLIS = 2 * 1000;
 
     private A avatar;
     private long roomId;

@@ -195,6 +195,7 @@ public class RoomService {
                         if (room.getOwnerId() == avatarId) {
                             long owner = room.getSessionIds().toArray(new Long[0])[0];
                             room.setOwnerId(owner);
+                            broadcast(RoomBroadcastApi.ROOM_CHANGE_OWNER, room.getId(), ReturnUtils.succ(owner));
                             ret.put("owner", owner);
                         }
                     } else {
