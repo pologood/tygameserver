@@ -63,7 +63,7 @@ public class GuessGameController {
     @WsRpcCall("/like")
     public GameResult like(long roomId, GameContext<AvatarSession<Avatar>> ctx){
         long avatarId = ctx.getSession().getAvatarId();
-        if(!guessGameService.containsRule(GuessGame.RULE.LIKE, roomId, avatarId) || !guessGameService.containsRule(GuessGame.RULE.UNLIKE, roomId, avatarId)) {
+        if(!guessGameService.containsRule(GuessGame.RULE.LIKE, roomId, avatarId) && !guessGameService.containsRule(GuessGame.RULE.UNLIKE, roomId, avatarId)) {
             return guessGameService.like(roomId, ctx.getSession());
         }else{
             return ReturnUtils.failed();
