@@ -212,8 +212,6 @@ public class RoomService {
         });
     }
 
-
-
     public void broadcast(String path, long roomId, Object msg) {
         GameRoom room = getGameRoom(roomId);
         Set<Long> sessionIds = room.getSessionIds();
