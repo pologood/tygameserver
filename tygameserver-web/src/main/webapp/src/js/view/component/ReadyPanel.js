@@ -6,6 +6,9 @@ puremvc.define({
 			this.container=document.querySelector( '#readyPanel');
 			this.$container=$('#readyPanel');
 			this.$container.find(".startBtn").click(function(){
+				if($(this).hasClass("gray")){
+					return;
+				}
 				_this.startGame();
 			})
 			this.$container.click(function(e){
@@ -58,12 +61,14 @@ puremvc.define({
 			}else{
 				this.$container.find(".startBtn").hide();
 			}
+			this.updateStartBtn();
 		},
 		addPlayer:function(data){
 			var p=new drawsomething.view.component.PlayerItem();
 			p.update(data.member.avatar,data.roominfo,data.avatarId);
 			this.items.push(p);
 			this.$container.find(".playerList").append(p.el);
+			this.updateStartBtn();
 		},
 		updateReadyInfo:function(data){
 			var readyAvatarId=data.info.avatar.avatarId;
@@ -72,9 +77,10 @@ puremvc.define({
 					this.items[i].ready();
 				}
 			}
+			this.updateStartBtn();
 		},
 		updateMembers:function(){
-			
+
 		},
 		startGame:function(){
 			var e = this.createEvent( drawsomething.view.event.AppEvents.START_GAME);
@@ -101,6 +107,19 @@ puremvc.define({
 				}
 			}
 			this.$container.find(".confirmPop").hide();
+		},
+		updateStartBtn:function(){
+			var readyCount=0;
+			for(var i=0;i<this.items.length;i++){
+				if(this.items[i].isReady){
+					readyCount++;
+				}
+			}
+			if(readyCount>=2&&readyCount==this.items.length){
+				this.$container.find(".startBtn").removeClass("gray");
+			}else{
+				this.$container.find(".startBtn").addClass("gray");
+			}
 		},
 		hide:function(){
 			this.$container.hide();

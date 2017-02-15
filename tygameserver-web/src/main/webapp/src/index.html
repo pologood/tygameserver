@@ -39,7 +39,7 @@
                 <div class="joinRoom">
                     <p class="t">加入房间</p>
                     <div class="iptCnt">
-                        <input type='text' class="roomIdIpt">
+                        <input type="number" min="1" class="roomIdIpt">
                     </div>
                     <div class="btnCnt">
                         <a href="javascript:;" class="joinBtn">加入房间</a>
@@ -120,6 +120,7 @@
                 </div>
             </div>
         </div>
+        <!-- drawPanel -->
         <div id="drawPanel" class="drawPanel">
             <div class="colorDisc">
                 <div class="pen">
@@ -225,6 +226,20 @@
                 <span class="num">60</span>
             </div>
         </div>
+        <!-- drawPanel -->
+
+        <!-- commonAlert -->
+        <div class="commonAlert">
+            <div class="cnt">
+                <p class="title">提示</p>
+                <div class="content">
+
+                </div>
+                <a href="javascript:;" class="confirmBtn"></a>
+            </div>            
+        </div>
+        <!-- commonAlert -->
+        
     </div>
     <script id="roleItems-template" type="text/x-handlebars-template">
         {{#each rolesList}}
