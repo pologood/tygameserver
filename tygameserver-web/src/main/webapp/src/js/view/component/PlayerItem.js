@@ -40,12 +40,14 @@ puremvc.define(
 			if(avatarId==data.avatarId){
 				if(data.state=="READY"){
 					this.el.find(".btn-already").css({"display":"block"});
+					this.isReady=true;
 				}else{
 					this.el.find(".btn-ready").css({"display":"block"});
 				}
 			}else{
 				if(data.state=="READY"){
 					this.el.find(".btn-already").css({"display":"block"});
+					this.isReady=true;
 				}else{
 					this.el.find(".btn-unready").css({"display":"block"});
 				}				
@@ -66,6 +68,7 @@ puremvc.define(
 			this.el.find(".btn-unready").css({"display":"none"});
 			this.el.find(".btn-ready").css({"display":"none"});
 			this.el.find(".btn-already").css({"display":"block"});
+			this.isReady=true;
 		},
 		remove:function(){			
 			this.el.find(".btn-ready").unbind("click");
