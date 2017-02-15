@@ -94,7 +94,7 @@ puremvc.define({
 			this.dispatchEvent(e);
 		},
 		receiveRemovePlayer:function(removeInfo){
-			for(var i=this.items.length-1;i>0;i--){
+			for(var i=this.items.length-1;i>=0;i--){
 				if(removeInfo.avatarId==this.items[i].avatarId){
 					this.items[i].remove();
 					this.items.splice(i, 1);					

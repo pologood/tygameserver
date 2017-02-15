@@ -184,7 +184,8 @@ puremvc.define({
 	                if(data.rpcMethod.toLowerCase() == "/room/broadcast/remove"){
 	                    var avatarId=data.content.payload;
 	                    var members=_this.roominfo.members;
-	                	for(var i=members.length-1;i>0;i--){
+	                	for(var i=members.length-1;i>=0;i--){
+	                		console.log(members[i].avatarId)
 	                		if(avatarId==members[i].avatarId){
 								members.splice(i, 1);				
 							}
@@ -208,12 +209,11 @@ puremvc.define({
 	                if(data.rpcMethod.toLowerCase() == "/room/broadcast/guess/exit"){
 	                	var avatarId=data.content.payload;
 	                	var members=_this.roominfo.members;
-	                	for(var i=members.length-1;i>0;i--){
+	                	for(var i=members.length-1;i>=0;i--){
 	                		if(avatarId==members[i].avatarId){
 								members.splice(i, 1);				
 							}
 	                	}
-	                	console.log(_this.roominfo.members)
 	                	_this.sendNotification(drawsomething.AppConstants.RECEIVE_REMOVE_PLAYER,{avatarId:avatarId});
 	                }
 
