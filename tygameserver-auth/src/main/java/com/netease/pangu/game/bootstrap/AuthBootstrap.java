@@ -18,8 +18,8 @@ import org.springframework.stereotype.Component;
  * Created by huangc on 2017/2/6.
  */
 @Component
-public class AuthBootStrap implements Bootstrap {
-    private final static Logger logger = Logger.getLogger(AuthBootStrap.class);
+public class AuthBootstrap implements Bootstrap {
+    private final static Logger logger = Logger.getLogger(AuthBootstrap.class);
     @Value("${server.httpPort}")
     private int httpPort = 8100;
     private ConfigurableApplicationContext context;
@@ -53,7 +53,7 @@ public class AuthBootStrap implements Bootstrap {
             @Override
             public void run() {
                 logger.info("*** shutting down server since JVM is shutting down");
-                AuthBootStrap.this.stop();
+                AuthBootstrap.this.stop();
                 logger.info("*** server shut down");
             }
         });
@@ -74,7 +74,7 @@ public class AuthBootStrap implements Bootstrap {
 
     public static void main(String[] args) {
         ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("tygameserver-auth-service.xml");
-        AuthBootStrap bootstrap = context.getBean(AuthBootStrap.class);
+        AuthBootstrap bootstrap = context.getBean(AuthBootstrap.class);
         if (args.length == 3) {
             int httpPort = Integer.parseInt(args[0]);
             int rpcPort = Integer.parseInt(args[1]);
