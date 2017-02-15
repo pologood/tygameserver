@@ -17,7 +17,7 @@ public class GuessGame {
     private List<Guess> answers;
     private boolean isFirstGuessed;
     private Map<Long, Integer> scores;
-    private Map<Long, List<RULE>> operations;
+    private Map<Long, Map<Integer, List<RULE>>> operations;
     private GuessGameState state;
     private int round;
 
@@ -28,7 +28,7 @@ public class GuessGame {
 
     public GuessGame() {
         this.answers = new ArrayList<Guess>();
-        this.operations = new HashMap<Long, List<RULE>>();
+        this.operations = new HashMap<Long, Map<Integer, List<RULE>>>();
         this.scores = new HashMap<Long, Integer>();
         this.timer = new Timer();
     }
@@ -109,7 +109,7 @@ public class GuessGame {
         this.round = round;
     }
 
-    public Map<Long, List<RULE>> getOperations() {
+    public Map<Long, Map<Integer, List<RULE>>> getOperations() {
         return operations;
     }
 
@@ -220,7 +220,7 @@ public class GuessGame {
         private List<Guess> answers;
         private boolean isFirstGuessed;
         private Map<Long, Integer> scores;
-        private Map<Long, List<RULE>> operations;
+        private Map<Long, Map<Integer, List<RULE>>> operations;
 
         public GameRound(GuessGame game, long ownerId){
             this.setOwnerId(ownerId);
@@ -317,11 +317,11 @@ public class GuessGame {
             this.scores = scores;
         }
 
-        public Map<Long, List<RULE>> getOperations() {
+        public Map<Long, Map<Integer, List<RULE>>> getOperations() {
             return operations;
         }
 
-        public void setOperations(Map<Long, List<RULE>> operations) {
+        public void setOperations(Map<Long, Map<Integer, List<RULE>>> operations) {
             this.operations = operations;
         }
     }

@@ -319,7 +319,7 @@ public class GuessGameService {
         GuessGame game = gameMap.get(roomId);
         if (game != null && game.getState() == GuessGameState.ROUND_INTERNAL) {
             synchronized (game) {
-                if (!containsRule(GuessGame.RULE.LIKE, roomId, avatarSession.getAvatarId())) {
+                if (!containsRule(GuessGame.RULE.LIKE, roomId, avatarSession.getAvatarId()) || !containsRule(GuessGame.RULE.UNLIKE, roomId, avatarSession.getAvatarId())) {
                     addScore(GuessGame.RULE.LIKE, game, avatarSession.getAvatarId());
                     roomService.broadcast(RoomBroadcastApi.GAME_LIKE, roomId, ReturnUtils.succ(getCurrentGameInfo(roomId)));
                     return ReturnUtils.succ();
@@ -333,7 +333,7 @@ public class GuessGameService {
         GuessGame game = gameMap.get(roomId);
         if (game != null && game.getState() == GuessGameState.ROUND_INTERNAL) {
             synchronized (game) {
-                if (!containsRule(GuessGame.RULE.UNLIKE, roomId, avatarSession.getAvatarId())) {
+                if (!containsRule(GuessGame.RULE.UNLIKE, roomId, avatarSession.getAvatarId()) || !containsRule(GuessGame.RULE.LIKE, roomId, avatarSession.getAvatarId()) ) {
                     addScore(GuessGame.RULE.UNLIKE, game, avatarSession.getAvatarId());
                     roomService.broadcast(RoomBroadcastApi.GAME_UNLIKE, roomId, ReturnUtils.succ());
                     return ReturnUtils.succ();
@@ -357,14 +357,14 @@ public class GuessGameService {
     }
 
     private void addScore(GuessGame.RULE rule, GuessGame game, long avatarId) {
-        Map<Long, List<GuessGame.RULE>> operations = game.getOperations();
+        Map<Long, Map<Integer, List<GuessGame.RULE>>> operations = game.getOperations();
         Map<Long, Integer> scores = game.getScores();
         long drawerId = game.getDrawerId();
         if (!operations.containsKey(drawerId)) {
-            operations.put(drawerId, new ArrayList<GuessGame.RULE>());
+            operations.put(drawerId, new HashMap<Integer, List<GuessGame.RULE>>());
         }
         if (!operations.containsKey(avatarId)) {
-            operations.put(avatarId, new ArrayList<GuessGame.RULE>());
+            operations.put(avatarId, new HashMap<Integer, List<GuessGame.RULE>>());
         }
         if (rule == GuessGame.RULE.GUESSED || rule == GuessGame.RULE.FIRST_GUESSED || rule == GuessGame.RULE.LIKE) {
             GuessGame.RULE drawRule = null;
@@ -373,13 +373,21 @@ public class GuessGameService {
             } else if (rule == GuessGame.RULE.LIKE) {
                 drawRule = GuessGame.RULE.LIKE;
             }
-            List<GuessGame.RULE> drawerRuleList = operations.get(drawerId);
+            List<GuessGame.RULE> drawerRuleList = operations.get(drawerId).get(game.getRound());
+            if(drawerRuleList == null){
+                drawerRuleList = new ArrayList<GuessGame.RULE>();
+                operations.get(drawerId).put(game.getRound(), drawerRuleList);
+            }
             drawerRuleList.add(drawRule);
             int drawerScore = MapUtils.getIntValue(scores, drawerId, 0) + RULE_SCORE.get(drawRule);
             scores.put(drawerId, drawerScore > 0 ? drawerScore : 0);
         }
 
-        List<GuessGame.RULE> ruleList = operations.get(avatarId);
+        List<GuessGame.RULE> ruleList = operations.get(avatarId).get(game.getRound());
+        if(ruleList == null){
+            ruleList = new ArrayList<GuessGame.RULE>();
+            operations.get(avatarId).put(game.getRound(), ruleList);
+        }
         ruleList.add(rule);
         int score = MapUtils.getIntValue(scores, avatarId, 0) + RULE_SCORE.get(rule);
         scores.put(avatarId, score > 0 ? score : 0);
@@ -388,8 +396,8 @@ public class GuessGameService {
     public boolean containsRule(GuessGame.RULE rule, long roomId, long avatarId) {
         GuessGame game = gameMap.get(roomId);
         if (game != null) {
-            Map<Long, List<GuessGame.RULE>> operations = game.getOperations();
-            List<GuessGame.RULE> ruleList = operations.get(avatarId);
+            Map<Long, Map<Integer, List<GuessGame.RULE>>> operations = game.getOperations();
+            List<GuessGame.RULE> ruleList = operations.get(avatarId).get(game.getRound());
             if (CollectionUtils.isNotEmpty(ruleList)) {
                 return ruleList.contains(rule);
             }

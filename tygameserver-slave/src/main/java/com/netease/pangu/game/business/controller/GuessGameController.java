@@ -63,11 +63,7 @@ public class GuessGameController {
     @WsRpcCall("/like")
     public GameResult like(long roomId, GameContext<AvatarSession<Avatar>> ctx){
         long avatarId = ctx.getSession().getAvatarId();
-        if(!guessGameService.containsRule(GuessGame.RULE.LIKE, roomId, avatarId) || !guessGameService.containsRule(GuessGame.RULE.UNLIKE, roomId, avatarId)) {
-            return guessGameService.like(roomId, ctx.getSession());
-        }else{
-            return ReturnUtils.failed();
-        }
+        return guessGameService.like(roomId, ctx.getSession());
     }
 
     @WsRpcCall("/exit")
@@ -78,11 +74,7 @@ public class GuessGameController {
     @WsRpcCall("/unlike")
     public GameResult unlike(long roomId, GameContext<AvatarSession<Avatar>> ctx){
         long avatarId = ctx.getSession().getAvatarId();
-        if(!guessGameService.containsRule(GuessGame.RULE.UNLIKE, roomId, avatarId)|| !guessGameService.containsRule(GuessGame.RULE.LIKE, roomId, avatarId)) {
-            return guessGameService.unlike(roomId, ctx.getSession());
-        }else{
-            return ReturnUtils.failed();
-        }
+        return guessGameService.unlike(roomId, ctx.getSession());
     }
 
     @WsRpcCall("/answer")
