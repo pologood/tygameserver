@@ -209,7 +209,6 @@ public class GuessGameService {
                                 roomService.setRoomState(roomId, RoomStatus.IDLE, AvatarStatus.IDLE, AvatarStatus.READY);
                                 game.getTimer().cancel();
                             }
-                            System.out.println("111");
                         }
                     }
                 }
@@ -305,6 +304,9 @@ public class GuessGameService {
                         updateGameTime(roomId, 5000);
                         ret.put("isCorrect", true);
                         ret.put("info", getCurrentGameInfo(roomId));
+                        if(isAllGuessed(roomId)){
+                            game.setEndTime(System.currentTimeMillis());
+                        }
                         roomService.broadcast(RoomBroadcastApi.GAME_ANSWER, roomId, ReturnUtils.succ(ret));
                     } else {
                         ret.put("isCorrect", false);
@@ -319,6 +321,10 @@ public class GuessGameService {
         GuessGame game = gameMap.get(roomId);
         if (game != null && game.getState() == GuessGameState.ROUND_INTERNAL) {
             synchronized (game) {
+                if(game.getDrawerId() == avatarSession.getAvatarId()){
+                    return ReturnUtils.failed();
+                }
+
                 if (!containsRule(GuessGame.RULE.LIKE, roomId, avatarSession.getAvatarId()) || !containsRule(GuessGame.RULE.UNLIKE, roomId, avatarSession.getAvatarId())) {
                     addScore(GuessGame.RULE.LIKE, game, avatarSession.getAvatarId());
                     roomService.broadcast(RoomBroadcastApi.GAME_LIKE, roomId, ReturnUtils.succ(getCurrentGameInfo(roomId)));
@@ -333,6 +339,10 @@ public class GuessGameService {
         GuessGame game = gameMap.get(roomId);
         if (game != null && game.getState() == GuessGameState.ROUND_INTERNAL) {
             synchronized (game) {
+                if(game.getDrawerId() == avatarSession.getAvatarId()){
+                    return ReturnUtils.failed();
+                }
+
                 if (!containsRule(GuessGame.RULE.UNLIKE, roomId, avatarSession.getAvatarId()) || !containsRule(GuessGame.RULE.LIKE, roomId, avatarSession.getAvatarId()) ) {
                     addScore(GuessGame.RULE.UNLIKE, game, avatarSession.getAvatarId());
                     roomService.broadcast(RoomBroadcastApi.GAME_UNLIKE, roomId, ReturnUtils.succ());
@@ -397,9 +407,12 @@ public class GuessGameService {
         GuessGame game = gameMap.get(roomId);
         if (game != null) {
             Map<Long, Map<Integer, List<GuessGame.RULE>>> operations = game.getOperations();
-            List<GuessGame.RULE> ruleList = operations.get(avatarId).get(game.getRound());
-            if (CollectionUtils.isNotEmpty(ruleList)) {
-                return ruleList.contains(rule);
+            Map<Integer, List<GuessGame.RULE>> rules = operations.get(avatarId);
+            if(MapUtils.isNotEmpty(rules)){
+                List<GuessGame.RULE> ruleList = rules.get(game.getRound());
+                if (CollectionUtils.isNotEmpty(ruleList)) {
+                    return ruleList.contains(rule);
+                }
             }
         }
         return false;
@@ -408,6 +421,22 @@ public class GuessGameService {
 
     public boolean hasGuessed(long roomId, long avatarId) {
         return containsRule(GuessGame.RULE.FIRST_GUESSED, roomId, avatarId) || containsRule(GuessGame.RULE.GUESSED, roomId, avatarId);
+    }
+
+    public boolean isAllGuessed(long roomId){
+        GameRoom room = roomService.getGameRoom(roomId);
+        GuessGame game = gameMap.get(roomId);
+        if(room != null && game != null){
+            Set<Long> avatarIds = room.getSessionIds();
+            for(Long avatarId : avatarIds){
+                if(avatarId != game.getDrawerId()) {
+                    if (!hasGuessed(roomId, avatarId)) {
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
     }
 
     public boolean isDrawer(long roomId, long avatarId) {

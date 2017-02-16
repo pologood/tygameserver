@@ -120,7 +120,26 @@ public class MasterController {
         String urs = UrsAuthUtils.getLoginedUserName(request);
         if(StringUtils.isNotEmpty(urs)) {
             Map<String, List<DataCenterSimpleRoleInfo>> roles = dataCenterApiService.getSimpleAvatarsInfoByUrs(urs);
-            return JSONPUtil.getJSONP(callback , ReturnUtils.succ(roles));
+            Map<String, List<Map<String, Object>>> rolesData = new HashMap<String, List<Map<String, Object>>>();
+            for(String server : roles.keySet()){
+                List<DataCenterSimpleRoleInfo> rolesInfo = roles.get(server);
+                if(rolesInfo != null){
+                    List<Map<String, Object>> roleList = rolesData.get(server);
+                    if(roleList == null) {
+                        roleList = new ArrayList<Map<String, Object>>();
+                        rolesData.put(server, roleList);
+                    }
+                    for(DataCenterSimpleRoleInfo info : rolesInfo){
+                        Map<String, Object> roleMap = new HashMap<String, Object>();
+                        roleMap.put("playerName", info.getPlayerName());
+                        roleMap.put("level", info.getLevel());
+                        roleMap.put("gbId", info.getGbId());
+                        roleMap.put("school", info.getSchool());
+                        roleList.add(roleMap);
+                    }
+                }
+            }
+            return JSONPUtil.getJSONP(callback , ReturnUtils.succ(rolesData));
         }else{
             return JSONPUtil.getJSONP(callback, ReturnUtils.failed());
         }
