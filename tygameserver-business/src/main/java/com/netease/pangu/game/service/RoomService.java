@@ -214,24 +214,27 @@ public class RoomService {
 
     public void broadcast(String path, long roomId, Object msg) {
         GameRoom room = getGameRoom(roomId);
-        Set<Long> sessionIds = room.getSessionIds();
-        Map<Long, AvatarSession<Avatar>> sessionMap = avatarSessionService.getAvatarSessions(sessionIds);
-        for (AvatarSession<Avatar> session : sessionMap.values()) {
-            if (session.getChannel() != null && session.getChannel().isActive()) {
-                NettyHttpUtil.sendWsResponse(RoomBroadcastApi.ROOM_BROADCAST + path, session.getChannel(), msg);
+        if(room != null) {
+            Set<Long> sessionIds = room.getSessionIds();
+            Map<Long, AvatarSession<Avatar>> sessionMap = avatarSessionService.getAvatarSessions(sessionIds);
+            for (AvatarSession<Avatar> session : sessionMap.values()) {
+                if (session.getChannel() != null && session.getChannel().isActive()) {
+                    NettyHttpUtil.sendWsResponse(RoomBroadcastApi.ROOM_BROADCAST + path, session.getChannel(), msg);
+                }
             }
-
         }
     }
 
     public void chatTo(String path, long roomId, List<Long> avatarIds, Object msg) {
         GameRoom room = getGameRoom(roomId);
-        Set<Long> sessionIds = room.getSessionIds();
-        Map<Long, AvatarSession<Avatar>> sessionMap = avatarSessionService.getAvatarSessions(sessionIds);
-        for (Long avatarId : avatarIds) {
-            AvatarSession<Avatar> session = sessionMap.get(avatarId);
-            if (session != null && session.getChannel() != null && session.getChannel().isActive()) {
-                NettyHttpUtil.sendWsResponse(RoomBroadcastApi.ROOM_PRIVATE + path, session.getChannel(), msg);
+        if(room != null) {
+            Set<Long> sessionIds = room.getSessionIds();
+            Map<Long, AvatarSession<Avatar>> sessionMap = avatarSessionService.getAvatarSessions(sessionIds);
+            for (Long avatarId : avatarIds) {
+                AvatarSession<Avatar> session = sessionMap.get(avatarId);
+                if (session != null && session.getChannel() != null && session.getChannel().isActive()) {
+                    NettyHttpUtil.sendWsResponse(RoomBroadcastApi.ROOM_PRIVATE + path, session.getChannel(), msg);
+                }
             }
         }
     }

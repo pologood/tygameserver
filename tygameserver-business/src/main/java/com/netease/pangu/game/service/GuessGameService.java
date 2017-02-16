@@ -1,9 +1,6 @@
 package com.netease.pangu.game.service;
 
-import com.netease.pangu.game.common.meta.AvatarSession;
-import com.netease.pangu.game.common.meta.AvatarStatus;
-import com.netease.pangu.game.common.meta.GameRoom;
-import com.netease.pangu.game.common.meta.RoomStatus;
+import com.netease.pangu.game.common.meta.*;
 import com.netease.pangu.game.dao.impl.GuessGameInfoDaoImpl;
 import com.netease.pangu.game.meta.*;
 import com.netease.pangu.game.meta.GuessGame.Guess;
@@ -39,7 +36,6 @@ public class GuessGameService {
 
     private final List<GuessQuestion> questions = new ArrayList<GuessQuestion>();
 
-    public final static long gameId = 1;
     private final static int TOTOAL_ROUND = 3;
     private final static int ROUND_INTERVAL_TIME = 5000;
     private final static int ROUNG_GAME_TIME = 60000;
@@ -237,7 +233,7 @@ public class GuessGameService {
         GuessGame game = gameMap.get(roomId);
         if(game == null){
             game = new GuessGame();
-            game.setGameId(gameId);
+            game.setGameId(GameConst.GUESSS);
             game.setRoomId(roomId);
             gameMap.put(roomId, game);
         }else{
