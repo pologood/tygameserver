@@ -8,7 +8,7 @@ puremvc.define({
         this.selectedBrush=1;
         this.colors=['','#ffffff','#322322','#bf5ebc','#6649b0','#3f71ae','#32c9e3','#9bea57','#eaca57','#e89054','#e85454'];
         this.brushes=[,2,5,10,20,30];
-		this.container=document.querySelector( '#connectPanel');
+		this.container=document.querySelector( '#drawPanel');
         this.$container=$("#drawPanel");
 		this.stage=new createjs.Stage("drawingBoard");
 		this.drawingCanvas=new createjs.Shape();	
@@ -22,12 +22,19 @@ puremvc.define({
         this.drawingCanvas.cache(0,0,900,600);
         this.el=$("#drawPanel");
         this.el.find(".colorcard").find(".circle").click(function(){
-            var index=$(this).parent().index();
+            var index=$(this).parent().index()+1;
             setColor(index);
         })
         this.$container.find(".eraser").click(function(){
             _this.type=2;
+            _this.$container.find(".pen").find(".selected").hide();
         })
+
+        this.$container.find(".pen").click(function(){
+            _this.type=1;
+            $(this).find(".selected").show();
+        })
+
         this.$container.find(".delete").click(function(){
             _this.dispatchDelete();
         })
@@ -268,6 +275,7 @@ puremvc.define({
         }
         this.stage.clear();
         this.drawingCanvas.cache(0,0,900,600);
+        this.$container.find(".item[data-avatarId="+gameInfo.drawerId+"]").addClass("active");
         // this.startCountdown();
     },
     getMember:function(members,avatarId){
@@ -307,6 +315,17 @@ puremvc.define({
         var template = Handlebars.compile(source); 
         var html    = template({rolesList:members});
         this.$container.find(".members").html(html);
+
+        var tempScore=0;
+        var tempItem;
+        this.$container.find(".item").each(function(){
+            if($(this).attr("data-localScore")>tempScore){
+                tempScore=$(this).attr("data-localScore");
+                tempItem=$(this);
+            }
+        })
+        this.$container.find(".icon").removeClass("active");
+        tempItem.find(".icon").addClass("active");
     },
     receiveLikeInfo:function(info){
         this.$endPop.find(".zanBtn").html("("+info.like+")");

@@ -142,13 +142,12 @@ puremvc.define({
                   		console.log(data.content.payload);	
 	                }
 
-	                if(data.rpcMethod.toLowerCase() == "/room/broadcast/remove"){
-                  		console.log(data.content.payload);	
-	                }
+	                // if(data.rpcMethod.toLowerCase() == "/room/broadcast/remove"){
+                 //  		console.log(data.content.payload);	
+	                // }
 	                
 	                //开启游戏
 	                if(data.rpcMethod.toLowerCase() == "/room/broadcast/guess/start"){
-	                	console.log(data.content.payload);	
 	                	_this.gameInfo=data.content.payload;    
 	                	_this.sendNotification(drawsomething.AppConstants.GAME_STARTING,{
 	                		gameInfo:_this.gameInfo,avatarId:_this.avatarId,roominfo:_this.roominfo
@@ -193,7 +192,6 @@ puremvc.define({
 	                    var avatarId=data.content.payload;
 	                    var members=_this.roominfo.members;
 	                	for(var i=members.length-1;i>=0;i--){
-	                		console.log(members[i].avatarId)
 	                		if(avatarId==members[i].avatarId){
 								members.splice(i, 1);				
 							}
@@ -264,7 +262,6 @@ puremvc.define({
 	                }
 
 	                if(data.rpcMethod.toLowerCase()=="/room/broadcast/guess/like"){
-	                	console.log(data.content.payload)
 	                	_this.likeCount++;
 	                	_this.sendNotification(drawsomething.AppConstants.RECEIVE_LIKE_INFO,{like:_this.likeCount,unlike:_this.unlikeCount});
 	                	_this.sendNotification(drawsomething.AppConstants.RECEIVE_SCORES,{
@@ -274,7 +271,6 @@ puremvc.define({
 	                }
 
 	                if(data.rpcMethod.toLowerCase()=="/room/broadcast/guess/unlike"){
-	                	console.log(data.content.payload)
 	                	_this.unlikeCount++;
 	                	_this.sendNotification(drawsomething.AppConstants.RECEIVE_LIKE_INFO,{like:_this.likeCount,unlike:_this.unlikeCount});
 	                }
@@ -288,7 +284,7 @@ puremvc.define({
 	                	_this.likeCount=0;
 	                	_this.unlikeCount=0;
 	                }
-	                
+
 	                //大轮游戏结束
 	                if(data.rpcMethod.toLowerCase()=="/room/broadcast/guess/gameover"){
 	                	_this.sendNotification(drawsomething.AppConstants.GAME_OVER);

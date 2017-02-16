@@ -11,6 +11,10 @@ puremvc.define({
 				}
 			})
 			this.code=0;
+
+			// $(window).bind('beforeunload',function(){
+			//      return '你是否要退出房间，游戏中退出将扣除10积分，重新进入需要再次消耗游戏币';
+			// });
 		}
 	},
 	{

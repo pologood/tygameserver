@@ -56,51 +56,6 @@
                 </div>
             </div>
         </div>
-        <div id="connectPanel" class="connectPanel">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h3 class="panel-title">连接服务器</h3>
-                </div>
-                <div class="panel-body">
-
-                    <div class="form-horizontal">
-
-                         <div class="form-group f-cb">
-                            <label class="col-md-2 control-label f-fl" >玩家名字</label>
-                            <div class="col-md-10 f-fl">
-                                <input type="text" class="form-control" placeholder="请填写您的昵称" id="playerName">
-                            </div>                      
-                        </div>
-
-                        <div class="form-group f-cb">
-                            <label class="col-md-2 control-label f-fl">uuid</label>
-                            <div class="col-md-10 f-fl">
-                                <input type="text" class="form-control" placeholder="请填写数字" id="uuid">
-                            </div>
-                        </div>
-
-                        <div class="form-group f-cb">
-                            <label class="col-md-2 control-label f-fl">头像</label>
-                            <div class="col-md-10 f-fl">
-                                <input type="text" class="form-control" placeholder="可以不填写" id="headImg">
-                            </div>
-                        </div>
-
-                        <div class="form-group f-cb">
-                            <label for="inputPassword3" class="col-sm-2 control-label f-fl">房间号</label>
-                            <div class="col-sm-10 f-fl">
-                                <input type="text" class="form-control" id="roomId"> 
-                            </div>
-                        </div>
-
-                        <div class="btncnt form-inline">
-                            <button class="btn btn-success connectBtn">连接服务器</button>
-                        </div>                    
-                    </div>
-
-                </div>
-            </div>
-        </div>
         <div id="readyPanel" class="readyPannel">
             <h2 class="roomId"></h2>
             <div class="playerList f-cb">
@@ -120,13 +75,10 @@
                 </div>
             </div>
         </div>
+
         <!-- drawPanel -->
         <div id="drawPanel" class="drawPanel">
-            <div class="colorDisc">
-                <div class="pen">
-                    <div class="selected"></div>
-                    <div class="normalPen"></div>                    
-                </div>
+            <div class="colorDisc">                
                 <div class="colorcard colorcard-1">
                     <span class="circle"></span>
                 </div>
@@ -157,6 +109,10 @@
                 <div class="colorcard colorcard-10">
                     <span class="circle"></span>
                 </div>
+                <div class="pen">
+                    <div class="selected"></div>
+                    <div class="normalPen"></div>                    
+                </div>
                 <div class="cursor cursor-10"></div>
             </div>
             <div class="circleOverlayer"></div>
@@ -184,7 +140,7 @@
             </div>
             <canvas id="drawingBoard" width="550" height="418" class="drawingBoard"></canvas>
             <div class="tools">
-                <p class="answer answerTxt">作品：玉虚坐骑</p>
+                <p class="answer answerTxt">作品：</p>
                 <a href="javascript:;" class="eraser"></a>
                 <a href="javascript::" class="delete"></a>
                 <div class="lineSet">
@@ -196,22 +152,18 @@
                 </div>
             </div>
             <div class="members">
-                <!-- <div class="item f-fl">
-                    <span class="head">
-                        <img src="img/ready/head.png" width="43" heigth="43">
-                        <span class="imgBorder"></span>
-                    </span>
-                    <span class="name">的地方是地方</span>
-                    <span class="score">
-                        <span class="num">14分</span>
-                        <span class="icon"></span>
-                    </span>
-                    <div class="current"></div>
-                </div> -->
+
             </div>
+            <div class="roundCountDown">
+                <span>倒计时</span>
+                <span class="num"></span>
+            </div>
+            <div class="petal-1"></div>
+            <div class="petal-2"></div>
+
             <div class="mask"></div>
             <div class="endPop">
-                <p class="title">答案：玉虚坐骑</p>
+                <p class="title">答案：</p>
                 <span class="timeTips">5秒后自动关闭</span>
                 <div class="imgCnt">
                     <img src="" width="440" height="240">
@@ -220,11 +172,7 @@
                     <a href="javascript:;" class="caiBtn f-fl">(0)</a>
                     <a href="javascript:;" class="zanBtn f-fr">(0)</a>
                 </div>
-            </div>
-            <div class="roundCountDown">
-                <span>倒计时</span>
-                <span class="num">60</span>
-            </div>
+            </div>            
         </div>
         <!-- drawPanel -->
 
@@ -272,7 +220,7 @@
     </script>
     <script id="drawingPlayerItem-template" type="text/x-handlebars-template">
     {{#each rolesList}}
-        <div class="item f-fl">
+        <div class="item f-fl" data-avatarId="{{avatarId}}" data-localScore="{{localScore}}">
             <span class="head">
                 <img src="img/ready/head.png" width="43" heigth="43">
                 <span class="imgBorder"></span>
@@ -295,14 +243,12 @@
     <script type="text/javascript" src="js/lib/handlebars-v4.0.5.js"></script>
     <script type="text/javascript" src="js/lib/puremvc-1.0.1.min.js"></script>
     <script type="text/javascript" src="js/view/event/AppEvents.js"></script>
-    <script type="text/javascript" src="js/view/component/ConnectPanel.js"></script>
     <script type="text/javascript" src="js/view/component/DrawPanel.js"></script>
     <script type="text/javascript" src="js/view/component/Scroll.js"></script>
     <script type="text/javascript" src="js/view/component/ReadyPanel.js"></script>
     <script type="text/javascript" src="js/view/component/LoginPanel.js"></script>  
     <script type="text/javascript" src="js/view/component/PlayerItem.js"></script>
     <script type="text/javascript" src="js/view/component/CommonAlert.js"></script>
-    <script type="text/javascript" src="js/view/mediator/ConnectPanelMediator.js"></script>
     <script type="text/javascript" src="js/view/mediator/DrawPanelMediator.js"></script>
     <script type="text/javascript" src="js/view/mediator/ReadyPanelMediator.js"></script>
     <script type="text/javascript" src="js/view/mediator/LoginPanelMediator.js"></script>

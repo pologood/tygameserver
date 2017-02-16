@@ -42,7 +42,7 @@ public class GuessGameService {
     public final static long gameId = 1;
     private final static int TOTOAL_ROUND = 3;
     private final static int ROUND_INTERVAL_TIME = 5000;
-    private final static int ROUNG_GAME_TIME = 11000;
+    private final static int ROUNG_GAME_TIME = 60000;
     private final static int PERIOD_TIME = 20;
     private final static Map<GuessGame.RULE, Integer> RULE_SCORE;
     private final Timer checkTimer = new Timer();

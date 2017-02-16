@@ -44,6 +44,9 @@ puremvc.define({
 			drawsomething.view.event.AppEvents.dispatchEvent(this.container,event);
 		},
 		initRoom:function(data){
+			this.roominfo=data.roominfo;
+			this.avatarId=data.avatarId;
+
 			this.$container.find(".playerList").empty();
 			var members=data.info.members;
 			for(var i=0;i<members.length;i++){
@@ -56,11 +59,7 @@ puremvc.define({
 				}				
 			}
 			this.$container.find(".roomId").html("房间号："+data.info.id);
-			if(data.roominfo.ownerId==data.avatarId){
-				this.$container.find(".startBtn").show();
-			}else{
-				this.$container.find(".startBtn").hide();
-			}
+			
 			this.updateStartBtn();
 		},
 		addPlayer:function(data){
@@ -76,6 +75,12 @@ puremvc.define({
 				if(this.items[i].avatarId==readyAvatarId){
 					this.items[i].ready();
 				}
+			}
+			this.updateStartBtn();
+		},
+		changeOwner:function(){
+			for(var i=0;i<this.items.length;i++){
+				this.items[i].updateState();
 			}
 			this.updateStartBtn();
 		},
@@ -107,6 +112,7 @@ puremvc.define({
 				}
 			}
 			this.$container.find(".confirmPop").hide();
+			this.updateStartBtn();
 		},
 		updateStartBtn:function(){
 			var readyCount=0;
@@ -119,6 +125,11 @@ puremvc.define({
 				this.$container.find(".startBtn").removeClass("gray");
 			}else{
 				this.$container.find(".startBtn").addClass("gray");
+			}
+			if(this.roominfo.ownerId==this.avatarId){
+				this.$container.find(".startBtn").show();
+			}else{
+				this.$container.find(".startBtn").hide();
 			}
 		},
 		hide:function(){
