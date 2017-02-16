@@ -80,7 +80,7 @@ public class UrsAuthUtils {
             request.headers().add(USERNAME_ATTR_KEY, credential.userName);
             return true;
         } else {
-            request.headers().add(USERNAME_ATTR_KEY, null);
+            request.headers().add(USERNAME_ATTR_KEY, "");
             return false;
         }
     }
