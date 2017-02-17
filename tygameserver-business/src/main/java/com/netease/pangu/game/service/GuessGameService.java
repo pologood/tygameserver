@@ -484,12 +484,13 @@ public class GuessGameService {
         GuessGame game = getGuessGame(roomId);
         if (room != null && game != null) {
             Iterator<Long> iterator = room.getSessionIds().iterator();
-            long oldOwner = room.getOwnerId();
-            if (oldOwner == 0L) {
+            long oldDrawer = game.getDrawerId();
+            if (oldDrawer == 0L) {
                 return iterator.next();
             } else {
                 while (iterator.hasNext()) {
-                    if (oldOwner == iterator.next()) {
+                    long drawer = iterator.next();
+                    if (oldDrawer == drawer) {
                         if (iterator.hasNext()) {
                             return iterator.next();
                         }
