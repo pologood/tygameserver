@@ -132,7 +132,8 @@ public class GuessGameService {
         public void run() {
             try {
                 GuessGame game = gameMap.get(roomId);
-                if (game != null) {
+                GameRoom room = roomService.getGameRoom(roomId);
+                if (game != null && room != null) {
                     synchronized (game) {
                         long current = System.currentTimeMillis();
                         if (game.getState() == GuessGameState.START) {
@@ -160,7 +161,7 @@ public class GuessGameService {
                                     roomService.broadcast(RoomBroadcastApi.GAME_HINT2, roomId, ReturnUtils.succ(game.getQuestion().getHint2()));
                                 }
                             } else {
-                                if (game.getRound() == TOTOAL_ROUND) {
+                                if (game.getRound() == room.getSessionIds().size()) {
                                     game.setState(GuessGameState.GAME_STATS);
                                 } else {
                                     game.setState(GuessGameState.ROUND_INTERNAL);
@@ -170,16 +171,16 @@ public class GuessGameService {
                                     ret.put("answer", game.getQuestion().getAnswer());
                                     roomService.broadcast(RoomBroadcastApi.GAME_ROUND_OVER, roomId, ReturnUtils.succ(ret));
                                 }
-                                getGuessGameInfo().getInfos().put(game.getRound(), new GuessGame.GameRound(game, roomService.getGameRoom(roomId).getOwnerId()));
+                                getGuessGameInfo().getInfos().put(game.getRound(), new GuessGame.GameRound(game, room.getOwnerId()));
                                 guessGameInfoDao.save(getGuessGameInfo());
                                 Map<Long, AvatarSession<Avatar>> members = roomService.getMembers(roomId);
                                 for (AvatarSession<Avatar> member : members.values()) {
                                     int score = member.getAvatar().getTotalScore();
-                                    member.getAvatar().setTotalScore(score +  MapUtils.getInteger(game.getScores(), member.getAvatarId(), 0));
+                                    member.getAvatar().setTotalScore(score + MapUtils.getInteger(game.getScores(), member.getAvatarId(), 0));
                                     avatarService.save(member.getAvatar());
                                 }
                             }
-                        } else if (game.getState() == GuessGameState.ROUND_INTERNAL && game.getRound() < TOTOAL_ROUND) {
+                        } else if (game.getState() == GuessGameState.ROUND_INTERNAL && game.getRound() < room.getSessionIds().size()) {
                             if (isNearEqual(current, (current / 1000) * 1000)) {
                                 roomService.broadcast(RoomBroadcastApi.GAME_INTERVAL_COUNTDOWN, roomId, ReturnUtils.succ(game.getNextStartTime() / 1000 - current / 1000));
                             }
@@ -199,8 +200,7 @@ public class GuessGameService {
                                 roomService.broadcast(RoomBroadcastApi.GAME_RUNNING, roomId, ReturnUtils.succ(ret));
                             }
                         } else if (game.getState() == GuessGameState.GAME_STATS) {
-                            GameRoom room = roomService.getGameRoom(roomId);
-                            if(room.getStatus() == RoomStatus.GAMEING) {
+                            if (room.getStatus() == RoomStatus.GAMEING) {
                                 roomService.broadcast(RoomBroadcastApi.GAME_OVER, roomId, ReturnUtils.succ(getCurrentGameInfo(roomId)));
                                 roomService.setRoomState(roomId, RoomStatus.IDLE, AvatarStatus.IDLE, AvatarStatus.READY);
                                 game.getTimer().cancel();
@@ -231,12 +231,12 @@ public class GuessGameService {
 
     public boolean startGame(long roomId, AvatarSession<Avatar> session) {
         GuessGame game = gameMap.get(roomId);
-        if(game == null){
+        if (game == null) {
             game = new GuessGame();
             game.setGameId(GameConst.GUESSS);
             game.setRoomId(roomId);
             gameMap.put(roomId, game);
-        }else{
+        } else {
             game.setTimer(new Timer());
         }
         game.setDrawerId(0);
@@ -252,7 +252,7 @@ public class GuessGameService {
             task.setGuessGameInfo(gameInfo);
             game.getTimer().scheduleAtFixedRate(task, 0, PERIOD_TIME);
             return true;
-        }else {
+        } else {
             return false;
         }
     }
@@ -300,7 +300,7 @@ public class GuessGameService {
                         updateGameTime(roomId, 5000);
                         ret.put("isCorrect", true);
                         ret.put("info", getCurrentGameInfo(roomId));
-                        if(isAllGuessed(roomId)){
+                        if (isAllGuessed(roomId)) {
                             game.setEndTime(System.currentTimeMillis());
                         }
                         roomService.broadcast(RoomBroadcastApi.GAME_ANSWER, roomId, ReturnUtils.succ(ret));
@@ -317,7 +317,7 @@ public class GuessGameService {
         GuessGame game = gameMap.get(roomId);
         if (game != null && game.getState() == GuessGameState.ROUND_INTERNAL) {
             synchronized (game) {
-                if(game.getDrawerId() == avatarSession.getAvatarId()){
+                if (game.getDrawerId() == avatarSession.getAvatarId()) {
                     return ReturnUtils.failed();
                 }
 
@@ -335,11 +335,11 @@ public class GuessGameService {
         GuessGame game = gameMap.get(roomId);
         if (game != null && game.getState() == GuessGameState.ROUND_INTERNAL) {
             synchronized (game) {
-                if(game.getDrawerId() == avatarSession.getAvatarId()){
+                if (game.getDrawerId() == avatarSession.getAvatarId()) {
                     return ReturnUtils.failed();
                 }
 
-                if (!containsRule(GuessGame.RULE.UNLIKE, roomId, avatarSession.getAvatarId()) || !containsRule(GuessGame.RULE.LIKE, roomId, avatarSession.getAvatarId()) ) {
+                if (!containsRule(GuessGame.RULE.UNLIKE, roomId, avatarSession.getAvatarId()) || !containsRule(GuessGame.RULE.LIKE, roomId, avatarSession.getAvatarId())) {
                     addScore(GuessGame.RULE.UNLIKE, game, avatarSession.getAvatarId());
                     roomService.broadcast(RoomBroadcastApi.GAME_UNLIKE, roomId, ReturnUtils.succ());
                     return ReturnUtils.succ();
@@ -380,7 +380,7 @@ public class GuessGameService {
                 drawRule = GuessGame.RULE.LIKE;
             }
             List<GuessGame.RULE> drawerRuleList = operations.get(drawerId).get(game.getRound());
-            if(drawerRuleList == null){
+            if (drawerRuleList == null) {
                 drawerRuleList = new ArrayList<GuessGame.RULE>();
                 operations.get(drawerId).put(game.getRound(), drawerRuleList);
             }
@@ -390,7 +390,7 @@ public class GuessGameService {
         }
 
         List<GuessGame.RULE> ruleList = operations.get(avatarId).get(game.getRound());
-        if(ruleList == null){
+        if (ruleList == null) {
             ruleList = new ArrayList<GuessGame.RULE>();
             operations.get(avatarId).put(game.getRound(), ruleList);
         }
@@ -404,7 +404,7 @@ public class GuessGameService {
         if (game != null) {
             Map<Long, Map<Integer, List<GuessGame.RULE>>> operations = game.getOperations();
             Map<Integer, List<GuessGame.RULE>> rules = operations.get(avatarId);
-            if(MapUtils.isNotEmpty(rules)){
+            if (MapUtils.isNotEmpty(rules)) {
                 List<GuessGame.RULE> ruleList = rules.get(game.getRound());
                 if (CollectionUtils.isNotEmpty(ruleList)) {
                     return ruleList.contains(rule);
@@ -419,13 +419,13 @@ public class GuessGameService {
         return containsRule(GuessGame.RULE.FIRST_GUESSED, roomId, avatarId) || containsRule(GuessGame.RULE.GUESSED, roomId, avatarId);
     }
 
-    public boolean isAllGuessed(long roomId){
+    public boolean isAllGuessed(long roomId) {
         GameRoom room = roomService.getGameRoom(roomId);
         GuessGame game = gameMap.get(roomId);
-        if(room != null && game != null){
+        if (room != null && game != null) {
             Set<Long> avatarIds = room.getSessionIds();
-            for(Long avatarId : avatarIds){
-                if(avatarId != game.getDrawerId()) {
+            for (Long avatarId : avatarIds) {
+                if (avatarId != game.getDrawerId()) {
                     if (!hasGuessed(roomId, avatarId)) {
                         return false;
                     }
@@ -481,9 +481,23 @@ public class GuessGameService {
 
     private long generateDrawer(long roomId) {
         GameRoom room = roomService.getGameRoom(roomId);
-        Long[] avatarIds = room.getSessionIds().toArray(new Long[0]);
-        int random = RandomUtils.nextInt(0, avatarIds.length);
-        return avatarIds[random];
+        GuessGame game = getGuessGame(roomId);
+        if (room != null && game != null) {
+            Iterator<Long> iterator = room.getSessionIds().iterator();
+            long oldOwner = room.getOwnerId();
+            if (oldOwner == 0L) {
+                return iterator.next();
+            } else {
+                while (iterator.hasNext()) {
+                    if (oldOwner == iterator.next()) {
+                        if (iterator.hasNext()) {
+                            return iterator.next();
+                        }
+                    }
+                }
+            }
+        }
+        return 0L;
     }
 
     public GuessQuestion generateQuestion() {
