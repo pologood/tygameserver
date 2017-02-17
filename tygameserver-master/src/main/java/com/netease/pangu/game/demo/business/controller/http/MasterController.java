@@ -133,7 +133,7 @@ public class MasterController {
                         Map<String, Object> roleMap = new HashMap<String, Object>();
                         roleMap.put("playerName", info.getPlayerName());
                         roleMap.put("level", info.getLevel());
-                        roleMap.put("gbId", info.getGbId());
+                        roleMap.put("gbId", String.valueOf(info.getGbId()));
                         roleMap.put("school", info.getSchool());
                         roleList.add(roleMap);
                     }
