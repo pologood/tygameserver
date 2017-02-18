@@ -332,7 +332,7 @@ puremvc.define({
 				rpcMethod:"/room/create",
 				params:{
 					gameId:this.gameId,
-					maxSize:10
+					maxSize:8
 				},
 				gameId:this.gameId,
 				uuid:this.gbId

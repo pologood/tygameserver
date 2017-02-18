@@ -8,10 +8,7 @@ import io.netty.channel.ChannelId;
 import org.springframework.util.Assert;
 
 import javax.annotation.Resource;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -48,7 +45,7 @@ public abstract class AbstractAvatarSessionService<A extends IAvatar> {
         return Collections.unmodifiableMap(avatarMap);
     }
 
-    public Map<Long, AvatarSession<A>> getAvatarSessions(Set<Long> avatarIds) {
+    public Map<Long, AvatarSession<A>> getAvatarSessions(List<Long> avatarIds) {
         Map<Long, AvatarSession<A>> avatarMap = new HashMap<Long, AvatarSession<A>>();
         for (Long avatarId : avatarIds) {
             AvatarSession<A> session = sessions.get(avatarId);

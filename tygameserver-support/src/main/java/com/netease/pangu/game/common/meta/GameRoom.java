@@ -1,6 +1,6 @@
 package com.netease.pangu.game.common.meta;
 
-import java.util.Set;
+import java.util.Map;
 
 public class GameRoom {
 	public static enum RoomType {
@@ -8,7 +8,7 @@ public class GameRoom {
 	}
 
 	private long id;
-	private Set<Long> sessionIds;
+	private Map<Integer, Long> sessionIds;
 	private long gameId;
 	private RoomStatus status;
 	private long ownerId;
@@ -63,11 +63,11 @@ public class GameRoom {
 		this.type = type;
 	}
 
-	public Set<Long> getSessionIds() {
+	public Map<Integer, Long> getSessionIds() {
 		return sessionIds;
 	}
 
-	public void setSessionIds(Set<Long> sessionIds) {
+	public void setSessionIds(Map<Integer, Long> sessionIds) {
 		this.sessionIds = sessionIds;
 	}
 

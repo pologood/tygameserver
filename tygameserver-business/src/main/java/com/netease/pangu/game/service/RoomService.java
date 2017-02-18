@@ -53,8 +53,8 @@ public class RoomService {
 
     public boolean isReady(long roomId) {
         GameRoom room = getGameRoom(roomId);
-        Set<Long> avatarIds = room.getSessionIds();
-        Map<Long, AvatarSession<Avatar>> sessionsMap = avatarSessionService.getAvatarSessions(avatarIds);
+        Map<Integer, Long> avatarIds = room.getSessionIds();
+        Map<Long, AvatarSession<Avatar>> sessionsMap = avatarSessionService.getAvatarSessions(Arrays.asList(room.getSessionIds().values().toArray(new Long[0])));
         if (sessionsMap.values().size() < 2) {
             return false;
         }
@@ -68,8 +68,7 @@ public class RoomService {
 
     public  Map<Long, AvatarSession<Avatar>> getMembers(long roomId){
         GameRoom room = getGameRoom(roomId);
-        Set<Long> avatarIds = room.getSessionIds();
-        return avatarSessionService.getAvatarSessions(avatarIds);
+        return avatarSessionService.getAvatarSessions(Arrays.asList(room.getSessionIds().values().toArray(new Long[0])));
     }
 
 
@@ -90,13 +89,12 @@ public class RoomService {
                         room.setId(roomId);
                         room.setGameId(gameId);
                         room.setOwnerId(avatarId);
-                        room.setSessionIds(new LinkedHashSet<Long>());
+                        room.setSessionIds(new HashMap<Integer, Long>());
                         room.setStatus(RoomStatus.IDLE);
                         room.setMaxSize(maxSize);
-                        room.getSessionIds().add(avatarId);
+                        room.getSessionIds().put(0, avatarId);
 
                         playerSession.setRoomId(roomId);
-
                         rooms.put(roomId, room);
                         gameIdRefRoom.putIfAbsent(gameId, new HashSet<Long>());
                         gameIdRefRoom.get(gameId).add(roomId);
@@ -117,8 +115,8 @@ public class RoomService {
     public void setRoomState(long roomId, RoomStatus status, AvatarStatus avatarStatus, AvatarStatus ownerStatus) {
         final GameRoom room = getGameRoom(roomId);
         synchronized (room) {
-            Set<Long> sessionIds = room.getSessionIds();
-            Map<Long, AvatarSession<Avatar>> sessionMap = avatarSessionService.getAvatarSessions(sessionIds);
+            Map<Integer, Long> sessionIds = room.getSessionIds();
+            Map<Long, AvatarSession<Avatar>> sessionMap = avatarSessionService.getAvatarSessions(Arrays.asList(sessionIds.values().toArray(new Long[0])));
             for (AvatarSession<Avatar> session : sessionMap.values()) {
                 avatarSessionService.updateAvatarSession(session.getAvatarId(), new SessionCallable<Void, Avatar>() {
                     @Override
@@ -148,9 +146,13 @@ public class RoomService {
             public Boolean call(AvatarSession<Avatar> playerSession) {
                 if (playerSession.getRoomId() == 0) {
                     GameRoom room = getGameRoom(roomId);
-                    if (canJoin(roomId)) {
+                    if (canJoin(roomId) && !room.getSessionIds().containsValue(avatarId)) {
                         playerSession.setRoomId(roomId);
-                        room.getSessionIds().add(avatarId);
+                        for(int i = 0; i < room.getMaxSize(); i++) {
+                            if(!room.getSessionIds().containsKey(i)){
+                                room.getSessionIds().put(i, avatarId);
+                            }
+                        }
                         roomAllocationService.setRoomWithAvatarId(room.getGameId(), avatarId, roomId);
                         return true;
                     }
@@ -187,13 +189,13 @@ public class RoomService {
             public Boolean call(AvatarSession<Avatar> playerSession) {
                 if (playerSession.getRoomId() > 0) {
                     GameRoom room = getGameRoom(playerSession.getRoomId());
-                    room.getSessionIds().remove(avatarId);
+                    room.getSessionIds().values().remove(avatarId);
                     roomAllocationService.deleteRoomByAvatarId(room.getGameId(), avatarId);
                     Map<String, Object> ret = new HashMap<String, Object>();
                     ret.put("exit", avatarId);
                     if (room.getSessionIds().size() > 0) {
                         if (room.getOwnerId() == avatarId) {
-                            long owner = room.getSessionIds().toArray(new Long[0])[0];
+                            long owner = room.getSessionIds().values().toArray(new Long[0])[0];
                             room.setOwnerId(owner);
                             broadcast(RoomBroadcastApi.ROOM_CHANGE_OWNER, room.getId(), ReturnUtils.succ(owner));
                             ret.put("owner", owner);
@@ -215,8 +217,7 @@ public class RoomService {
     public void broadcast(String path, long roomId, Object msg) {
         GameRoom room = getGameRoom(roomId);
         if(room != null) {
-            Set<Long> sessionIds = room.getSessionIds();
-            Map<Long, AvatarSession<Avatar>> sessionMap = avatarSessionService.getAvatarSessions(sessionIds);
+            Map<Long, AvatarSession<Avatar>> sessionMap = avatarSessionService.getAvatarSessions(Arrays.asList(room.getSessionIds().values().toArray(new Long[0])));
             for (AvatarSession<Avatar> session : sessionMap.values()) {
                 if (session.getChannel() != null && session.getChannel().isActive()) {
                     NettyHttpUtil.sendWsResponse(RoomBroadcastApi.ROOM_BROADCAST + path, session.getChannel(), msg);
@@ -228,8 +229,7 @@ public class RoomService {
     public void chatTo(String path, long roomId, List<Long> avatarIds, Object msg) {
         GameRoom room = getGameRoom(roomId);
         if(room != null) {
-            Set<Long> sessionIds = room.getSessionIds();
-            Map<Long, AvatarSession<Avatar>> sessionMap = avatarSessionService.getAvatarSessions(sessionIds);
+            Map<Long, AvatarSession<Avatar>> sessionMap = avatarSessionService.getAvatarSessions(Arrays.asList(room.getSessionIds().values().toArray(new Long[0])));
             for (Long avatarId : avatarIds) {
                 AvatarSession<Avatar> session = sessionMap.get(avatarId);
                 if (session != null && session.getChannel() != null && session.getChannel().isActive()) {
@@ -330,7 +330,7 @@ public class RoomService {
     public GameResult getRoomInfo(long roomId) {
         GameRoom room = getGameRoom(roomId);
         Map<String, Object> payload = new HashMap<String, Object>();
-        Map<Long, AvatarSession<Avatar>> sessions = avatarSessionService.getAvatarSessions(room.getSessionIds());
+        Map<Long, AvatarSession<Avatar>> sessions = avatarSessionService.getAvatarSessions(Arrays.asList(room.getSessionIds().values().toArray(new Long[0])));
         List<SimpleAvatar> members = new ArrayList<SimpleAvatar>();
         for (AvatarSession<Avatar> session : sessions.values()) {
             members.add(SimpleAvatar.create(session));

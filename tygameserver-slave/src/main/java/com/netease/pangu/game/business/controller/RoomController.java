@@ -105,7 +105,7 @@ public class RoomController {
     public void chat(long roomId, String msg, GameContext<AvatarSession<IAvatar>> ctx) {
         AvatarSession<IAvatar> pSession = ctx.getSession();
         GameRoom room = roomService.getGameRoom(roomId);
-        Map<Long, AvatarSession<Avatar>> members = avatarSessionService.getAvatarSessions(room.getSessionIds());
+        Map<Long, AvatarSession<Avatar>> members = avatarSessionService.getAvatarSessions(Arrays.asList(room.getSessionIds().values().toArray(new Long[0])));
         Map<String, Object> payload = new HashMap<String, Object>();
         payload.put("msg", msg);
         Map<String, Object> source = new HashMap<String, Object>();

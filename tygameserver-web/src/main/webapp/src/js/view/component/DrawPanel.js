@@ -314,18 +314,21 @@ puremvc.define({
         var source=$("#drawingPlayerItem-template").html();
         var template = Handlebars.compile(source); 
         var html    = template({rolesList:members});
-        this.$container.find(".members").html(html);
+        var $el=$(html);
+        this.$container.find(".members").empty();
+        this.$container.find(".members").append($el);
 
         var tempScore=0;
         var tempItem;
-        this.$container.find(".item").each(function(){
+        $el.each(function(){
             if($(this).attr("data-localScore")>tempScore){
                 tempScore=$(this).attr("data-localScore");
                 tempItem=$(this);
             }
         })
-        this.$container.find(".icon").removeClass("active");
-        tempItem.find(".icon").addClass("active");
+
+        $el.find(".icon").removeClass("show");
+        tempItem.find(".icon").addClass("show");
     },
     receiveLikeInfo:function(info){
         this.$endPop.find(".zanBtn").html("("+info.like+")");

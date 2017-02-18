@@ -423,8 +423,7 @@ public class GuessGameService {
         GameRoom room = roomService.getGameRoom(roomId);
         GuessGame game = gameMap.get(roomId);
         if (room != null && game != null) {
-            Set<Long> avatarIds = room.getSessionIds();
-            for (Long avatarId : avatarIds) {
+            for (Long avatarId : room.getSessionIds().values()) {
                 if (avatarId != game.getDrawerId()) {
                     if (!hasGuessed(roomId, avatarId)) {
                         return false;
@@ -483,7 +482,7 @@ public class GuessGameService {
         GameRoom room = roomService.getGameRoom(roomId);
         GuessGame game = getGuessGame(roomId);
         if (room != null && game != null) {
-            Iterator<Long> iterator = room.getSessionIds().iterator();
+            Iterator<Long> iterator = room.getSessionIds().values().iterator();
             long oldDrawer = game.getDrawerId();
             if (oldDrawer == 0L) {
                 return iterator.next();
