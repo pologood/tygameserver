@@ -160,8 +160,9 @@ public class RoomService {
                     if (canJoin(roomId) && !room.getSessionIds().containsValue(avatarId)) {
                         playerSession.setRoomId(roomId);
                         for(int i = 0; i < room.getMaxSize(); i++) {
-                            if(!room.getSessionIds().containsKey(i)){
+                            if(room.getSessionIds().get(i) == null){
                                 room.getSessionIds().put(i, avatarId);
+                                break;
                             }
                         }
                         roomAllocationService.setRoomWithAvatarId(room.getGameId(), avatarId, roomId);
