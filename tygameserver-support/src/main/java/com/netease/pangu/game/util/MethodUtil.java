@@ -1,6 +1,10 @@
 package com.netease.pangu.game.util;
 
-import javassist.*;
+import javassist.ClassPool;
+import javassist.CtClass;
+import javassist.CtMethod;
+import javassist.Modifier;
+import javassist.NotFoundException;
 import javassist.bytecode.CodeAttribute;
 import javassist.bytecode.LocalVariableAttribute;
 import javassist.bytecode.MethodInfo;

@@ -14,7 +14,12 @@ import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
-import io.netty.handler.codec.http.*;
+import io.netty.handler.codec.http.DefaultFullHttpResponse;
+import io.netty.handler.codec.http.FullHttpRequest;
+import io.netty.handler.codec.http.FullHttpResponse;
+import io.netty.handler.codec.http.HttpMethod;
+import io.netty.handler.codec.http.HttpResponseStatus;
+import io.netty.handler.codec.http.HttpVersion;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import io.netty.handler.codec.http.websocketx.WebSocketFrame;
 import io.netty.handler.codec.http.websocketx.WebSocketServerHandshaker;
@@ -94,8 +99,8 @@ public class NodeServerHandler extends ChannelInboundHandlerAdapter {
                 } else {
                     NettyHttpUtil.sendWsResponse(rpcMethod, ctx.channel(), "avatar not init");
                 }
-            }finally {
-                if(frame.refCnt() > 0){
+            } finally {
+                if (frame.refCnt() > 0) {
                     frame.release();
                 }
             }

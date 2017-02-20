@@ -1,6 +1,10 @@
 package com.netease.pangu.game.business.controller;
 
-import com.netease.pangu.game.common.meta.*;
+import com.netease.pangu.game.common.meta.AvatarSession;
+import com.netease.pangu.game.common.meta.AvatarStatus;
+import com.netease.pangu.game.common.meta.GameConst;
+import com.netease.pangu.game.common.meta.GameContext;
+import com.netease.pangu.game.common.meta.RoomStatus;
 import com.netease.pangu.game.meta.Avatar;
 import com.netease.pangu.game.meta.GuessGame;
 import com.netease.pangu.game.meta.GuessGameState;

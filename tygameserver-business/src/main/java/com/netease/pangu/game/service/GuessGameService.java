@@ -1,9 +1,17 @@
 package com.netease.pangu.game.service;
 
-import com.netease.pangu.game.common.meta.*;
+import com.netease.pangu.game.common.meta.AvatarSession;
+import com.netease.pangu.game.common.meta.AvatarStatus;
+import com.netease.pangu.game.common.meta.GameConst;
+import com.netease.pangu.game.common.meta.GameRoom;
+import com.netease.pangu.game.common.meta.RoomStatus;
 import com.netease.pangu.game.dao.impl.GuessGameInfoDaoImpl;
-import com.netease.pangu.game.meta.*;
+import com.netease.pangu.game.meta.Avatar;
+import com.netease.pangu.game.meta.GuessGame;
 import com.netease.pangu.game.meta.GuessGame.Guess;
+import com.netease.pangu.game.meta.GuessGameInfo;
+import com.netease.pangu.game.meta.GuessGameState;
+import com.netease.pangu.game.meta.GuessQuestion;
 import com.netease.pangu.game.util.ObjectUtil;
 import com.netease.pangu.game.util.ReturnUtils;
 import org.apache.commons.collections.CollectionUtils;
@@ -16,7 +24,14 @@ import org.springframework.stereotype.Service;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
