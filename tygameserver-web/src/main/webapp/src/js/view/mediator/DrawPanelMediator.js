@@ -15,7 +15,9 @@ puremvc.define({
                 drawsomething.AppConstants.COUNTDOWN,
                 drawsomething.AppConstants.RECEIVE_SCORES,
                 drawsomething.AppConstants.RECEIVE_LIKE_INFO,
-                drawsomething.AppConstants.GAME_OVER
+                drawsomething.AppConstants.GAME_OVER,
+                drawsomething.AppConstants.RECEIVE_NOTICE,
+                drawsomething.AppConstants.ICOUNTDOWN
             ];
         },
         
@@ -112,6 +114,14 @@ puremvc.define({
                 case drawsomething.AppConstants.GAME_OVER:
                     this.viewComponent.isDrawer=false;
                     this.viewComponent.hide();
+                    this.viewComponent.clearChat();
+                    this.viewComponent.resetLocalScores();
+                break;
+                case drawsomething.AppConstants.RECEIVE_NOTICE:
+                    this.viewComponent.receiveNotice(note.getBody());
+                break;
+                case drawsomething.AppConstants.ICOUNTDOWN:
+                    this.viewComponent.updateICountDown(note.getBody());
                 break;
             }
         },

@@ -9,9 +9,10 @@
     <meta charset="UTF-8">
     <meta name="renderer" content="webkit">
     <link rel="dns-prefetch" href="https://nie.res.netease.com">    
-    <!--<link href="http://res.tianyu.netease.com/qt/16/drawsomething/css/bootstrap.min.css" rel="stylesheet">-->
-    <link rel="stylesheet" type="text/css" href="css/index.less">
+    <!--<link href="http://res.tianyu.netease.com/qt/16/drawsomething/css/bootstrap.min.css" rel="stylesheet">-->    
     <link rel="stylesheet" type="text/css" href="css/jquery.jscrollpane.css">
+    <link rel="stylesheet" type="text/css" href="css/semantic.min.css">
+    <link rel="stylesheet" type="text/css" href="css/index.less">
     <script type="text/javascript" src="https://nie.res.netease.com/comm/js/jquery(mixNIE).last.js"></script>
     <script src="http://res.tianyu.netease.com/qt/16/drawsomething/js/createjs-2015.11.26.min.js"></script> 
     <script type="text/javascript" src="https://webzj.reg.163.com/webapp/javascript/page/json3.js"></script>
@@ -24,17 +25,24 @@
 <body>
     <div class="g-wrap" id="drawsomething">
         <div id="loginPanel" class="loginPanel">
-            <p class="title">欢迎来到天谕你画我猜</p>
-            <div class="loginCnt" id="login">
+            <p class="h1">天谕你画我猜</p>
+            <div class="loginCard">
+                <div class="loginCnt ui card" id="login">
 
-            </div>
-            <div class="selectRole">
-                <h2> 请选择游戏角色 </h2>
-                <div class="radioCnt">
-                    <label><input name="role" type="radio" value="gbid" /></label>
                 </div>
-                <a href="javascript:;" class="confirmBtn">确认</a>
             </div>
+            <div class="selectRoleCard">
+                <div class="selectRole">
+                    <div class="content">
+                        <div class="header title"> 请选择游戏角色 </div>
+                        <div class="radioCnt">
+                            <label><input name="role" type="radio" value="gbid" /></label>
+                        </div>
+                        <a href="javascript:;" class="confirmBtn ui brown button">确认</a>
+                    </div>                    
+                </div>
+            </div>           
+            
             <div class="entrance">
                 <div class="joinRoom">
                     <p class="t">加入房间</p>
@@ -42,7 +50,7 @@
                         <input type="number" min="1" class="roomIdIpt">
                     </div>
                     <div class="btnCnt">
-                        <a href="javascript:;" class="joinBtn">加入房间</a>
+                        <a href="javascript:;" class="joinBtn ui brown button">加入房间</a>
                     </div>
                     <p class="err"></p>
                 </div>
@@ -50,35 +58,43 @@
                     <p class="t">创建房间</p>
                     <p>点击“创建房间”建立全新的游戏房间</p>
                     <div class="btnCnt">
-                        <a href="javascript:;" class="createBtn">创建房间</a>
+                        <a href="javascript:;" class="createBtn ui brown button">创建房间</a>
                     </div>
                     <p class="err"></p>
                 </div>
             </div>
         </div>
+
         <div id="readyPanel" class="readyPannel">
             <h2 class="roomId"></h2>
             <div class="playerList f-cb">
-
+                <div class="item f-fl"></div>
+                <div class="item f-fl"></div>
+                <div class="item f-fl"></div>
+                <div class="item f-fl"></div>
+                <div class="item f-fl"></div>
+                <div class="item f-fl"></div>
+                <div class="item f-fl"></div>
+                <div class="item f-fl"></div>
             </div>
             <a href="javascript:;" class="startBtn"></a>
             <div class="confirmPop">
                 <div class="pop">
                     <p class="title">提示</p>
                     <p class="content">
-                        确定踢除该队员？
+                        确定要把<span class="nickName"></span>请出房间？
                     </p>
-                    <p class="btns">
-                        <a href="javascript:;" class="cancelBtn">取消</a>
+                    <p class="btns">                        
                         <a href="javascript:;" class="confirmBtn">确定</a>
+                        <a href="javascript:;" class="cancelBtn">取消</a>
                     </p>
                 </div>
             </div>
         </div>
-
         <!-- drawPanel -->
         <div id="drawPanel" class="drawPanel">
-            <div class="colorDisc">                
+            <div class="colorDisc">
+                
                 <div class="colorcard colorcard-1">
                     <span class="circle"></span>
                 </div>
@@ -152,7 +168,7 @@
                 </div>
             </div>
             <div class="members">
-
+                
             </div>
             <div class="roundCountDown">
                 <span>倒计时</span>
@@ -163,8 +179,8 @@
 
             <div class="mask"></div>
             <div class="endPop">
-                <p class="title">答案：</p>
-                <span class="timeTips">5秒后自动关闭</span>
+                <p class="title"></p>
+                <span class="timeTips"></span>
                 <div class="imgCnt">
                     <img src="" width="440" height="240">
                 </div>
@@ -172,7 +188,17 @@
                     <a href="javascript:;" class="caiBtn f-fl">(0)</a>
                     <a href="javascript:;" class="zanBtn f-fr">(0)</a>
                 </div>
-            </div>            
+            </div>
+            <div class="deleteConfirmPop">
+                <p class="title">提示</p>
+                <p class="content">
+                    确认后将清空整个画板
+                </p>
+                <div class="btns f-cb">
+                    <a href="javascript:;" class="confirmBtn f-fl">清空</a>
+                    <a href="javascript:;" class="cancelBtn f-fr">取消</a>
+                </div>
+            </div>
         </div>
         <!-- drawPanel -->
 
@@ -187,8 +213,13 @@
             </div>            
         </div>
         <!-- commonAlert -->
+        
+        <div class="audioPanel" id="audioPanel">
+            <!-- <audio src="http://v.tianyu.netease.com/2017/0222/u8c15u4e16.ogg" autoplay loop></audio> -->
+            <!-- <a href="javascript:;" class="audioCloseBtn">关闭</a> -->
+        </div>
 
-    </div>
+    </div>    
     <script id="roleItems-template" type="text/x-handlebars-template">
         {{#each rolesList}}
         <label>
@@ -200,31 +231,33 @@
         </label>
         {{/each}}
     </script>
-    <script id="playerItems-template" type="text/x-handlebars-template">
-        <div class="item f-fl">
-            <span class="name">{{name}}<span class="score f-fr">{{totalScore}}分</span></span>
-            <div class="head">
-                <img src="img/ready/head.png" width="72" height="72">
-                <span class="head_border"></span>
-            </div>
-            <a href="javascript:;" class="btn btn-ready">点击准备</a>
-            <span class="btn btn-already">已准备<span class="icon-already"></span></span>
-            <span class="btn btn-unready">未准备</span>
-            <span class="countDown">
-                <span class="icon-time"></span>
-                <span class="second">59</span><span class="txt">/秒</span>                        
-            </span>
-            <a href="javascript:;" class="closeBtn" data-avatarId="{{avatarId}}"></a>
-            <span class="ownerIcon"></span>
+    <script id="playerItems-template" type="text/x-handlebars-template">  
+    <div>     
+        <span class="name">{{name}}<span class="score f-fr">{{totalScore}}分</span></span>
+        <div class="head">
+            <img src="img/ready/head.png" width="72" height="72">
+            <span class="head_border"></span>
         </div>
+        <a href="javascript:;" class="btn btn-ready">点击准备</a>
+        <span class="btn btn-already">已准备<span class="icon-already"></span></span>
+        <span class="btn btn-unready">未准备</span>
+        <span class="countDown">
+            <span class="icon-time"></span>
+            <span class="second">59</span><span class="txt">/秒</span>                        
+        </span>
+        <a href="javascript:;" class="closeBtn" data-avatarId="{{avatarId}}"></a>
+        <span class="ownerIcon"></span>        
+    </div>
     </script>
     <script id="drawingPlayerItem-template" type="text/x-handlebars-template">
     {{#each rolesList}}
         <div class="item f-fl" data-avatarId="{{avatarId}}" data-localScore="{{localScore}}">
+            {{#if avatarId}}
             <span class="head">
                 <img src="img/ready/head.png" width="43" heigth="43">
                 <span class="imgBorder"></span>
-            </span>
+            </span>           
+
             <span class="name">{{name}}</span>
             <span class="score">
                 {{#if localScore}}
@@ -235,6 +268,7 @@
                 <span class="icon"></span>
             </span>
             <div class="current"></div>
+            {{/if}}
         </div>
     {{/each}}
     </script>

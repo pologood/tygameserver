@@ -10,14 +10,15 @@ puremvc.define({
         
         // Code to be executed when the Mediator instance is registered with the View
         onRegister: function() {
-            this.setViewComponent( new drawsomething.view.component.CommonAlert);
+            this.setViewComponent( new drawsomething.view.component.CommonAlert);    
+                 
         },
         
         // Handle events from the view component
         handleEvent: function ( event ) {            
             switch( event.type ) {
-
-             }
+                
+            }
             
         },
  

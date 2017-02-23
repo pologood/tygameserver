@@ -4,6 +4,7 @@ import com.google.common.base.Strings;
 import com.netease.pangu.game.common.meta.GameContext;
 import com.netease.pangu.game.rpc.annotation.WsRpcCall;
 import com.netease.pangu.game.rpc.annotation.WsRpcController;
+import com.netease.pangu.game.util.JsonUtil;
 import com.netease.pangu.game.util.MethodUtil;
 import com.netease.pangu.game.util.NettyHttpUtil;
 import javassist.NotFoundException;
@@ -18,6 +19,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,6 +33,8 @@ public class WsRpcCallInvoker {
     private Map<Long, Map<String, Method>> methodMap;
     private Map<Long, Map<String, Map<Integer, String>>> methodParamIndexMap;
     private Map<Long, Map<String, String>> nettyRpcCallAnnoValueMap;
+    public Map<Long, Map<Integer, String>> methodIndexMap;
+
     @Resource
     private ConfigurableListableBeanFactory beanFactory;
 
@@ -54,8 +59,13 @@ public class WsRpcCallInvoker {
     }
 
     public boolean containsURIPath(long gameId, String requestUri) {
-        return methodMap.get(gameId) != null ? methodMap.get(gameId).keySet().contains(requestUri):false;
+        return methodMap.get(gameId) != null ? methodMap.get(gameId).keySet().contains(requestUri) : false;
     }
+
+    public Map<Long, Map<Integer, String>> getMethodIndexMap() {
+        return Collections.unmodifiableMap(methodIndexMap);
+    }
+
 
     @SuppressWarnings("unchecked")
     public void invoke(long gameId, String rpcMethodName, Map<String, Object> args, GameContext<?> context) {
@@ -63,7 +73,9 @@ public class WsRpcCallInvoker {
         Object controller = getController(gameId, rpcMethodName);
         final Class<?>[] parameterTypes = method.getParameterTypes();
         List<Object> convertedArgs = new ArrayList<Object>();
+        logger.info(String.format("%d %s %s", gameId, rpcMethodName, JsonUtil.toJson(args)));
         Map<Integer, String> paramsIndex = getParamsIndex(gameId, rpcMethodName);
+        logger.info(String.format("%d %s %s", gameId, rpcMethodName, JsonUtil.toJson(paramsIndex)));
         try {
             for (Integer i = 0; i < parameterTypes.length; i++) {
                 if (Long.class.isAssignableFrom(parameterTypes[i]) || long.class.isAssignableFrom(parameterTypes[i])) {
@@ -157,18 +169,36 @@ public class WsRpcCallInvoker {
         nettyRpcCallAnnoValueMap = new HashMap<Long, Map<String, String>>();
         methodParamIndexMap = new HashMap<Long, Map<String, Map<Integer, String>>>();
         controllerMap = new HashMap<Long, Map<String, Object>>();
+        methodIndexMap = new HashMap<Long, Map<Integer, String>>();
         Map<String, Object> controllers = beanFactory.getBeansWithAnnotation(WsRpcController.class);
         for (Entry<String, Object> entry : controllers.entrySet()) {
             WsRpcController anno = entry.getValue().getClass().getAnnotation(WsRpcController.class);
-            if (!controllerMap.containsKey(anno.gameId())) {
-                controllerMap.put(anno.gameId(), new HashMap<String, Object>());
+            Map<String, Object> map = controllerMap.get(anno.gameId());
+            if(map == null){
+                map = new HashMap<String, Object>();
+                controllerMap.put(anno.gameId(), map);
             }
-            controllerMap.get(anno.gameId()).put(entry.getKey(), entry.getValue());
+            map.put(entry.getKey(), entry.getValue());
             initAndCheckMethodsByNettyRpcCall(anno.gameId(), entry.getValue(), entry.getKey());
+        }
+
+        for (Entry<Long, Map<String, Method>> entry : methodMap.entrySet()) {
+            Map<Integer, String> map = methodIndexMap.get(entry.getKey());
+            if(map == null){
+                map = new HashMap<Integer, String>();
+                methodIndexMap.put(entry.getKey(), map);
+            }
+            Map<String, Method> methods = methodMap.get(entry.getKey());
+            List<String> methodNames = Arrays.asList(methodMap.get(entry.getKey()).keySet().toArray(new String[0]));
+            Collections.sort(methodNames);
+            for(int i = 0; i < methodNames.size(); i++){
+                map.put(i, methodNames.get(i));
+            }
         }
     }
 
     public void initAndCheckMethodsByNettyRpcCall(long gameId, Object controller, String controllerName) {
+
         if (!methodMap.containsKey(gameId)) {
             methodMap.put(gameId, new HashMap<String, Method>());
         }
@@ -211,10 +241,5 @@ public class WsRpcCallInvoker {
 
     private Map<Integer, String> getParamsIndex(long gameId, String requestUri) {
         return methodParamIndexMap.get(gameId).get(requestUri);
-    }
-
-    public static void main(String[] args) {
-        WsRpcCallInvoker manager = new WsRpcCallInvoker();
-        manager.init();
     }
 }

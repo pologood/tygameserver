@@ -34,9 +34,9 @@ puremvc.define({
             _this.type=1;
             $(this).find(".selected").show();
         })
-
         this.$container.find(".delete").click(function(){
-            _this.dispatchDelete();
+            _this.$deleteConfirmPop.show();
+            _this.$container.find(".mask").show();
         })
         this.$container.find(".sendBtn").click(function(){
             _this.dispatchMsg();          
@@ -96,6 +96,18 @@ puremvc.define({
         this.receivePosArray=[];
         this.pane=$('.chatBox').jScrollPane({showArrows:true, scrollbarWidth: 15, arrowSize: 16,autoReinitialise:true,autoReinitialiseDelay:0,verticalDragMaxHeight:170});
         this.paneApi = this.pane.data('jsp');
+
+        this.$deleteConfirmPop=this.$container.find(".deleteConfirmPop");
+        this.$deleteConfirmPop.find(".confirmBtn").click(function(){
+            _this.dispatchDelete();
+            _this.$deleteConfirmPop.hide();
+            _this.$container.find(".mask").hide();
+
+        })
+        this.$deleteConfirmPop.find(".cancelBtn").click(function(){
+            _this.$deleteConfirmPop.hide();
+            _this.$container.find(".mask").hide();
+        })
         
 	}
 },
@@ -156,6 +168,10 @@ puremvc.define({
 	},
     dispatchMsg:function(){
         var msgStr=this.$container.find(".msgIpt").val();
+        if(msgStr==""){
+            this.receiveNotice("发送信息不能为空");
+            return;
+        }
         var e = this.createEvent( drawsomething.view.event.AppEvents.SEND_MSG);
         e.msg={
             text:msgStr
@@ -252,6 +268,7 @@ puremvc.define({
         this.dispatchEvent(e);
     },
     roundStart:function(data){
+        this.roominfo=data.roominfo;
         var gameInfo=data.gameInfo;
         var avatarId=data.avatarId;
         if(avatarId==gameInfo.drawerId){
@@ -264,11 +281,20 @@ puremvc.define({
             this.$container.find(".tools").hide();
             this.$container.find(".iptCnt").show();
             this.isDrawer=false;
+        }       
+           
+        this.membersList=[];
+        var members=this.roominfo.members;
+        for(var i=0;i<8;i++){
+            if(members[i]){
+               this.membersList[i]=members[i];
+            }else{
+                this.membersList[i]={};
+            }
         }
-        var source=$("#drawingPlayerItem-template").html();
-        var template = Handlebars.compile(source); 
-        var html    = template({rolesList:data.roominfo.members});
-        this.$container.find(".members").html(html);
+
+        this.refreshMembers();
+
         var owner=this.getMember(data.roominfo.members,gameInfo.drawerId);
         if(owner){
             this.$container.find(".drawerName").html(owner.name);
@@ -278,8 +304,38 @@ puremvc.define({
         this.$container.find(".item[data-avatarId="+gameInfo.drawerId+"]").addClass("active");
         // this.startCountdown();
     },
+    resetLocalScores:function(){
+        var members=this.roominfo.members;
+        for(var i in members){
+            members[i].localScore=0;
+        }  
+        this.refreshMembers();
+    },
+    refreshMembers:function(){
+        var source=$("#drawingPlayerItem-template").html();
+        var template = Handlebars.compile(source); 
+        var html    = template({rolesList:this.membersList});
+        var $el=$(html);
+        this.$container.find(".members").empty();
+        this.$container.find(".members").append($el);
+
+        var tempScore=0;
+        var tempItem;
+        $el.each(function(){
+            if($(this).attr("data-localScore")>tempScore){
+                tempScore=$(this).attr("data-localScore");
+                tempItem=$(this);
+            }
+        })
+
+        $el.find(".icon").removeClass("show");
+        if(tempItem!=undefined){
+            tempItem.find(".icon").addClass("show");
+        }
+        
+    },
     getMember:function(members,avatarId){
-        for(var i=0;i<members.length;i++){
+        for(var i in members){
             if(members[i].avatarId==avatarId){
                 return members[i];
             }
@@ -304,6 +360,14 @@ puremvc.define({
             _this.paneApi.scrollToBottom();
         },0)
     },
+    receiveNotice:function(info){
+        var _this=this;
+        var msg='<p>'+info+'</p>';
+        this.$container.find(".chatBox").find(".content").append(msg);
+        setTimeout(function(){
+            _this.paneApi.scrollToBottom();
+        },0)
+    },
     receiveScores:function(data){
         var members=data.members;
         var scores=data.scores;
@@ -313,22 +377,15 @@ puremvc.define({
         }
         var source=$("#drawingPlayerItem-template").html();
         var template = Handlebars.compile(source); 
-        var html    = template({rolesList:members});
-        var $el=$(html);
-        this.$container.find(".members").empty();
-        this.$container.find(".members").append($el);
-
-        var tempScore=0;
-        var tempItem;
-        $el.each(function(){
-            if($(this).attr("data-localScore")>tempScore){
-                tempScore=$(this).attr("data-localScore");
-                tempItem=$(this);
+        this.membersList=[];
+        for(var i=0;i<8;i++){
+            if(members[i]){
+                this.membersList[i]=members[i];
+            }else{
+                this.membersList[i]={};
             }
-        })
-
-        $el.find(".icon").removeClass("show");
-        tempItem.find(".icon").addClass("show");
+        }
+        this.refreshMembers();
     },
     receiveLikeInfo:function(info){
         this.$endPop.find(".zanBtn").html("("+info.like+")");
@@ -349,18 +406,22 @@ puremvc.define({
         this.$endPop.show();
         this.$container.find(".mask").show();
         this.$endPop.find(".title").html("答案："+roundInfo.answer);
-        var countDown=6;
-        function count(){            
-            countDown--;
-            _this.$endPop.find(".timeTips").html(countDown+"秒后自动关闭");
-            if(countDown>0){
-                setTimeout(count,1000);
-            }else{
+
+        this.$container.find(".hint1").html("");
+        this.$container.find(".hint2").html("");
+
+        this.receiveLikeInfo({like:0,unlike:0});
+    },
+    updateICountDown:function(left){
+        var _this=this;
+        this.$endPop.find(".timeTips").html(left+"秒后自动关闭");
+        if(left==0){
+            setTimeout(function(){
                 _this.$endPop.hide();
                 _this.$container.find(".mask").hide();
-            }
+                _this.$endPop.find(".timeTips").html("5秒后自动关闭");
+            },1000);
         }
-        count();
     },
     updateCountDown:function(left){
         this.$container.find(".roundCountDown").find(".num").html(left);
@@ -389,6 +450,9 @@ puremvc.define({
         var e = this.createEvent( drawsomething.view.event.AppEvents.UNLIKE);
         e.msg={};
         this.dispatchEvent(e);
+    },
+    clearChat:function(){
+        this.$container.find(".chatBox").find(".content").empty();
     },
 	show:function(){
 		this.$container.show();

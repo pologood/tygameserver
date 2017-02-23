@@ -60,7 +60,7 @@ puremvc.define({
                     this.viewComponent.show();
                 break;
                 case drawsomething.AppConstants.CHANGE_OWNER:
-                    this.viewComponent.changeOwner();
+                    this.viewComponent.changeOwner(note.getBody());
                 break;
             }
         },

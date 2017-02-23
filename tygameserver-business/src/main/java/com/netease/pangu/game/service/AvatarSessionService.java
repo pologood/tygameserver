@@ -21,9 +21,7 @@ public class AvatarSessionService extends AbstractAvatarSessionService<Avatar> {
             public Void call(AvatarSession<Avatar> playerSession) {
                 GameRoom room = roomService.getGameRoom(playerSession.getRoomId());
                 if(roomService.exitRoom(playerSession.getAvatarId())) {
-                    remove(playerSession.getAvatarId());
                     ReturnUtils.GameResult result = guessGameService.exit(room.getId(), playerSession);
-
                     if(result.getCode() == ReturnUtils.FAILED) {
                         roomService.broadcast(RoomBroadcastApi.ROOM_REMOVE, room.getId(), ReturnUtils.succ(playerSession.getAvatarId()));
                     }else{
@@ -33,8 +31,8 @@ public class AvatarSessionService extends AbstractAvatarSessionService<Avatar> {
                     if (room != null && room.getSessionIds().size() == 1) {
                         guessGameService.stopGame(room.getId());
                     }
-
                 }
+                remove(playerSession.getAvatarId());
                 return null;
             }
         });

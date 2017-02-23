@@ -2,12 +2,16 @@ package com.netease.pangu.game.business.controller;
 
 import com.netease.pangu.game.common.meta.AvatarSession;
 import com.netease.pangu.game.common.meta.AvatarStatus;
+import com.netease.pangu.game.common.meta.GameConst;
 import com.netease.pangu.game.common.meta.GameContext;
 import com.netease.pangu.game.distribution.service.SystemAttrService;
+import com.netease.pangu.game.http.annotation.HttpController;
+import com.netease.pangu.game.http.annotation.HttpRequestMapping;
 import com.netease.pangu.game.meta.Avatar;
 import com.netease.pangu.game.rpc.WsRpcResponse;
 import com.netease.pangu.game.rpc.annotation.WsRpcCall;
 import com.netease.pangu.game.rpc.annotation.WsRpcController;
+import com.netease.pangu.game.service.AbstractAvatarSessionService;
 import com.netease.pangu.game.service.AvatarService;
 import com.netease.pangu.game.service.AvatarSessionService;
 import com.netease.pangu.game.service.RoomBroadcastApi;
@@ -20,7 +24,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
-@WsRpcController(value = "/avatar", gameId = 1)
+@HttpController(value = "/avatar", gameId = GameConst.GUESSS)
+@WsRpcController(value = "/avatar", gameId = GameConst.GUESSS)
 public class AvatarController {
     @Resource
     private AvatarSessionService avatarSessionService;
@@ -31,8 +36,10 @@ public class AvatarController {
     @Resource
     private SystemAttrService systemAttrService;
 
+
+    @HttpRequestMapping("/list")
     @WsRpcCall("/list")
-    public GameResult list(GameContext<AvatarSession<Avatar>> ctx) {
+    public GameResult list() {
         TreeMap<Long, Avatar> map = new TreeMap<Long, Avatar>();
         for (Long avatarId : avatarSessionService.getSessions().keySet()) {
             map.put(avatarId, avatarSessionService.getSessions().get(avatarId).getAvatar());
@@ -57,12 +64,25 @@ public class AvatarController {
     @WsRpcCall("/ready")
     public GameResult ready(GameContext<AvatarSession<Avatar>> ctx) {
         AvatarSession<Avatar> session = ctx.getSession();
-        if (session.getAvatarStatus() != AvatarStatus.READY) {
-            session.setAvatarStatus(AvatarStatus.READY);
-            roomService.broadcast(RoomBroadcastApi.ROOM_READY, session.getRoomId(), roomService.getMember(session));
+        boolean isOk = avatarSessionService.updateAvatarSession(session.getAvatarId(), new AbstractAvatarSessionService.SessionCallable<Boolean, Avatar>() {
+
+            @Override
+            public Boolean call(AvatarSession<Avatar> playerSession) {
+                if (session.getAvatarStatus() != AvatarStatus.READY) {
+                    session.setAvatarStatus(AvatarStatus.READY);
+                    roomService.broadcast(RoomBroadcastApi.ROOM_READY, session.getRoomId(), roomService.getMember(session));
+                    return true;
+                }else{
+                    return false;
+                }
+
+            }
+        });
+        if(isOk) {
+            return ReturnUtils.succ(session.getAvatarId());
+        }else{
+            return ReturnUtils.failed();
         }
-        GameResult result = ReturnUtils.succ(session.getAvatarId());
-        return result;
     }
 
     @WsRpcCall("/chat")

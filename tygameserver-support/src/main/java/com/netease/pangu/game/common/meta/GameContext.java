@@ -8,12 +8,14 @@ public class GameContext<T> {
     private final T session;
     private final String rpcMethod;
     private final Object frame;
+    private final long gameId;
 
-    public GameContext(ChannelHandlerContext context, T session, String rpcMethod, Object frame) {
+    public GameContext(long gameId, ChannelHandlerContext context, T session, String rpcMethod, Object frame) {
         this.channelHandlerContext = context;
         this.session = session;
         this.rpcMethod = rpcMethod;
         this.frame = frame;
+        this.gameId = gameId;
     }
 
     public ChannelHandlerContext getChannelHandlerContext() {
@@ -34,5 +36,9 @@ public class GameContext<T> {
 
     public T getSession() {
         return session;
+    }
+
+    public long getGameId() {
+        return gameId;
     }
 }

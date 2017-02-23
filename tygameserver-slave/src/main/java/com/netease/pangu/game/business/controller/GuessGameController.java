@@ -5,6 +5,8 @@ import com.netease.pangu.game.common.meta.AvatarStatus;
 import com.netease.pangu.game.common.meta.GameConst;
 import com.netease.pangu.game.common.meta.GameContext;
 import com.netease.pangu.game.common.meta.RoomStatus;
+import com.netease.pangu.game.http.annotation.HttpController;
+import com.netease.pangu.game.http.annotation.HttpRequestMapping;
 import com.netease.pangu.game.meta.Avatar;
 import com.netease.pangu.game.meta.GuessGame;
 import com.netease.pangu.game.meta.GuessGameState;
@@ -20,6 +22,7 @@ import com.netease.pangu.game.util.ReturnUtils.GameResult;
 import javax.annotation.Resource;
 import java.util.Map;
 
+@HttpController(value = "/guess", gameId = GameConst.GUESSS)
 @WsRpcController(value = "/guess", gameId = GameConst.GUESSS)
 public class GuessGameController {
     public static final String START_GAME = "startGame";
@@ -34,6 +37,11 @@ public class GuessGameController {
     private AvatarSessionService avatarSessionService;
     @Resource
     private RoomService roomService;
+
+    @HttpRequestMapping("/list")
+    public GameResult listGuessGame() {
+        return ReturnUtils.succ(guessGameService.getGuessGames());
+    }
 
     @WsRpcCall("/start")
     public GameResult startGuessGame(long roomId, GameContext<AvatarSession<Avatar>> ctx) {
@@ -53,7 +61,7 @@ public class GuessGameController {
     public GameResult draw(long roomId, Map<String, Object> content, GameContext<AvatarSession<Avatar>> ctx) {
         if (guessGameService.isDrawer(roomId, ctx.getSession().getAvatarId())) {
             GuessGame game = guessGameService.getGuessGame(roomId);
-            if (game != null &&game.getState() == GuessGameState.ROUND_GAMING && ctx.getSession().getAvatarId() == game.getDrawerId()) {
+            if (game != null && game.getState() == GuessGameState.ROUND_GAMING && ctx.getSession().getAvatarId() == game.getDrawerId()) {
                 roomService.broadcast(DRAW_GAME, roomId, ReturnUtils.succ(content));
                 return ReturnUtils.succ();
             } else {
@@ -65,18 +73,18 @@ public class GuessGameController {
     }
 
     @WsRpcCall("/like")
-    public GameResult like(long roomId, GameContext<AvatarSession<Avatar>> ctx){
+    public GameResult like(long roomId, GameContext<AvatarSession<Avatar>> ctx) {
         long avatarId = ctx.getSession().getAvatarId();
         return guessGameService.like(roomId, ctx.getSession());
     }
 
     @WsRpcCall("/exit")
-    public void exit(long roomId, GameContext<AvatarSession<Avatar>> ctx){
+    public void exit(long roomId, GameContext<AvatarSession<Avatar>> ctx) {
         guessGameService.exit(roomId, ctx.getSession());
     }
 
     @WsRpcCall("/unlike")
-    public GameResult unlike(long roomId, GameContext<AvatarSession<Avatar>> ctx){
+    public GameResult unlike(long roomId, GameContext<AvatarSession<Avatar>> ctx) {
         long avatarId = ctx.getSession().getAvatarId();
         return guessGameService.unlike(roomId, ctx.getSession());
     }
@@ -92,7 +100,7 @@ public class GuessGameController {
         if (guessGameService.getGuessGameState(roomId) == GuessGameState.ROUND_GAMING) {
             guessGameService.answer(roomId, ctx.getSession(), guess);
             return ReturnUtils.succ();
-        }else {
+        } else {
             return ReturnUtils.failed("not in gaming");
         }
     }

@@ -21,6 +21,7 @@ public class GuessGame {
     private List<Guess> answers;
     private boolean isFirstGuessed;
     private Map<Long, Integer> scores;
+
     private Map<Long, Map<Integer, List<RULE>>> operations;
     private GuessGameState state;
     private int round;
@@ -37,8 +38,11 @@ public class GuessGame {
         this.timer = new Timer();
     }
 
-    public void setTimer(Timer timer) {
-        this.timer = timer;
+    public void reset() {
+        this.answers = new ArrayList<Guess>();
+        this.operations = new HashMap<Long, Map<Integer, List<RULE>>>();
+        this.scores = new HashMap<Long, Integer>();
+        this.timer = new Timer();
     }
 
     public long getRoomId() {
@@ -155,7 +159,9 @@ public class GuessGame {
         LIKE(3, "画题人：绘画被点赞"),
         UNLIKE(4, "不喜欢"),
         BE_GUESSED(5, "画题人：每次作品被别人"),
-        EXIT(6, "中途离开");
+        EXIT(6, "中途离开"),
+        BE_LIKED(7, "画题人：绘画被点赞"),
+        BE_UNLIKED(8, "画题人：绘画被点赞");
 
         private int id;
         private String desc;

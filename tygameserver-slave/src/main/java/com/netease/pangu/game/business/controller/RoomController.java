@@ -7,6 +7,8 @@ import com.netease.pangu.game.common.meta.GameContext;
 import com.netease.pangu.game.common.meta.GameRoom;
 import com.netease.pangu.game.common.meta.IAvatar;
 import com.netease.pangu.game.common.meta.RoomStatus;
+import com.netease.pangu.game.http.annotation.HttpController;
+import com.netease.pangu.game.http.annotation.HttpRequestMapping;
 import com.netease.pangu.game.meta.Avatar;
 import com.netease.pangu.game.rpc.WsRpcResponse;
 import com.netease.pangu.game.rpc.annotation.WsRpcCall;
@@ -25,6 +27,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+@HttpController(value = "/room", gameId = GameConst.GUESSS)
 @WsRpcController(value = "/room", gameId = GameConst.GUESSS)
 public class RoomController {
     @Resource
@@ -36,23 +39,32 @@ public class RoomController {
     @Resource
     private GuessGameService guessGameService;
 
+
+    @HttpRequestMapping(value = "/list")
     @WsRpcCall("/list")
-    public GameResult listRoom(GameContext<Avatar> ctx) {
-        GameResult result = ReturnUtils.succ(roomService.getRooms());
-        return result;
+    public GameResult listRoom() {
+        Map<Long, Object> ret = new HashMap<Long, Object>();
+        for(Map.Entry<Long, GameRoom> entry : roomService.getRooms().entrySet()){
+            ret.put(entry.getKey(), roomService.getRoomInfoMap(entry.getKey()));
+        }
+        return ReturnUtils.succ(ret);
     }
 
     @WsRpcCall("/create")
-    public GameResult createRoom(long gameId, int maxSize, GameContext<AvatarSession<Avatar>> ctx) {
+    public GameResult createRoom(int maxSize, GameContext<AvatarSession<Avatar>> ctx) {
         AvatarSession<Avatar> session = ctx.getSession();
-        long roomId = roomService.createRoom(gameId, session.getAvatarId(), maxSize);
+        long roomId = roomService.createRoom(ctx.getGameId(), session.getAvatarId(), maxSize);
         GameResult result;
-        if (roomId > 0) {
-            session.setAvatarStatus(AvatarStatus.READY);
-            roomService.broadcast(RoomBroadcastApi.ROOM_INFO, roomId, roomService.getRoomInfo(roomId));
-            result = ReturnUtils.succ(roomId);
-        } else {
-            result = ReturnUtils.failed("create room failed");
+        if(maxSize > 8){
+            result = ReturnUtils.failed("maxSize must less equal than 8");
+        }else {
+            if (roomId > 0) {
+                session.setAvatarStatus(AvatarStatus.READY);
+                roomService.broadcast(RoomBroadcastApi.ROOM_INFO, roomId, roomService.getRoomInfo(roomId));
+                result = ReturnUtils.succ(roomId);
+            } else {
+                result = ReturnUtils.failed("create room failed");
+            }
         }
         return result;
     }
@@ -67,9 +79,9 @@ public class RoomController {
                 return ReturnUtils.failed(String.format("you have in room %d", session.getRoomId()));
             }
         }
-        boolean isOk = roomService.joinRoom(session.getAvatarId(), roomId);
+        int pos = roomService.joinRoom(session.getAvatarId(), roomId);
         GameResult result;
-        if (isOk) {
+        if (pos >= 0) {
             roomService.broadcast(RoomBroadcastApi.ROOM_JOIN, roomId, roomService.getMember(session));
             result = roomService.getRoomInfo(roomId);
         } else {

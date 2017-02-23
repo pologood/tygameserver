@@ -94,7 +94,7 @@ public class NodeServerHandler extends ChannelInboundHandlerAdapter {
                     if (session.getChannel() == null || !session.getChannel().isActive()) {
                         session.setChannel(ctx.channel());
                     }
-                    context = new GameContext<AvatarSession<Avatar>>(ctx, session, rpcMethod, frame);
+                    context = new GameContext<AvatarSession<Avatar>>(gameId, ctx, session, rpcMethod, frame);
                     wsRpcCallInvoker.invoke(gameId, rpcMethod, args, context);
                 } else {
                     NettyHttpUtil.sendWsResponse(rpcMethod, ctx.channel(), "avatar not init");
@@ -132,16 +132,17 @@ public class NodeServerHandler extends ChannelInboundHandlerAdapter {
                     NettyHttpUtil.sendHttpResponse(ctx, request,
                             new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.BAD_REQUEST,
                                     Unpooled.copiedBuffer("parameter gameId not exist!", Charset.forName("UTF-8"))));
+                }else {
+                    Double dGameId = NumberUtils.toDouble(params.get("gameId").toString());
+                    long gameId = dGameId.longValue();
+                    FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.CONTINUE);
+                    if (httpRequestInvoker.containsURIPath(gameId, uri.getPath())) {
+                        httpRequestInvoker.invoke(gameId, uri.getPath(), params, request, response);
+                    } else {
+                        NettyHttpUtil.setHttpResponse(response, HttpResponseStatus.BAD_REQUEST, "uri not exist!");
+                    }
+                    NettyHttpUtil.sendHttpResponse(ctx, request, response);
                 }
-                Double dGameId = NumberUtils.toDouble(params.get("gameId").toString());
-                long gameId = dGameId.longValue();
-                FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.CONTINUE);
-                if (httpRequestInvoker.containsURIPath(gameId, uri.getPath())) {
-                    httpRequestInvoker.invoke(gameId, uri.getPath(), params, request, response);
-                } else {
-                    NettyHttpUtil.setHttpResponse(response, HttpResponseStatus.BAD_REQUEST, "uri not exist!");
-                }
-                NettyHttpUtil.sendHttpResponse(ctx, request, response);
                 return;
             }
 

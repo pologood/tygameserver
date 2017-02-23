@@ -26,6 +26,7 @@ import javax.annotation.Resource;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -84,10 +85,29 @@ public class GuessGameService {
         RULE_SCORE.put(GuessGame.RULE.FIRST_GUESSED, 3);
         RULE_SCORE.put(GuessGame.RULE.GUESSED, 1);
         RULE_SCORE.put(GuessGame.RULE.BE_GUESSED, 1);
-        RULE_SCORE.put(GuessGame.RULE.LIKE, 1);
-        RULE_SCORE.put(GuessGame.RULE.UNLIKE, 0);
+        RULE_SCORE.put(GuessGame.RULE.BE_LIKED, 1);
         RULE_SCORE.put(GuessGame.RULE.EXIT, -10);
     }
+
+    public Map<Long, Object> getGuessGames() {
+        Map<Long, Object> map = new HashMap<Long, Object>();
+        for (Long roomId : gameMap.keySet()) {
+            Map<String, Object> currentGame = new HashMap<String, Object>();
+            GuessGame game = gameMap.get(roomId);
+            currentGame.put("drawerId", game.getDrawerId());
+            currentGame.put("round", game.getRound());
+            currentGame.put("endTime", game.getEndTime());
+            currentGame.put("nextStartTime", game.getNextStartTime());
+            currentGame.put("scores", game.getScores());
+            currentGame.put("answers", game.getAnswers());
+            currentGame.put("state", game.getState());
+            currentGame.put("isFirstGuessed", game.isFirstGuessed());
+            currentGame.put("operations", game.getOperations());
+            map.put(roomId, currentGame);
+        }
+        return Collections.unmodifiableMap(map);
+    }
+
 
     @PostConstruct
     public void init() {
@@ -176,49 +196,47 @@ public class GuessGameService {
                                     roomService.broadcast(RoomBroadcastApi.GAME_HINT2, roomId, ReturnUtils.succ(game.getQuestion().getHint2()));
                                 }
                             } else {
-                                if (game.getRound() == room.getSessionIds().size()) {
-                                    game.setState(GuessGameState.GAME_STATS);
-                                } else {
-                                    game.setState(GuessGameState.ROUND_INTERNAL);
-                                    long nextStartTime = current + ROUND_INTERVAL_TIME;
-                                    game.setNextStartTime(nextStartTime);
-                                    Map<String, Object> ret = new HashMap<String, Object>(getCurrentGameInfo(roomId));
-                                    ret.put("answer", game.getQuestion().getAnswer());
-                                    roomService.broadcast(RoomBroadcastApi.GAME_ROUND_OVER, roomId, ReturnUtils.succ(ret));
-                                }
+                                game.setState(GuessGameState.ROUND_INTERNAL);
+                                long nextStartTime = current + ROUND_INTERVAL_TIME;
+                                game.setNextStartTime(nextStartTime);
+                                Map<String, Object> ret = new HashMap<String, Object>(getCurrentGameInfo(roomId));
+                                ret.put("answer", game.getQuestion().getAnswer());
+                                roomService.broadcast(RoomBroadcastApi.GAME_ROUND_OVER, roomId, ReturnUtils.succ(ret));
+
                                 getGuessGameInfo().getInfos().put(game.getRound(), new GuessGame.GameRound(game, room.getOwnerId()));
                                 guessGameInfoDao.save(getGuessGameInfo());
-                                Map<Long, AvatarSession<Avatar>> members = roomService.getMembers(roomId);
-                                for (AvatarSession<Avatar> member : members.values()) {
-                                    int score = member.getAvatar().getTotalScore();
-                                    member.getAvatar().setTotalScore(score + MapUtils.getInteger(game.getScores(), member.getAvatarId(), 0));
-                                    avatarService.save(member.getAvatar());
-                                }
                             }
-                        } else if (game.getState() == GuessGameState.ROUND_INTERNAL && game.getRound() < room.getSessionIds().size()) {
+                        } else if (game.getState() == GuessGameState.ROUND_INTERNAL && game.getRound() <= room.getSessionIds().size()) {
                             if (isNearEqual(current, (current / 1000) * 1000)) {
                                 roomService.broadcast(RoomBroadcastApi.GAME_INTERVAL_COUNTDOWN, roomId, ReturnUtils.succ(game.getNextStartTime() / 1000 - current / 1000));
                             }
 
                             if (current > game.getNextStartTime()) {
-                                game.setState(GuessGameState.ROUND_GAMING);
-                                long drawerId = generateDrawer(roomId);
-                                game.setDrawerId(drawerId);
-                                long startTime = game.getNextStartTime();
-                                game.setStartTime(startTime);
-                                game.setNextStartTime(0);
-                                game.setEndTime(startTime + ROUNG_GAME_TIME);
-                                game.setQuestion(generateQuestion());
-                                game.setRound(game.getRound() + 1);
-                                roomService.chatTo(RoomBroadcastApi.GAME_QUESTION, roomId, Arrays.asList(game.getDrawerId()), ReturnUtils.succ(game.getQuestion()));
-                                Map<String, Object> ret = new HashMap<String, Object>(getCurrentGameInfo(roomId));
-                                roomService.broadcast(RoomBroadcastApi.GAME_RUNNING, roomId, ReturnUtils.succ(ret));
+                                if (game.getRound() == room.getSessionIds().size()) {
+                                    game.setState(GuessGameState.GAME_STATS);
+                                } else {
+                                    game.setState(GuessGameState.ROUND_GAMING);
+                                    long drawerId = generateDrawer(roomId);
+                                    game.setFirstGuessed(false);
+                                    game.setDrawerId(drawerId);
+                                    long startTime = game.getNextStartTime();
+                                    game.setStartTime(startTime);
+                                    game.setNextStartTime(0);
+                                    game.setEndTime(startTime + ROUNG_GAME_TIME);
+                                    game.setQuestion(generateQuestion());
+                                    game.setRound(game.getRound() + 1);
+                                    roomService.chatTo(RoomBroadcastApi.GAME_QUESTION, roomId, Arrays.asList(game.getDrawerId()), ReturnUtils.succ(game.getQuestion()));
+                                    Map<String, Object> ret = new HashMap<String, Object>(getCurrentGameInfo(roomId));
+                                    roomService.broadcast(RoomBroadcastApi.GAME_RUNNING, roomId, ReturnUtils.succ(ret));
+                                }
                             }
                         } else if (game.getState() == GuessGameState.GAME_STATS) {
                             if (room.getStatus() == RoomStatus.GAMEING) {
                                 roomService.broadcast(RoomBroadcastApi.GAME_OVER, roomId, ReturnUtils.succ(getCurrentGameInfo(roomId)));
                                 roomService.setRoomState(roomId, RoomStatus.IDLE, AvatarStatus.IDLE, AvatarStatus.READY);
                                 game.getTimer().cancel();
+                                game.setState(GuessGameState.END);
+                                roomService.broadcast(RoomBroadcastApi.ROOM_INFO, roomId, roomService.getRoomInfo(roomId));
                             }
                         }
                     }
@@ -252,10 +270,11 @@ public class GuessGameService {
             game.setRoomId(roomId);
             gameMap.put(roomId, game);
         } else {
-            game.setTimer(new Timer());
+            game.reset();
         }
         game.setDrawerId(0);
         game.setState(GuessGameState.START);
+
         GameTimerTask task = new GameTimerTask(roomId);
         GameRoom room = roomService.getGameRoom(roomId);
         GuessGameInfo gameInfo = new GuessGameInfo();
@@ -336,7 +355,7 @@ public class GuessGameService {
                     return ReturnUtils.failed();
                 }
 
-                if (!containsRule(GuessGame.RULE.LIKE, roomId, avatarSession.getAvatarId()) || !containsRule(GuessGame.RULE.UNLIKE, roomId, avatarSession.getAvatarId())) {
+                if (!containsRule(GuessGame.RULE.LIKE, roomId, avatarSession.getAvatarId()) && !containsRule(GuessGame.RULE.UNLIKE, roomId, avatarSession.getAvatarId())) {
                     addScore(GuessGame.RULE.LIKE, game, avatarSession.getAvatarId());
                     roomService.broadcast(RoomBroadcastApi.GAME_LIKE, roomId, ReturnUtils.succ(getCurrentGameInfo(roomId)));
                     return ReturnUtils.succ();
@@ -354,7 +373,7 @@ public class GuessGameService {
                     return ReturnUtils.failed();
                 }
 
-                if (!containsRule(GuessGame.RULE.UNLIKE, roomId, avatarSession.getAvatarId()) || !containsRule(GuessGame.RULE.LIKE, roomId, avatarSession.getAvatarId())) {
+                if (!containsRule(GuessGame.RULE.UNLIKE, roomId, avatarSession.getAvatarId()) && !containsRule(GuessGame.RULE.LIKE, roomId, avatarSession.getAvatarId())) {
                     addScore(GuessGame.RULE.UNLIKE, game, avatarSession.getAvatarId());
                     roomService.broadcast(RoomBroadcastApi.GAME_UNLIKE, roomId, ReturnUtils.succ());
                     return ReturnUtils.succ();
@@ -368,7 +387,8 @@ public class GuessGameService {
         GuessGame game = gameMap.get(roomId);
         if (game != null) {
             synchronized (game) {
-                if (game.getState() != GuessGameState.END && !containsRule(GuessGame.RULE.EXIT, roomId, avatarSession.getAvatarId())) {
+                if ((game.getState() != GuessGameState.END) && !containsRule(GuessGame.RULE.EXIT, roomId, avatarSession.getAvatarId())) {
+
                     addScore(GuessGame.RULE.EXIT, game, avatarSession.getAvatarId());
                     return ReturnUtils.succ();
                 }
@@ -392,7 +412,7 @@ public class GuessGameService {
             if (rule == GuessGame.RULE.GUESSED || rule == GuessGame.RULE.FIRST_GUESSED) {
                 drawRule = GuessGame.RULE.BE_GUESSED;
             } else if (rule == GuessGame.RULE.LIKE) {
-                drawRule = GuessGame.RULE.LIKE;
+                drawRule = GuessGame.RULE.BE_LIKED;
             }
             List<GuessGame.RULE> drawerRuleList = operations.get(drawerId).get(game.getRound());
             if (drawerRuleList == null) {
@@ -400,8 +420,23 @@ public class GuessGameService {
                 operations.get(drawerId).put(game.getRound(), drawerRuleList);
             }
             drawerRuleList.add(drawRule);
-            int drawerScore = MapUtils.getIntValue(scores, drawerId, 0) + RULE_SCORE.get(drawRule);
+            int drawerScore = MapUtils.getIntValue(scores, drawerId, 0) + MapUtils.getIntValue(RULE_SCORE, drawRule, 0);
             scores.put(drawerId, drawerScore > 0 ? drawerScore : 0);
+            final GuessGame.RULE fdrawRule = drawRule;
+            avatarSessionService.updateAvatarSession(drawerId, new AbstractAvatarSessionService.SessionCallable<Void, Avatar>() {
+                @Override
+                public Void call(AvatarSession<Avatar> playerSession) {
+                    Avatar avatar = playerSession.getAvatar();
+                    int score = avatar.getTotalScore();
+                    int newScore = score + MapUtils.getIntValue(RULE_SCORE, fdrawRule, 0);
+                    if(newScore < 0){
+                        newScore = 0;
+                    }
+                    avatar.setTotalScore(newScore);
+                    avatarService.save(avatar);
+                    return null;
+                }
+            });
         }
 
         List<GuessGame.RULE> ruleList = operations.get(avatarId).get(game.getRound());
@@ -410,8 +445,24 @@ public class GuessGameService {
             operations.get(avatarId).put(game.getRound(), ruleList);
         }
         ruleList.add(rule);
-        int score = MapUtils.getIntValue(scores, avatarId, 0) + RULE_SCORE.get(rule);
+        int score = MapUtils.getIntValue(scores, avatarId, 0) + MapUtils.getIntValue(RULE_SCORE, rule, 0);
         scores.put(avatarId, score > 0 ? score : 0);
+        final GuessGame.RULE fRule = rule;
+        avatarSessionService.updateAvatarSession(avatarId, new AbstractAvatarSessionService.SessionCallable<Void, Avatar>() {
+            @Override
+            public Void call(AvatarSession<Avatar> playerSession) {
+                Avatar avatar = playerSession.getAvatar();
+                int score = avatar.getTotalScore();
+                int newScore = score + MapUtils.getIntValue(RULE_SCORE, fRule, 0);
+                if(newScore < 0){
+                    newScore = 0;
+                }
+                avatar.setTotalScore(newScore);
+                avatarService.save(avatar);
+                return null;
+            }
+        });
+
     }
 
     public boolean containsRule(GuessGame.RULE rule, long roomId, long avatarId) {

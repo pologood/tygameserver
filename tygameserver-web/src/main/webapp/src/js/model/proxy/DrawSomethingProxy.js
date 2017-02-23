@@ -61,7 +61,7 @@ puremvc.define({
 		},
 		getConnectData:function(){
 			var _this=this;
-			$.getJSON(this.host+"/master/init?callback=?&uuid="+this.gbId+"&roleName="+this.roleName+"&avatarImg="+encodeURIComponent(this.avatarImg)+"&gameId="+this.gameId+"&roomId="+this.roomId, function(msg){
+			$.getJSON(this.host+"/master/init?callback=?&uuid="+encodeURIComponent(this.gbId)+"&roleName="+encodeURIComponent(this.roleName)+"&avatarImg="+encodeURIComponent(this.avatarImg)+"&gameId="+this.gameId+"&roomId="+this.roomId, function(msg){
                 _this.connectSocket(msg.payload);
                 _this.avatarId=msg.payload.avatarId;
             })
@@ -101,8 +101,11 @@ puremvc.define({
 			}
 
 			this.socket.onmessage=function(event){
-				console.log("Client received a message",event.data);
 				data=JSON.parse(event.data);
+
+				if(data.rpcMethod.toLowerCase()!="/room/broadcast/drawgame"&&data.rpcMethod.toLowerCase()!="/room/broadcast/guess/countdown"){
+					console.log("Client received a message",event.data);
+				}				
 
 				if(data.content.code==1){
 					if(data.rpcMethod.toLowerCase() == "/room/create"){
@@ -126,12 +129,12 @@ puremvc.define({
 	                }
 
 	                if(data.rpcMethod.toLowerCase() == "/room/broadcast/join"){
-                  		console.log(data.content.payload);	
                   		if(data.content.payload.avatar.avatarId==_this.avatarId){
                   			//加入房间的玩家自己的join信息不处理，包含在roominfo里面了
                   			return;
                   		}
-                  		_this.roominfo.members.push(data.content.payload.avatar);
+                  		var position=data.content.payload.position;
+                  		_this.roominfo.members[position]=data.content.payload.avatar
                   		_this.sendNotification(drawsomething.AppConstants.BROADCAST_JOIN,{member:data.content.payload,roominfo:_this.roominfo,avatarId:_this.avatarId});
 	                }
 
@@ -148,6 +151,7 @@ puremvc.define({
 	                
 	                //开启游戏
 	                if(data.rpcMethod.toLowerCase() == "/room/broadcast/guess/start"){
+	                	console.log(data.content.payload);	
 	                	_this.gameInfo=data.content.payload;    
 	                	_this.sendNotification(drawsomething.AppConstants.GAME_STARTING,{
 	                		gameInfo:_this.gameInfo,avatarId:_this.avatarId,roominfo:_this.roominfo
@@ -156,22 +160,21 @@ puremvc.define({
 
 	                //问题答案
 	                if(data.rpcMethod.toLowerCase() == "/room/private/guess/quesion"){
+	                	console.log(data.content.payload);	
 	                	_this.answerInfo=data.content.payload;
 	                	_this.sendNotification(drawsomething.AppConstants.ANSWER_INFO,data.content.payload);
-	                }	         
+	                }	     
 
 	                // 被房主踢出去
 	                if(data.rpcMethod.toLowerCase() == "/room/private/remove"){
 	                	_this.sendNotification(drawsomething.AppConstants.SHOW_ALERT,{code:1,txt:"你被房主请出了房间，去其他房间看看吧"});
-	                }
-	                       
+	                }           
 
 	                if(data.rpcMethod.toLowerCase() == "/avatar/ready"){
 	                    self.state=1;
 	                }
 
 	                if(data.rpcMethod.toLowerCase() == "/room/chat"){
-	                    console.log(data.content.payload);	
 	                    self.groupmsgs.push({msg:data.content.payload.msg,from:data.content.source.avatarName});
 	                }
 
@@ -191,11 +194,12 @@ puremvc.define({
 	                if(data.rpcMethod.toLowerCase() == "/room/broadcast/remove"){
 	                    var avatarId=data.content.payload;
 	                    var members=_this.roominfo.members;
-	                	for(var i=members.length-1;i>=0;i--){
-	                		if(avatarId==members[i].avatarId){
-								members.splice(i, 1);				
+	                    for(var i in members){
+	                    	if(avatarId==members[i].avatarId){
+								delete members[i];				
 							}
-	                	}
+	                    }
+
 	                    _this.sendNotification(drawsomething.AppConstants.RECEIVE_REMOVE_PLAYER,{avatarId:avatarId});
 	                    
 	                }
@@ -215,12 +219,15 @@ puremvc.define({
 	                if(data.rpcMethod.toLowerCase() == "/room/broadcast/guess/exit"){
 	                	var avatarId=data.content.payload;
 	                	var members=_this.roominfo.members;
-	                	for(var i=members.length-1;i>=0;i--){
+	                	var name;
+	                	for(var i in members){
 	                		if(avatarId==members[i].avatarId){
-								members.splice(i, 1);				
+	                			name=members[i].name;
+								delete members[i];				
 							}
 	                	}
 	                	_this.sendNotification(drawsomething.AppConstants.RECEIVE_REMOVE_PLAYER,{avatarId:avatarId});
+	                	_this.sendNotification(drawsomething.AppConstants.RECEIVE_NOTICE,name+"离开了房间");
 	                }
 
 	                //聊天消息
@@ -255,6 +262,11 @@ puremvc.define({
 	                	_this.sendNotification(drawsomething.AppConstants.COUNTDOWN,left);
 	                }
 
+	                if(data.rpcMethod.toLowerCase()=="/room/broadcast/guess/incountdown"){
+	                	var left=data.content.payload;
+	                	_this.sendNotification(drawsomething.AppConstants.ICOUNTDOWN,left);
+	                }
+
 	                //一轮结束
 	                if(data.rpcMethod.toLowerCase()=="/room/broadcast/guess/roundover"){
 	                	var roundInfo=data.content.payload;	   
@@ -284,20 +296,18 @@ puremvc.define({
 	                	_this.likeCount=0;
 	                	_this.unlikeCount=0;
 	                }
-
 	                //大轮游戏结束
 	                if(data.rpcMethod.toLowerCase()=="/room/broadcast/guess/gameover"){
 	                	_this.sendNotification(drawsomething.AppConstants.GAME_OVER);
 	                	_this.sendNotification(drawsomething.AppConstants.BROADCAST_ROOMINFO,{info:_this.roominfo,roominfo:_this.roominfo,avatarId:_this.avatarId});
-	                	
 	                }
-
+	                
 	                // 更换房主
 	                if(data.rpcMethod.toLowerCase()=="/room/broadcast/changeowner"){
 	                	var avatarId = data.content.payload;
 	                	_this.roominfo.ownerId=avatarId;
 	                	_this.sendNotification(drawsomething.AppConstants.CHANGE_OWNER,avatarId);             	
-	                }	                
+	                }
 	                
 	                if(data.rpcMethod.toLowerCase() == "/room/broadcast/correct"){
 	                    var answer = data.content.payload;
@@ -331,14 +341,12 @@ puremvc.define({
 			var msg={
 				rpcMethod:"/room/create",
 				params:{
-					gameId:this.gameId,
 					maxSize:8
 				},
 				gameId:this.gameId,
 				uuid:this.gbId
 			}
 			this.socket.send(JSON.stringify(msg));
-			console.log(msg)
 		},
 		joinRoom:function(){
 			console.log("joinRoom");

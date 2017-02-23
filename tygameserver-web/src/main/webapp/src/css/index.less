@@ -4,47 +4,66 @@ body{
 	background: #fff;user-select:none;
 }
 .g-wrap{
-	width: 1105px;position: relative;height: 623px;background: #bbb;
+	width: 1105px;position: relative;height: 623px;background: #e0e1e2;
 }
 .loginPanel{
+	background: url(../img/ready/bg.jpg) no-repeat;height: 623px;
+	.h1{
+		font-size: 72px;font-weight: bold;text-align: center;color: #c1a98f;
+		background-image: -webkit-gradient(linear, 0 0, 0 bottom, from(#f8e3b4), to(#c0a98f));
+	    -webkit-background-clip: text;
+	    -webkit-text-fill-color: transparent;
+	}
 	.title{
-		font-size: 40px;color: #fff;text-align: center;padding-top: 20px;
+		font-size: 24px;color: #fff;text-align: center;padding-top: 20px;
+	}
+	.loginCard{
+		width: 420px;height: 332px;position: absolute;margin-left: -210px;margin-top: -166px;left: 50%;top: 50%;
 	}
 	.loginCnt{
+		
+	}
+	.selectRoleCard{
 		width: 420px;height: 332px;position: absolute;margin-left: -210px;margin-top: -166px;left: 50%;top: 50%;
+		background:#855337;border-radius: 10px;
+		display: none;
 	}
 	.selectRole{
-		width: 420px;height: 332px;position: absolute;margin-left: -210px;margin-top: -166px;left: 50%;top: 50%;
-		background: #fff;display: none;
+		&.ui.card{
+			width: 420px;
+		}
+		
 		h2{
 			padding: 5px;font-weight: normal;padding-left: 20px;
 		}
 		label{
-			display: block;padding-left: 20px;margin-top: 10px;
+			display: block;padding-left: 20px;margin-top: 10px;font-size: 16px;color: #fff;
 		}
 		.radioCnt{
-			height: 200px;background: #ccc;overflow-y: auto;
+			height: 200px;overflow-y: auto;margin-top: 10px;
 			span{margin: 0 10px;}
 		}
 		.confirmBtn{
-			width: 100px;height: 40px;background: #2d85be;display: block;line-height: 40px;text-align: center;color: #fff;
-			margin: 10px auto;
+			background: #b47d4e;display: block;text-align: center;color: #fff;width: 100px;
+			margin: 10px auto;box-shadow: 0px 0px 1px 0 #666;
 		}
 	}
 	.entrance{
-		position: absolute;top: 50%;left: 50%;width: 1px;height: 1px;display: none;
+		position: absolute;top: 50%;left: 50%;width: 1px;height: 1px;display: none;color: #fff;
 		.joinRoom{
-			width: 300px;background: #fff;height: 332px;position: absolute;margin-top: -166px;top: 50%;left: 20px;
+			width: 300px;background: #855337;height: 332px;position: absolute;margin-top: -166px;top: 50%;left: 20px;
 			
 			.iptCnt{
 				text-align: center;
 				input{
-					width: 240px;height: 40px;
+					width: 240px;height: 40px;text-indent: 1em;border-radius: 5px;border: none;background:#a5673f;color:#fff;
 				}
-			}			
+			}	
+			border-radius: 10px;	
 		}
 		.createRoom{
-			width: 300px;background: #fff;height: 332px;margin-top: -166px;top: 50%;position: absolute;right: 20px;
+			width: 300px;background: #855337;height: 332px;margin-top: -166px;top: 50%;position: absolute;right: 20px;
+			border-radius: 10px;
 		}
 		.t{
 			font-size: 20px;font-weight: bold;text-align: center;padding: 20px;
@@ -53,7 +72,7 @@ body{
 			text-align: center;margin-top: 20px;
 		}
 		a{
-			display: inline-block;width: 100px;height: 40px;background: #2d85be;line-height: 40px;text-align: center;color: #fff;
+			display: inline-block;background: #b47d4e;text-align: center;color: #fff;
 		}
 		p{
 			text-align: center;
@@ -98,7 +117,7 @@ body{
 		text-align: center;width: 100%;position: absolute;top: 20px;color: #fff;
 	}
 	.playerList{
-		width: 674px;margin: 0 auto;padding-top: 60px;height: 544-60px;
+		width: 674px;margin: 0 auto;padding-top: 60px;height: 540px;
 	}
 	.item{
 		width: 327px;height: 111px;background: url(../img/ready/item.png) no-repeat;margin-right: 10px;margin-bottom: 10px;
@@ -217,6 +236,7 @@ body{
 				overflow: hidden;height: 100%;
 				.content{
 					padding-right: 32px;line-height: 24px;
+					p{word-wrap:break-word;}
 				}
 			}
 		}
@@ -445,6 +465,24 @@ body{
 		top: 180px;right: 67px;
 
 	}
+	.deleteConfirmPop{
+		width: 525px;height: 316px;background: url(../img/ready/confirm_bg.png) no-repeat;position: absolute;
+		margin-left: -262px;margin-top: -158px;left: 50%;top: 50%;display: none;
+		.title{
+			font-size: 24px;text-align: center;height: 40px;line-height: 40px;
+		}
+		.content{
+			width: 420px;margin: 0 auto;margin-top: 30px;height: 170px;font-size: 20px;text-align: center;
+			line-height: 30px;
+		}
+		.btns{
+			width: 400px;margin: 0 auto;
+			a{
+				width: 152px;height: 44px;background: url(../img/ready/confirm_btn_bg.png) no-repeat;line-height: 44px;text-align: center;
+				font-size: 18px;color: #fff;
+			}
+		}
+	}
 }
 
 .commonAlert{
@@ -465,6 +503,13 @@ body{
 		}
 	}	
 
+}
+
+.audioPanel{
+	position: absolute;top: 0;left: 0;width: 100%;
+	.audioCloseBtn{
+		position: absolute;right: 20px;top: 20px;color: #fff;
+	}
 }
 
 .u-name{

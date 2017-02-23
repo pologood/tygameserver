@@ -1,19 +1,39 @@
 puremvc.define(
 	{
 		name:'drawsomething.view.component.PlayerItem',
-		constructor:function(){
-			this.el=null;
+		constructor:function(container){
+			this.$container=container;
 			var source=$("#playerItems-template").html();
 			this.template = Handlebars.compile(source);	
 			this.isReady=false;		
 		}
 	},
 	{
-		getName:function(){
-
+		setBlank:function(){
+			this.avatarId=null;
+			var html    = this.template({});
+			this.el=$(html);
+			this.$container.empty();
+			this.$container.append(this.el);
+			this.$container.find(".name").hide();
+			this.$container.find(".head").hide();
+			this.$container.find(".closeBtn").hide();
 		},
-		getElement:function(){
-
+		setData:function(data,info,userAvatarId){
+			var _this=this;
+			this.selfData=data;
+			this.roomInfo=info;
+			this.avatarId=data.avatarId;
+			this.userAvatarId=userAvatarId;
+			var html    = this.template(data);
+			this.el=$(html);
+			this.$container.append(this.el);
+			this.updateState();			
+			
+			this.$container.find(".btn-ready").click(function(){
+				_this.el.find(".countDown").hide();
+				_this.isReady=true;
+			})
 		},
 		startCountDown:function(){
 			this.el.find(".countDown").show();
@@ -31,22 +51,9 @@ puremvc.define(
 			}
 			count();
 		},
-		update:function(data,info,userAvatarId){
-			var _this=this;
-			this.selfData=data;
-			this.roomInfo=info;
-			this.avatarId=data.avatarId;
-			this.userAvatarId=userAvatarId;
-			var html    = this.template(data);
-			this.el=$(html);
-			this.updateState();			
-			
-			this.el.find(".btn-ready").click(function(){
-				_this.el.find(".countDown").hide();
-				_this.isReady=true;
-			})
-		},
 		updateState:function(){
+			this.el.find(".closeBtn").show();
+
 			if(this.userAvatarId==this.selfData.avatarId){
 				if(this.selfData.state=="READY"){
 					this.el.find(".btn-already").css({"display":"block"});
@@ -83,6 +90,8 @@ puremvc.define(
 		remove:function(){			
 			this.el.find(".btn-ready").unbind("click");
 			this.el.remove();
+			this.isReady=false;
+			this.avatarId=null;
 		}
 	},
 	{

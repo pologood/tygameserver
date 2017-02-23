@@ -64,7 +64,7 @@ public class MasterServerHandler extends ChannelInboundHandlerAdapter {
             Map<String, Object> args = (Map<String, Object>) data.get("params");
             Double tmp = NumberUtils.toDouble(data.get("gameId").toString());
             long gameId = tmp.longValue();
-            GameContext<Void> context = new GameContext<Void>(ctx, null, rpcMethod, frame);
+            GameContext<Void> context = new GameContext<Void>(gameId, ctx, null, rpcMethod, frame);
             if(wsRpcCallInvoker.containsURIPath(gameId, rpcMethod)) {
                 wsRpcCallInvoker.invoke(gameId, rpcMethod, args, context);
             }else{
@@ -97,26 +97,25 @@ public class MasterServerHandler extends ChannelInboundHandlerAdapter {
                     NettyHttpUtil.sendHttpResponse(ctx, request,
                             new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.NOT_FOUND,
                                     Unpooled.copiedBuffer("parameter gameId not exist!", Charset.forName("UTF-8"))));
-                    return;
-                }
-
-                Double tmp = NumberUtils.toDouble(params.get("gameId").toString());
-                long gameId = tmp.longValue();
-                FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.CONTINUE);
-                String userName = UrsAuthUtils.getLoginedUserName(request, response);
-                if (httpRequestInvoker.containsURIPath(gameId, uri.getPath())) {
-                    if(httpRequestInvoker.isNeedAuth(gameId, uri.getPath())) {
-                        if (StringUtils.isEmpty(userName)) {
-                            NettyHttpUtil.setHttpResponse(response, HttpResponseStatus.OK, JsonUtil.toJson(ReturnUtils.failed("need auth")));
-                            NettyHttpUtil.sendHttpResponse(ctx, request, response);
-                            return;
+                }else {
+                    Double tmp = NumberUtils.toDouble(params.get("gameId").toString());
+                    long gameId = tmp.longValue();
+                    FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.CONTINUE);
+                    String userName = UrsAuthUtils.getLoginedUserName(request, response);
+                    if (httpRequestInvoker.containsURIPath(gameId, uri.getPath())) {
+                        if (httpRequestInvoker.isNeedAuth(gameId, uri.getPath())) {
+                            if (StringUtils.isEmpty(userName)) {
+                                NettyHttpUtil.setHttpResponse(response, HttpResponseStatus.OK, JsonUtil.toJson(ReturnUtils.failed("need auth")));
+                                NettyHttpUtil.sendHttpResponse(ctx, request, response);
+                                return;
+                            }
                         }
+                        httpRequestInvoker.invoke(gameId, uri.getPath(), params, request, response);
+                    } else {
+                        NettyHttpUtil.setHttpResponse(response, HttpResponseStatus.NOT_FOUND, "uri not exist!");
                     }
-                    httpRequestInvoker.invoke(gameId, uri.getPath(), params, request, response);
-                }else{
-                    NettyHttpUtil.setHttpResponse(response, HttpResponseStatus.NOT_FOUND, "uri not exist!");
+                    NettyHttpUtil.sendHttpResponse(ctx, request, response);
                 }
-                NettyHttpUtil.sendHttpResponse(ctx, request, response);
                 return;
             }
 

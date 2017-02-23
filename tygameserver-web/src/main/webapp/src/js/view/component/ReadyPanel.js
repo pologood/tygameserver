@@ -17,6 +17,10 @@ puremvc.define({
 				}else if($(e.target).hasClass("closeBtn")){
 					var avatarId=$(e.target).attr("data-avatarId");
 					_this.kickPlayerId=avatarId;
+					var member=_this.getMember(_this.members,avatarId);
+					if(member!=null){
+						_this.$confirmPop.find(".nickName").html(member.name);
+					}
 					_this.$confirmPop.show();
 				}
 			})
@@ -46,29 +50,40 @@ puremvc.define({
 		initRoom:function(data){
 			this.roominfo=data.roominfo;
 			this.avatarId=data.avatarId;
-
-			this.$container.find(".playerList").empty();
+			this.items=[];
+			this.$container.find(".item").empty();
 			var members=data.info.members;
-			for(var i=0;i<members.length;i++){
-				var p=new drawsomething.view.component.PlayerItem();
-				p.update(members[i],data.roominfo,data.avatarId);
+			this.members=members;
+			for(var i=0;i<8;i++){
+				var p=new drawsomething.view.component.PlayerItem(this.$container.find(".item").eq(i));			
+				if(members[i]){
+					p.setData(members[i],data.roominfo,data.avatarId);
+					if(data.avatarId==members[i].avatarId&&data.avatarId!=data.roominfo.ownerId){
+						p.startCountDown();
+					}
+				}else{
+					p.setBlank();
+				}
 				this.items.push(p);
-				this.$container.find(".playerList").append(p.el);
-				if(data.avatarId==members[i].avatarId&&data.avatarId!=data.roominfo.ownerId){
-					p.startCountDown();
-				}				
+				// this.$container.find(".playerList").append(p.el);
 			}
+
 			this.$container.find(".roomId").html("房间号："+data.info.id);
-			
 			this.updateStartBtn();
 		},
 		addPlayer:function(data){
-			var p=new drawsomething.view.component.PlayerItem();
-			p.update(data.member.avatar,data.roominfo,data.avatarId);
-			this.items.push(p);
-			this.$container.find(".playerList").append(p.el);
+			var position=data.member.position;
+			this.items[position].setData(data.member.avatar,data.roominfo,data.avatarId);
 			this.updateStartBtn();
 		},
+		getMember:function(members,avatarId){
+	        for(var i in members){
+	            if(members[i].avatarId==avatarId){
+	                return members[i];
+	            }
+	        }
+	        return null;
+	    },
 		updateReadyInfo:function(data){
 			var readyAvatarId=data.info.avatar.avatarId;
 			for(var i=0;i<this.items.length;i++){
@@ -78,9 +93,14 @@ puremvc.define({
 			}
 			this.updateStartBtn();
 		},
-		changeOwner:function(){
+		changeOwner:function(changeAvatarId){
 			for(var i=0;i<this.items.length;i++){
-				this.items[i].updateState();
+				if(this.items[i].avatarId!=null){
+					if(this.items[i].avatarId==changeAvatarId){
+						this.items[i].selfData.state="READY";
+					}
+					this.items[i].updateState();
+				}				
 			}
 			this.updateStartBtn();
 		},
@@ -108,7 +128,7 @@ puremvc.define({
 			for(var i=this.items.length-1;i>=0;i--){
 				if(removeInfo.avatarId==this.items[i].avatarId){
 					this.items[i].remove();
-					this.items.splice(i, 1);					
+					// this.items.splice(i, 1);					
 				}
 			}
 			this.$container.find(".confirmPop").hide();
@@ -116,12 +136,16 @@ puremvc.define({
 		},
 		updateStartBtn:function(){
 			var readyCount=0;
+			var playerCount=0;
 			for(var i=0;i<this.items.length;i++){
 				if(this.items[i].isReady){
 					readyCount++;
 				}
+				if(this.items[i].avatarId!=null){
+					playerCount++;
+				}
 			}
-			if(readyCount>=2&&readyCount==this.items.length){
+			if(readyCount>=2&&readyCount==playerCount){
 				this.$container.find(".startBtn").removeClass("gray");
 			}else{
 				this.$container.find(".startBtn").addClass("gray");

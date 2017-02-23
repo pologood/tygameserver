@@ -18,6 +18,7 @@ import com.netease.pangu.game.util.JSONPUtil;
 import com.netease.pangu.game.util.ReturnUtils;
 import com.netease.pangu.game.util.UrsAuthUtils;
 import io.netty.handler.codec.http.FullHttpRequest;
+import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpStatus;
 import org.springframework.beans.factory.annotation.Value;
@@ -63,7 +64,10 @@ public class MasterController {
                 if (roomIdInGame > 0) {
                     node = nodeManager.getNode(roomAllocationService.getServerByRoomId(gameId, roomIdInGame));
                 } else if (roomId > 0) {
-                    node = nodeManager.getNode(roomAllocationService.getServerByRoomId(gameId, roomId));
+                    String tServer= roomAllocationService.getServerByRoomId(gameId, roomId);
+                    if(StringUtils.isNotEmpty(tServer)) {
+                        node = nodeManager.getNode(tServer);
+                    }
                 } else if (StringUtils.isNotEmpty(server)) {
                     node = nodeManager.getNode(server);
                 } else {
@@ -122,15 +126,21 @@ public class MasterController {
     public String getRolesByUrs(String callback, FullHttpRequest request){
         String urs = UrsAuthUtils.getLoginedUserName(request);
         if(StringUtils.isNotEmpty(urs)) {
+            Map<String, Object> serversMap = MapUtils.getMap(dataCenterApiService.getGameServers(), "all", new HashMap<String, Object>());
             Map<String, List<DataCenterSimpleRoleInfo>> roles = dataCenterApiService.getSimpleAvatarsInfoByUrs(urs);
             Map<String, List<Map<String, Object>>> rolesData = new HashMap<String, List<Map<String, Object>>>();
             for(String server : roles.keySet()){
+                String displayName = server;
+                Map<String, Object> serverInfo = (Map<String, Object>)serversMap.get(server);
+                if(serverInfo != null && serverInfo.containsKey("displayName")){
+                    displayName = (String)serverInfo.get("displayName");
+                }
                 List<DataCenterSimpleRoleInfo> rolesInfo = roles.get(server);
                 if(rolesInfo != null){
-                    List<Map<String, Object>> roleList = rolesData.get(server);
+                    List<Map<String, Object>> roleList = rolesData.get(displayName);
                     if(roleList == null) {
                         roleList = new ArrayList<Map<String, Object>>();
-                        rolesData.put(server, roleList);
+                        rolesData.put(displayName, roleList);
                     }
                     for(DataCenterSimpleRoleInfo info : rolesInfo){
                         Map<String, Object> roleMap = new HashMap<String, Object>();
@@ -138,6 +148,7 @@ public class MasterController {
                         roleMap.put("level", info.getLevel());
                         roleMap.put("gbId", String.valueOf(info.getGbId()));
                         roleMap.put("school", info.getSchool());
+                        roleMap.put("serverId", info.getServerName());
                         roleList.add(roleMap);
                     }
                 }

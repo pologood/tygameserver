@@ -12,6 +12,7 @@ public class AvatarSession<A extends IAvatar> implements IAvatar {
 
     private A avatar;
     private long roomId;
+    private int position;
     private ConnectionStatus state;
     private Channel channel;
     private Map<String, Object> attrs;
@@ -160,4 +161,11 @@ public class AvatarSession<A extends IAvatar> implements IAvatar {
         this.avatarStatus = avatarStatus;
     }
 
+    public int getPosition() {
+        return position;
+    }
+
+    public void setPosition(int position) {
+        this.position = position;
+    }
 }

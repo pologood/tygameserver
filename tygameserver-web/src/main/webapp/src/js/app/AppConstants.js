@@ -32,8 +32,10 @@ puremvc.define({name:'drawsomething.AppConstants'},{},{
 	SEND_LIKE:'send_like',//点赞
 	SEND_UNLIKE:'send_unlike',//踩
 	COUNTDOWN:'countDown',//倒计时
+	ICOUNTDOWN:'icountdown',
 	RECEIVE_LIKE_INFO:'receive_like_info',
 	GAME_OVER:'game_over',
 	SHOW_ALERT:'show_alert',
 	CHANGE_OWNER:'change_owner',//更换房主
+	RECEIVE_NOTICE:'receive_notice',//接受退出，比赛结果等通知
 })

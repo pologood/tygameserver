@@ -28,6 +28,10 @@ puremvc.define({
             this.$container.find(".joinBtn").click(function(){
             	_this.dispatchJoinRoom();
             })
+
+            this.$container.find(".roomIdIpt").focus(function(){
+            	$(".joinRoom .err").html("");
+            })
             
 		}
 	},
@@ -66,7 +70,7 @@ puremvc.define({
 				roomId:this.$container.find(".roomIdIpt").val()
 			};
 			if(e.msg.roomId==""){
-				alert("请输入房间号");
+				$(".joinRoom .err").html("请输入房间号后加入");
 				return;
 			}
 			this.dispatchEvent(e);
@@ -85,17 +89,17 @@ puremvc.define({
 		},
 		showRoleList:function(){
 			this.$container.find(".loginCnt").hide();
-			this.$container.find(".selectRole").show();
+			this.$container.find(".selectRoleCard").show();
 			this.$container.find(".entrance").hide();
 		},
 		showLogin:function(){
 			this.$container.find(".loginCnt").show();
-			this.$container.find(".selectRole").hide();
+			this.$container.find(".selectRoleCard").hide();
 			this.$container.find(".entrance").hide();
 		},
 		showEntrance:function(){
 			this.$container.find(".loginCnt").hide();
-			this.$container.find(".selectRole").hide();
+			this.$container.find(".selectRoleCard").hide();
 			this.$container.find(".entrance").show();
 		},
 		updateRoleList:function(obj){

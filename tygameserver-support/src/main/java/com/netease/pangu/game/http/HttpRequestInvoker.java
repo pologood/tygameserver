@@ -54,11 +54,11 @@ public class HttpRequestInvoker {
         return methodMap.get(gameId).get(requestUri);
     }
 
-    public boolean isNeedAuth(long gameId, String requestUri){
+    public boolean isNeedAuth(long gameId, String requestUri) {
         Method method = getMethod(gameId, requestUri);
-        if(method != null){
+        if (method != null) {
             Anonymous anno = method.getDeclaredAnnotation(Anonymous.class);
-            if(anno != null){
+            if (anno != null) {
                 return false;
             }
         }
@@ -66,15 +66,15 @@ public class HttpRequestInvoker {
     }
 
     private Map<Integer, String> getParamsIndex(long gameId, String requestUri) {
-        return methodMap.get(gameId) != null ? methodParamIndexMap.get(gameId).get(requestUri): null;
+        return methodMap.get(gameId) != null ? methodParamIndexMap.get(gameId).get(requestUri) : null;
     }
 
     public boolean containsURIPath(long gameId, String requestUri) {
-        return methodMap.get(gameId) != null ? methodMap.get(gameId).keySet().contains(requestUri):false;
+        return methodMap.get(gameId) != null ? methodMap.get(gameId).keySet().contains(requestUri) : false;
     }
 
     private Object getController(long gameId, String requestUri) {
-        return methodMap.get(gameId) != null ?  controllerMap.get(gameId).get(httpRequestMappingAnnoValueMap.get(gameId).get(requestUri)): null;
+        return methodMap.get(gameId) != null ? controllerMap.get(gameId).get(httpRequestMappingAnnoValueMap.get(gameId).get(requestUri)) : null;
 
     }
 
@@ -91,9 +91,9 @@ public class HttpRequestInvoker {
         Object controller = getController(gameId, requestUri);
         final Class<?>[] parameterTypes = method.getParameterTypes();
         try {
-            logger.info(JsonUtil.toJson(args));
+            logger.info(String.format("%d %s %s", gameId, requestUri, JsonUtil.toJson(args)));
             Map<Integer, String> paramsIndex = getParamsIndex(gameId, requestUri);
-            logger.info(JsonUtil.toJson(paramsIndex));
+            logger.info(String.format("%d %s %s", gameId, requestUri, JsonUtil.toJson(paramsIndex)));
             List<Object> convertedArgs = new ArrayList<Object>();
             for (Integer i = 0; i < parameterTypes.length; i++) {
                 if (Long.class.isAssignableFrom(parameterTypes[i])
@@ -176,10 +176,12 @@ public class HttpRequestInvoker {
         Map<String, Object> controllers = beanFactory.getBeansWithAnnotation(HttpController.class);
         for (Entry<String, Object> entry : controllers.entrySet()) {
             HttpController anno = entry.getValue().getClass().getAnnotation(HttpController.class);
-            if (!controllerMap.containsKey(anno.gameId())) {
-                controllerMap.put(anno.gameId(), new HashMap<String, Object>());
+            Map<String, Object> map = controllerMap.get(anno.gameId());
+            if(map == null){
+                map = new HashMap<String, Object>();
+                controllerMap.put(anno.gameId(), map);
             }
-            controllerMap.get(anno.gameId()).put(entry.getKey(), entry.getValue());
+            map.put(entry.getKey(), entry.getValue());
             initAndCheckMethodsByHttpRequest(anno.gameId(), entry.getValue(), entry.getKey());
         }
     }
