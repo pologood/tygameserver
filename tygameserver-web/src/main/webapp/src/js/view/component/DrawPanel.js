@@ -303,6 +303,11 @@ puremvc.define({
         this.drawingCanvas.cache(0,0,900,600);
         this.$container.find(".item[data-avatarId="+gameInfo.drawerId+"]").addClass("active");
         // this.startCountdown();
+        var mySelf=this.getMember(data.roominfo.members,avatarId);
+        if(mySelf){
+            $(".myName").html(mySelf.name);
+        }
+        
     },
     resetLocalScores:function(){
         var members=this.roominfo.members;

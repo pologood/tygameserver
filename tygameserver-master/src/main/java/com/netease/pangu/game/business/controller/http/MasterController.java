@@ -1,4 +1,4 @@
-package com.netease.pangu.game.demo.business.controller.http;
+package com.netease.pangu.game.business.controller.http;
 
 import com.netease.pangu.game.common.meta.GameConst;
 import com.netease.pangu.game.core.service.NodeScheduleService;

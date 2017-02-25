@@ -26,7 +26,7 @@
     <context:component-scan base-package="com.netease.pangu.game.distribution"/>
     <context:component-scan base-package="com.netease.pangu.game.core"/>
     <context:component-scan base-package="com.netease.pangu.game.netty"/>
-    <context:component-scan base-package="com.netease.pangu.game.demo.business.controller.http"/>
+    <context:component-scan base-package="com.netease.pangu.game.business.controller.http"/>
 
     <!-- 定时任务  -->
     <task:executor id="executor" pool-size="5"/>

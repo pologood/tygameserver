@@ -6,7 +6,7 @@ import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpServerCodec;
-import io.netty.handler.codec.http.websocketx.WebSocketServerProtocolHandler;
+import io.netty.handler.codec.http.websocketx.SecureWebSocketServerProtocolHandler;
 import io.netty.handler.codec.http.websocketx.extensions.compression.WebSocketServerCompressionHandler;
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.timeout.IdleStateHandler;
@@ -33,9 +33,10 @@ public class NodeServerInitializer extends ChannelInitializer<SocketChannel> {
         pipeline.addLast("ping", new IdleStateHandler(5, 5, 10, TimeUnit.MINUTES));
         pipeline.addLast(new HttpServerCodec());
         pipeline.addLast(new HttpObjectAggregator(65536));
-        pipeline.addLast(new WebSocketServerCompressionHandler());
-        pipeline.addLast(new WebSocketServerProtocolHandler(GameServerConst.WEB_SOCKET_PATH, null, true));
         pipeline.addLast("loginHandler", beanFactory.getBean(LoginHandler.class));
+        pipeline.addLast(new WebSocketServerCompressionHandler());
+        pipeline.addLast(new SecureWebSocketServerProtocolHandler(GameServerConst.WEB_SOCKET_PATH, null, true));
+
     }
 
     public SslContext getSslCtx() {

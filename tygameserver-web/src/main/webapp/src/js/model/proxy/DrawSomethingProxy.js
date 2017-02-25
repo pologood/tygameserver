@@ -30,6 +30,7 @@ puremvc.define({
 		selfName:'',
 		likeCount:0,
 		unlikeCount:0,
+		token:"",
 		host:'http://littlegame.tianyu.163.com:8090',
 		onRegister:function(){
 			this.getLoginStatus();
@@ -52,6 +53,7 @@ puremvc.define({
 				        	})
 				        }
 				    }
+
 				}
 				_this.sendNotification(drawsomething.AppConstants.GET_ROLELIST_SUCCESS,{rolesList:_this.rolesList})
 				if(_this.rolesList.length==0){
@@ -62,8 +64,10 @@ puremvc.define({
 		getConnectData:function(){
 			var _this=this;
 			$.getJSON(this.host+"/master/init?callback=?&uuid="+encodeURIComponent(this.gbId)+"&roleName="+encodeURIComponent(this.roleName)+"&avatarImg="+encodeURIComponent(this.avatarImg)+"&gameId="+this.gameId+"&roomId="+this.roomId, function(msg){
+                _this.token=msg.payload.token;
                 _this.connectSocket(msg.payload);
                 _this.avatarId=msg.payload.avatarId;
+                
             })
 		},
 		getLoginStatus:function(){
@@ -90,7 +94,7 @@ puremvc.define({
 		connectSocket:function(data){
 			var _this=this;
 			this.connectData=data;
-			this.socket=new WebSocket('ws://'+this.connectData.ip+':'+this.connectData.port+'/ws');
+			this.socket=new WebSocket('ws://'+this.connectData.ip+':'+this.connectData.port+'/ws?token='+this.connectData.token);
 			this.socket.onopen=function(event){
 				console.log("Client open a message",event.data);
 				if(_this.roomId==0){

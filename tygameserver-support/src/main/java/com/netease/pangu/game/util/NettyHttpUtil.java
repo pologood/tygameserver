@@ -60,32 +60,25 @@ public class NettyHttpUtil {
     public static void sendWsResponse(String rpcMethodName, Channel channel, Object content) {
         WsRpcResponse response = WsRpcResponse.create(rpcMethodName);
         response.setContent(content);
-        if (channel.isActive()) {
-            channel.writeAndFlush(new TextWebSocketFrame(JsonUtil.toJson(response)));
-        }
+        sendWsResponse(rpcMethodName, channel, response);
     }
 
-
     public static void sendWsResponse(@SuppressWarnings("rawtypes") GameContext context, Channel channel, Object content) {
-        WsRpcResponse response = WsRpcResponse.create(context.getRpcMethod());
-        response.setContent(content);
-        if (channel.isActive()) {
-            channel.writeAndFlush(new TextWebSocketFrame(JsonUtil.toJson(response)));
-        }
+        sendWsResponse(context.getRpcMethod(), channel, content);
     }
 
     public static void sendWsResponse(@SuppressWarnings("rawtypes") GameContext context, Object content) {
-        WsRpcResponse response = WsRpcResponse.create(context.getRpcMethod());
-        response.setContent(content);
-        if (context.getChannel().isActive()) {
-            context.getChannel().writeAndFlush(new TextWebSocketFrame(JsonUtil.toJson(response)));
+        sendWsResponse(context.getRpcMethod(), context.getChannel(), content);
+    }
+
+    public static void sendWsResponse(String rpcMethodName, Channel channel, WsRpcResponse response) {
+        if (channel.isActive()) {
+            channel.writeAndFlush(new TextWebSocketFrame(JsonUtil.toJson(response)));
         }
     }
 
     public static void sendWsResponse(@SuppressWarnings("rawtypes") GameContext context, WsRpcResponse response) {
-        if (context.getChannel().isActive()) {
-            context.getChannel().writeAndFlush(new TextWebSocketFrame(JsonUtil.toJson(response)));
-        }
+        sendWsResponse(context.getRpcMethod(), context.getChannel(), response);
     }
 
     public static String getWebSocketLocation(FullHttpRequest req, String webSocketPath) {
