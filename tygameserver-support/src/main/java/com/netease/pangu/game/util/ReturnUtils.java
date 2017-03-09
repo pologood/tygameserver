@@ -33,25 +33,21 @@ public class ReturnUtils {
         return result;
     }
 
-    public static GameResult failed(Object payload, Object source, String message) {
+    public static GameResult failed(int code, Object payload, Object source, String message) {
         GameResult result = new GameResult();
-        result.setCode(FAILED);
+        result.setCode(code);
         result.setPayload(payload);
         result.setSource(source);
         result.setMessage(message);
         return result;
     }
 
-    public static GameResult failed(Object payload, String message) {
-        return failed(payload, null, message);
+    public static GameResult failed(int code, Object payload, String message) {
+        return failed(code, payload, null, message);
     }
 
-    public static GameResult failed(String message) {
-        return failed(null, null, message);
-    }
-
-    public static GameResult failed() {
-        return failed(null, null, null);
+    public static GameResult failed(int code, String message) {
+        return failed(code, null, null, message);
     }
 
     public static class GameResult {

@@ -16,6 +16,7 @@ import com.netease.pangu.game.service.AvatarService;
 import com.netease.pangu.game.service.AvatarSessionService;
 import com.netease.pangu.game.service.GuessGameService;
 import com.netease.pangu.game.service.RoomService;
+import com.netease.pangu.game.util.BusinessCode;
 import com.netease.pangu.game.util.ReturnUtils;
 import com.netease.pangu.game.util.ReturnUtils.GameResult;
 
@@ -50,10 +51,10 @@ public class GuessGameController {
             if (guessGameService.startGame(roomId, ctx.getSession())) {
                 return ReturnUtils.succ();
             } else {
-                return ReturnUtils.failed();
+                return BusinessCode.failed(BusinessCode.STAT_GAME_FAILED);
             }
         } else {
-            return ReturnUtils.failed("room is not ready!");
+            return BusinessCode.failed(BusinessCode.ROOM_STATE_NOT_SUPPORT_START);
         }
     }
 
@@ -65,10 +66,10 @@ public class GuessGameController {
                 roomService.broadcast(DRAW_GAME, roomId, ReturnUtils.succ(content));
                 return ReturnUtils.succ();
             } else {
-                return ReturnUtils.failed("you are not drawer");
+                return BusinessCode.failed();
             }
         } else {
-            return ReturnUtils.failed("room is not ready");
+            return BusinessCode.failed();
         }
     }
 
@@ -101,7 +102,7 @@ public class GuessGameController {
             guessGameService.answer(roomId, ctx.getSession(), guess);
             return ReturnUtils.succ();
         } else {
-            return ReturnUtils.failed("not in gaming");
+            return BusinessCode.failed(BusinessCode.GUESS_NOTIN_ANSWER_TIME);
         }
     }
 }

@@ -1,5 +1,6 @@
 package com.netease.pangu.game.netty;
 
+import com.netease.pangu.game.common.meta.GameConst;
 import com.netease.pangu.game.constant.GameServerConst;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
@@ -30,12 +31,12 @@ public class NodeServerInitializer extends ChannelInitializer<SocketChannel> {
         if (sslCtx != null) {
             pipeline.addLast(sslCtx.newHandler(ch.alloc()));
         }
-        pipeline.addLast("ping", new IdleStateHandler(5, 5, 10, TimeUnit.MINUTES));
+        pipeline.addLast("ping", new IdleStateHandler(20, 20, 30, TimeUnit.MINUTES));
         pipeline.addLast(new HttpServerCodec());
-        pipeline.addLast(new HttpObjectAggregator(65536));
+        pipeline.addLast(new HttpObjectAggregator(GameConst.maxFramePayloadLength));
         pipeline.addLast("loginHandler", beanFactory.getBean(LoginHandler.class));
         pipeline.addLast(new WebSocketServerCompressionHandler());
-        pipeline.addLast(new SecureWebSocketServerProtocolHandler(GameServerConst.WEB_SOCKET_PATH, null, true));
+        pipeline.addLast(new SecureWebSocketServerProtocolHandler(GameServerConst.WEB_SOCKET_PATH, null, true, GameConst.maxFramePayloadLength));
 
     }
 

@@ -1,5 +1,6 @@
 package com.netease.pangu.game.netty;
 
+import com.netease.pangu.game.common.meta.GameConst;
 import com.netease.pangu.game.constant.GameServerConst;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
@@ -29,9 +30,9 @@ public class MasterServerInitializer extends ChannelInitializer<SocketChannel> {
         }
 
         pipeline.addLast(new HttpServerCodec());
-        pipeline.addLast(new HttpObjectAggregator(65536));
+        pipeline.addLast(new HttpObjectAggregator(GameConst.maxFramePayloadLength));
         pipeline.addLast(new WebSocketServerCompressionHandler());
-        pipeline.addLast(new WebSocketServerProtocolHandler(GameServerConst.WEB_SOCKET_PATH, null, true));
+        pipeline.addLast(new WebSocketServerProtocolHandler(GameServerConst.WEB_SOCKET_PATH, null, true, GameConst.maxFramePayloadLength));
         pipeline.addLast(beanFactory.getBean(MasterServerHandler.class));
     }
 

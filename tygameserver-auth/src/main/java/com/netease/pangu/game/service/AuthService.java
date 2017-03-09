@@ -19,7 +19,7 @@ public class AuthService {
 
     public String generateToken(String uuid, long expireTime) {
         String authCode = DigestUtils.md5Hex(uuid + expireTime + SALT_SEGMENT);
-        commonRedisDao.putWithTTL(authCode, expireTime, expireTime + 10 * 60 * 1000, TimeUnit.MILLISECONDS);
+        commonRedisDao.putWithTTL(authCode, expireTime,  10 * 60 * 1000, TimeUnit.MILLISECONDS);
         return authCode;
     }
 

@@ -19,6 +19,7 @@ import com.netease.pangu.game.service.AvatarSessionService;
 import com.netease.pangu.game.service.GuessGameService;
 import com.netease.pangu.game.service.RoomBroadcastApi;
 import com.netease.pangu.game.service.RoomService;
+import com.netease.pangu.game.util.BusinessCode;
 import com.netease.pangu.game.util.ReturnUtils;
 import com.netease.pangu.game.util.ReturnUtils.GameResult;
 
@@ -56,14 +57,14 @@ public class RoomController {
         long roomId = roomService.createRoom(ctx.getGameId(), session.getAvatarId(), maxSize);
         GameResult result;
         if(maxSize > 8){
-            result = ReturnUtils.failed("maxSize must less equal than 8");
+            result = BusinessCode.failed(BusinessCode.ROOM_MAX_SIZE_EXCEED);
         }else {
             if (roomId > 0) {
                 session.setAvatarStatus(AvatarStatus.READY);
                 roomService.broadcast(RoomBroadcastApi.ROOM_INFO, roomId, roomService.getRoomInfo(roomId));
                 result = ReturnUtils.succ(roomId);
             } else {
-                result = ReturnUtils.failed("create room failed");
+                result = BusinessCode.failed(BusinessCode.ROOM_CREATE_FAILED);
             }
         }
         return result;
@@ -73,27 +74,35 @@ public class RoomController {
     public GameResult joinRoom(long roomId, GameContext<AvatarSession<Avatar>> ctx) {
         AvatarSession<Avatar> session = ctx.getSession();
         if (session.getRoomId() > 0) {
-            if (session.getRoomId() == roomId) {
-                return ReturnUtils.succ(roomId);
-            } else {
-                return ReturnUtils.failed(String.format("you have in room %d", session.getRoomId()));
+            return BusinessCode.failed(BusinessCode.ROOM_HAS_JOINED);
+        }
+        GameRoom room = roomService.getGameRoom(roomId);
+        if(room == null){
+            return BusinessCode.failed(BusinessCode.ROOM_NOT_EXIST);
+        }else {
+            if(room.getStatus() != RoomStatus.IDLE){
+                return BusinessCode.failed(BusinessCode.ROOM_IS_NOT_IN_JOIN_STATE);
             }
+
+            if(room.getSessionIds().size() == room.getMaxSize()){
+                return BusinessCode.failed(BusinessCode.ROOM_IS_FULL);
+            }
+            int pos = roomService.joinRoom(session.getAvatarId(), roomId);
+            GameResult result;
+            if (pos >= 0) {
+                roomService.broadcast(RoomBroadcastApi.ROOM_JOIN, roomId, roomService.getMember(session));
+                result = roomService.getRoomInfo(roomId);
+            } else {
+                result = BusinessCode.failed(BusinessCode.ROOM_JOINED_FAILED);
+            }
+            return result;
         }
-        int pos = roomService.joinRoom(session.getAvatarId(), roomId);
-        GameResult result;
-        if (pos >= 0) {
-            roomService.broadcast(RoomBroadcastApi.ROOM_JOIN, roomId, roomService.getMember(session));
-            result = roomService.getRoomInfo(roomId);
-        } else {
-            result = ReturnUtils.failed(String.format("failed to join %d", roomId));
-        }
-        return result;
     }
 
     @WsRpcCall("/remove")
     public GameResult removeMember(long avatarId, GameContext<AvatarSession<Avatar>> ctx) {
         AvatarSession<Avatar> session = ctx.getSession();
-        GameResult result = ReturnUtils.failed();
+        GameResult result = BusinessCode.failed(BusinessCode.FAILED);
         if (session.getRoomId() > 0) {
             GameRoom room = roomService.getGameRoom(session.getRoomId());
             if (session.getAvatarId() == room.getOwnerId()) {
@@ -110,11 +119,11 @@ public class RoomController {
 
                     result = ReturnUtils.succ(avatarId);
                 } else {
-                    result = ReturnUtils.failed(String.format("room is not idle %d", avatarId));
+                    result = BusinessCode.failed(BusinessCode.ROOM_REMOVE_GAME_RUNNING);
                 }
             }
         } else {
-            result = ReturnUtils.failed(String.format(" you(%d) are not a room owner", avatarId));
+            result = BusinessCode.failed(BusinessCode.ROOM_REMOVE_ONLY_BY_OWNER);
         }
         return result;
     }

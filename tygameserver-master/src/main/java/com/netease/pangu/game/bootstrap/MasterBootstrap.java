@@ -44,10 +44,10 @@ public class MasterBootstrap implements Bootstrap {
                 e.printStackTrace();
             }
         }
-        logger.info("Server started, listening on " + port);
+        logger.info("Master Server started, listening on " + port);
 
-        EventLoopGroup bossGroup = new NioEventLoopGroup(1);
-        EventLoopGroup workerGroup = new NioEventLoopGroup();
+        EventLoopGroup bossGroup = new NioEventLoopGroup(2);
+        EventLoopGroup workerGroup = new NioEventLoopGroup(4);
         try {
             ServerBootstrap b = new ServerBootstrap();
             MasterServerInitializer initializer = context.getBean(MasterServerInitializer.class);
@@ -67,9 +67,9 @@ public class MasterBootstrap implements Bootstrap {
         Runtime.getRuntime().addShutdownHook(new Thread() {
             @Override
             public void run() {
-                logger.info("*** shutting down server since JVM is shutting down");
+                logger.info("Master Server Since JVM is shutting down");
                 MasterBootstrap.this.stop();
-                logger.info("*** server shut down");
+                logger.info("Master Server shut down");
             }
         });
     }

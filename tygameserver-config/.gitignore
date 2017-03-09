@@ -2,3 +2,5 @@
 /target/
 .project
 .classpath
+/src/main/resources/production/
+/src/main/resources/test/

@@ -1,5 +1,6 @@
 package com.netease.pangu.game.netty;
 
+import com.netease.pangu.game.common.meta.GameConst;
 import com.netease.pangu.game.common.meta.GameContext;
 import com.netease.pangu.game.constant.GameServerConst;
 import com.netease.pangu.game.http.HttpRequestInvoker;
@@ -84,7 +85,7 @@ public class MasterServerHandler extends ChannelInboundHandlerAdapter {
             URI uri = URI.create(request.uri());
             if (uri.getPath().equalsIgnoreCase(webSocketPath)) {
                 WebSocketServerHandshakerFactory wsFactory = new WebSocketServerHandshakerFactory(
-                        NettyHttpUtil.getWebSocketLocation(request, webSocketPath), null, true);
+                        NettyHttpUtil.getWebSocketLocation(request, webSocketPath), null, true, GameConst.maxFramePayloadLength);
                 WebSocketServerHandshaker handshaker = wsFactory.newHandshaker(request);
                 if (handshaker == null) {
                     WebSocketServerHandshakerFactory.sendUnsupportedVersionResponse(ctx.channel());

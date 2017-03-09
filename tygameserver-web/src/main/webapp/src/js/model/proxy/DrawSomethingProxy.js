@@ -94,7 +94,7 @@ puremvc.define({
 		connectSocket:function(data){
 			var _this=this;
 			this.connectData=data;
-			this.socket=new WebSocket('ws://'+this.connectData.ip+':'+this.connectData.port+'/ws?token='+this.connectData.token);
+			this.socket=new WebSocket('ws://'+this.connectData.ip+':'+this.connectData.port+'/ws?token='+_this.token);
 			this.socket.onopen=function(event){
 				console.log("Client open a message",event.data);
 				if(_this.roomId==0){

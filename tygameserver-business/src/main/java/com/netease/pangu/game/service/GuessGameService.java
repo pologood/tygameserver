@@ -12,6 +12,7 @@ import com.netease.pangu.game.meta.GuessGame.Guess;
 import com.netease.pangu.game.meta.GuessGameInfo;
 import com.netease.pangu.game.meta.GuessGameState;
 import com.netease.pangu.game.meta.GuessQuestion;
+import com.netease.pangu.game.util.BusinessCode;
 import com.netease.pangu.game.util.ObjectUtil;
 import com.netease.pangu.game.util.ReturnUtils;
 import org.apache.commons.collections.CollectionUtils;
@@ -317,7 +318,7 @@ public class GuessGameService {
         if (game != null) {
             synchronized (game) {
                 if (isDrawer(roomId, avatarSession.getAvatarId())) {
-                    avatarSession.sendMessage(ReturnUtils.failed("you are game drawer"));
+                    avatarSession.sendMessage(BusinessCode.failed(BusinessCode.GUESS_YOU_ARE_DRAWER));
                     return;
                 } else {
                     Map<String, Object> ret = new HashMap<String, Object>();
@@ -352,7 +353,7 @@ public class GuessGameService {
         if (game != null && game.getState() == GuessGameState.ROUND_INTERNAL) {
             synchronized (game) {
                 if (game.getDrawerId() == avatarSession.getAvatarId()) {
-                    return ReturnUtils.failed();
+                    return BusinessCode.failed(BusinessCode.ILLEGAL_OPERATION);
                 }
 
                 if (!containsRule(GuessGame.RULE.LIKE, roomId, avatarSession.getAvatarId()) && !containsRule(GuessGame.RULE.UNLIKE, roomId, avatarSession.getAvatarId())) {
@@ -362,7 +363,7 @@ public class GuessGameService {
                 }
             }
         }
-        return ReturnUtils.failed();
+        return BusinessCode.failed();
     }
 
     public ReturnUtils.GameResult unlike(long roomId, AvatarSession<Avatar> avatarSession) {
@@ -370,7 +371,7 @@ public class GuessGameService {
         if (game != null && game.getState() == GuessGameState.ROUND_INTERNAL) {
             synchronized (game) {
                 if (game.getDrawerId() == avatarSession.getAvatarId()) {
-                    return ReturnUtils.failed();
+                    return BusinessCode.failed(BusinessCode.ILLEGAL_OPERATION);
                 }
 
                 if (!containsRule(GuessGame.RULE.UNLIKE, roomId, avatarSession.getAvatarId()) && !containsRule(GuessGame.RULE.LIKE, roomId, avatarSession.getAvatarId())) {
@@ -380,7 +381,7 @@ public class GuessGameService {
                 }
             }
         }
-        return ReturnUtils.failed();
+        return BusinessCode.failed();
     }
 
     public ReturnUtils.GameResult exit(long roomId, AvatarSession<Avatar> avatarSession) {
@@ -388,13 +389,12 @@ public class GuessGameService {
         if (game != null) {
             synchronized (game) {
                 if ((game.getState() != GuessGameState.END) && !containsRule(GuessGame.RULE.EXIT, roomId, avatarSession.getAvatarId())) {
-
                     addScore(GuessGame.RULE.EXIT, game, avatarSession.getAvatarId());
                     return ReturnUtils.succ();
                 }
             }
         }
-        return ReturnUtils.failed();
+        return BusinessCode.failed();
     }
 
     private void addScore(GuessGame.RULE rule, GuessGame game, long avatarId) {
