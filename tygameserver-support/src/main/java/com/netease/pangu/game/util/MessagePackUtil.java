@@ -1,7 +1,5 @@
 package com.netease.pangu.game.util;
 
-import org.apache.commons.codec.DecoderException;
-import org.apache.commons.codec.binary.Hex;
 import org.msgpack.core.MessageBufferPacker;
 import org.msgpack.core.MessagePack;
 import org.msgpack.core.MessageUnpacker;
@@ -9,57 +7,47 @@ import org.msgpack.core.buffer.MessageBuffer;
 import org.msgpack.value.Value;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by huangc on 2017/2/24.
  */
 public class MessagePackUtil {
-    public static String packToHexString(byte[] bytes){
+    public static byte[] pack(byte[] bytes) {
         MessageBufferPacker packer = MessagePack.newDefaultBufferPacker();
         try {
+            packer.packRawStringHeader(bytes.length);
             packer.writePayload(bytes);
-            packer.flush();
+            packer.close();
             MessageBuffer buffer = packer.toMessageBuffer();
-            return buffer.toHexString(0, buffer.size());
+            return buffer.toByteArray();
         } catch (IOException e) {
             e.printStackTrace();
-        }finally {
-            try {
-                packer.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
         }
         return null;
     }
 
-    public static String upackFromHexString(String hexString){
+    public static String upack(byte[] bytes) {
         MessageUnpacker unpacker = null;
         try {
-            byte[] bytes = Hex.decodeHex(hexString.toCharArray());
             unpacker = MessagePack.newDefaultUnpacker(bytes);
             Value value = unpacker.unpackValue();
-            return value.asMapValue().toJson();
-        } catch (DecoderException e) {
-            e.printStackTrace();
+            unpacker.close();
+            return value.asStringValue().asString();
         } catch (IOException e) {
             e.printStackTrace();
-        }finally {
-            if(unpacker != null){
-                try {
-                    unpacker.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
         }
         return null;
     }
 
     public static void main(String[] args) {
-        String str = "87A3696E7401A5666C6F6174CB3FE0000000000000A7626F6F6C65616EC3A46E756C6CC0A6737472696E67A7666F6F20626172A5617272617992A3666F6FA3626172A66F626A65637482A3666F6F01A362617ACB3FE0000000000000";
-        System.out.println(str);
-        String result = MessagePackUtil.upackFromHexString(str);
-        System.out.println(result);
+        Map<String, Object> map = new HashMap<String, Object>();
+        map.put("1", 1);
+        map.put("2", "123");
+        map.put("3", "12");
+        String jsonStr = JsonUtil.toJson(map);
+        byte[] bytes = MessagePackUtil.pack(jsonStr.getBytes());
+        System.out.println(MessagePackUtil.upack(bytes));
     }
 }

@@ -75,7 +75,7 @@ public class UrsAuthUtils {
 
     /**
      * 检查合法的凭据是否存在，如果存在的话，则更新其安全凭据
-     *
+     * <p>
      * 如果存在，会在request中设置SEC_USERNAME_ATTR_KEY属性为登录的用户名
      *
      * @return
@@ -98,7 +98,7 @@ public class UrsAuthUtils {
      * @return
      */
     public static String getLoginedUserName(FullHttpRequest request, FullHttpResponse response) {
-        if(checkAndUpdateCredential(request, response)) {
+        if (checkAndUpdateCredential(request, response)) {
             String userName = request.headers().get(USERNAME_ATTR_KEY);
             return userName;
         }
@@ -122,9 +122,9 @@ public class UrsAuthUtils {
         String pInfo = null;
         Set<Cookie> cookies = NettyHttpUtil.getCookies(request);
         for (Cookie cookie : cookies) {
-            if(cookie.name().equals(P_INFO)) {
+            if (cookie.name().equals(P_INFO)) {
                 pInfo = cookie.value();
-            } else if(cookie.name().equals(CREDIDENTIAL_COOKIE_NAME)) {
+            } else if (cookie.name().equals(CREDIDENTIAL_COOKIE_NAME)) {
                 tyHdInfo = cookie.value();
             }
         }
@@ -132,12 +132,12 @@ public class UrsAuthUtils {
         String ursName = getUrsNameFromPInfo(pInfo);
         String ntessess = NettyHttpUtil.getCookieValue(request, COOKIENAME_URS, "");
 
-        if(StringUtils.isNotBlank(tyHdInfo)) {
+        if (StringUtils.isNotBlank(tyHdInfo)) {
             String[] values = tyHdInfo.split("\\|");
-            if(values.length == 2) {
+            if (values.length == 2) {
                 long expireAtTime = NumberUtils.toLong(values[0], 0);
                 String hashedMd5 = values[1];
-                if(System.currentTimeMillis() < expireAtTime) {
+                if (System.currentTimeMillis() < expireAtTime) {
                     String actualMd5 = encodeCredential(ursName, expireAtTime, ntessess);
                     if (StringUtils.equals(hashedMd5, actualMd5)) {
                         Credential credential = new Credential();
@@ -165,7 +165,7 @@ public class UrsAuthUtils {
                     ret = -1;
                 }
             }
-            if(ret >= 0) {
+            if (ret >= 0) {
                 //验证成功
                 Credential credential = new Credential();
                 credential.expiresAt = System.currentTimeMillis() + CREDIDENTIAL_LIFE;
@@ -189,11 +189,12 @@ public class UrsAuthUtils {
 
     /**
      * 获取当前登录用户的所有URS账户别名，第一个为主账户
+     *
      * @param request
      * @return
      */
     public static List<String> getAccountAliasBind(FullHttpRequest request) {
-        String userName =  request.headers().get(USERNAME_ATTR_KEY);
+        String userName = request.headers().get(USERNAME_ATTR_KEY);
         return getAccountAliasBind(userName);
     }
 
@@ -218,7 +219,7 @@ public class UrsAuthUtils {
                 return new ArrayList<String>(Arrays.asList(userName));
             }
         } else {
-            return new ArrayList<String>(Arrays.asList(new String[] {null}));
+            return new ArrayList<String>(Arrays.asList(new String[]{null}));
         }
     }
 

@@ -81,7 +81,7 @@ public class RoomService {
         return true;
     }
 
-    public  Map<Long, AvatarSession<Avatar>> getMembers(long roomId){
+    public Map<Long, AvatarSession<Avatar>> getMembers(long roomId) {
         GameRoom room = getGameRoom(roomId);
         return avatarSessionService.getAvatarSessions(Arrays.asList(room.getSessionIds().values().toArray(new Long[0])));
     }
@@ -142,7 +142,9 @@ public class RoomService {
                             playerSession.setAvatarStatus(avatarStatus);
                         }
                         return null;
-                    };
+                    }
+
+                    ;
                 });
 
             }
@@ -165,8 +167,8 @@ public class RoomService {
 
                     if (canJoin(roomId) && !room.getSessionIds().containsValue(avatarId)) {
                         playerSession.setRoomId(roomId);
-                        for(int i = 0; i < room.getMaxSize(); i++) {
-                            if(room.getSessionIds().get(i) == null){
+                        for (int i = 0; i < room.getMaxSize(); i++) {
+                            if (room.getSessionIds().get(i) == null) {
                                 room.getSessionIds().put(i, avatarId);
                                 playerSession.setPosition(i);
                                 pos = i;
@@ -244,7 +246,7 @@ public class RoomService {
 
     public void broadcast(String path, long roomId, Object msg) {
         GameRoom room = getGameRoom(roomId);
-        if(room != null) {
+        if (room != null) {
             Map<Long, AvatarSession<Avatar>> sessionMap = avatarSessionService.getAvatarSessions(Arrays.asList(room.getSessionIds().values().toArray(new Long[0])));
             for (AvatarSession<Avatar> session : sessionMap.values()) {
                 if (session.getChannel() != null && session.getChannel().isActive()) {
@@ -256,7 +258,7 @@ public class RoomService {
 
     public void chatTo(String path, long roomId, List<Long> avatarIds, Object msg) {
         GameRoom room = getGameRoom(roomId);
-        if(room != null) {
+        if (room != null) {
             Map<Long, AvatarSession<Avatar>> sessionMap = avatarSessionService.getAvatarSessions(Arrays.asList(room.getSessionIds().values().toArray(new Long[0])));
             for (Long avatarId : avatarIds) {
                 AvatarSession<Avatar> session = sessionMap.get(avatarId);
@@ -355,13 +357,13 @@ public class RoomService {
         }
     }
 
-    public Map<String, Object> getRoomInfoMap(long roomId){
+    public Map<String, Object> getRoomInfoMap(long roomId) {
         GameRoom room = getGameRoom(roomId);
         Map<String, Object> payload = new HashMap<String, Object>();
         Map<Long, AvatarSession<Avatar>> sessions = avatarSessionService.getAvatarSessions(Arrays.asList(room.getSessionIds().values().toArray(new Long[0])));
         SortedMap<Integer, SimpleAvatar> members = new TreeMap<Integer, SimpleAvatar>();
         for (Map.Entry<Integer, Long> entry : room.getSessionIds().entrySet()) {
-            if(entry.getValue() != null) {
+            if (entry.getValue() != null) {
                 members.put(entry.getKey(), SimpleAvatar.create(sessions.get(entry.getValue())));
             }
         }
@@ -380,11 +382,11 @@ public class RoomService {
         return ReturnUtils.succ(getRoomInfoMap(roomId));
     }
 
-    public GameResult getMember(AvatarSession<Avatar> session){
+    public GameResult getMember(AvatarSession<Avatar> session) {
         return ReturnUtils.succ(getMemberMap(session));
     }
 
-    public Map<String, Object> getMemberMap(AvatarSession<Avatar> session){
+    public Map<String, Object> getMemberMap(AvatarSession<Avatar> session) {
         GameRoom room = getGameRoom(session.getRoomId());
         Map<String, Object> payload = new HashMap<String, Object>();
         payload.put("avatar", SimpleAvatar.create(session));

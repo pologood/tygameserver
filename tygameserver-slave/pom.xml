@@ -15,6 +15,11 @@
         </dependency>
         <dependency>
             <groupId>com.netease.pangu.tygameserver</groupId>
+            <artifactId>tygameserver-guess</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>com.netease.pangu.tygameserver</groupId>
             <artifactId>tygameserver-protocol</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
@@ -60,7 +65,7 @@
                     <archive>
                         <!-- 清单文件 -->
                         <manifest>
-                            <mainClass>com.netease.pangu.game.bootstrap.NodeBootstrap</mainClass>
+                            <mainClass>com.netease.pangu.game.bootstrap.SlaveBootstrap</mainClass>
                             <addClasspath>true</addClasspath>
                             <classpathPrefix>lib/</classpathPrefix>
                         </manifest>

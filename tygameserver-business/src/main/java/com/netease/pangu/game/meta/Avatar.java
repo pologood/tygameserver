@@ -9,7 +9,7 @@ import java.util.Map;
 
 @Document(collection = "avatar")
 public class Avatar implements IAvatar, Serializable {
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = -254039576489330914L;
     private ObjectId id;
     private String name;
     private String uuid;
@@ -22,6 +22,7 @@ public class Avatar implements IAvatar, Serializable {
     private int totalScore;
     private Map<String, Object> data;
     private Map<String, Object> history;
+
     @Override
     public String getName() {
         return this.name;

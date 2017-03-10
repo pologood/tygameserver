@@ -3,7 +3,8 @@ puremvc.define({
 		parent:puremvc.Proxy
 	},
 	{	
-		gameId:1,//你画我猜ID
+		SYSTEM:0,
+		GUESS:1,//你画我猜ID
 		rolesList:[],//游戏角色列表
 		gbId:'',//选择角色gbId
 		roleName:'',//角色昵称
@@ -37,7 +38,7 @@ puremvc.define({
 		},
 		getRoleList:function(){
 			var _this=this;
-			$.getJSON(this.host+"/master/avatar/roles?callback=?&gameId="+this.gameId,function(msg){
+			$.getJSON(this.host+"/master/avatar/roles?callback=?&moduleId="+this.GUESS,function(msg){
 				if(msg.code==1){
 					_this.rolesList=[];
 					for(var i in msg.payload) {
@@ -63,7 +64,7 @@ puremvc.define({
 		},
 		getConnectData:function(){
 			var _this=this;
-			$.getJSON(this.host+"/master/init?callback=?&uuid="+encodeURIComponent(this.gbId)+"&roleName="+encodeURIComponent(this.roleName)+"&avatarImg="+encodeURIComponent(this.avatarImg)+"&gameId="+this.gameId+"&roomId="+this.roomId, function(msg){
+			$.getJSON(this.host+"/master/init?callback=?&uuid="+encodeURIComponent(this.gbId)+"&roleName="+encodeURIComponent(this.roleName)+"&avatarImg="+encodeURIComponent(this.avatarImg)+"&moduleId="+this.GUESS+"&roomId="+this.roomId, function(msg){
                 _this.token=msg.payload.token;
                 _this.connectSocket(msg.payload);
                 _this.avatarId=msg.payload.avatarId;
@@ -72,7 +73,7 @@ puremvc.define({
 		},
 		getLoginStatus:function(){
 			var _this=this;			
-			$.getJSON(this.host+"/master/isLogin?callback=?&gameId="+this.gameId,function(msg){
+			$.getJSON(this.host+"/master/isLogin?callback=?&moduleId="+this.GUESS,function(msg){
 				if(msg.code==1){
 					_this.sendNotification(drawsomething.AppConstants.URS_LOGIN_SUCCESS,{});
 				}else{
@@ -325,6 +326,66 @@ puremvc.define({
 
 				}else{
 					console.log(data.content.payload);
+					if(data.content.code==2){
+						alert("开启游戏失败！");
+						return;
+					}
+					if(data.content.code==3){
+						alert("非法操作！");
+						return;
+					}
+					if(data.content.code==4){
+						alert("没有登录！");
+						return;
+					}
+					if(data.content.code==10001){
+						alert("已经加入房间!");
+						return;
+					}
+					if(data.content.code==10002){
+						alert("加入房间失败!");
+						return;
+					}
+					if(data.content.code==10003){
+						alert("超过房间最大人数!");
+						return;
+					}
+					if(data.content.code==10004){
+						alert("创建房间失败！");
+						return;
+					}
+					if(data.content.code==10005){
+						alert("游戏已经开始，无法删除！");
+						return;
+					}
+					if(data.content.code==10006){
+						alert("房主才能删除！");
+						return;
+					}
+					if(data.content.code==10007){
+						alert("房间不存在！");
+						return;
+					}
+					if(data.content.code==10008){
+						alert("房间已满！");
+						return;
+					}
+					if(data.content.code==10009){
+						alert("加入房间状态不对！");
+						return;
+					}
+					if(data.content.code==10010){
+						alert("房间状态不对, 无法开启游戏！");
+						return;
+					}
+					if(data.content.code==20001){
+						alert("不在答题时间！");
+						return;
+					}
+					if(data.content.code==20002){
+						alert("你是画家！");
+						return;
+					}
 				}	
 
 
@@ -347,7 +408,7 @@ puremvc.define({
 				params:{
 					maxSize:8
 				},
-				gameId:this.gameId,
+				moduleId:this.GUESS,
 				uuid:this.gbId
 			}
 			this.socket.send(JSON.stringify(msg));
@@ -359,7 +420,7 @@ puremvc.define({
 				params:{
 					roomId:this.roomId
 				},
-				gameId:this.gameId,
+				moduleId:this.GUESS,
 				uuid:this.gbId
 			}
 			this.socket.send(JSON.stringify(msg));
@@ -370,7 +431,7 @@ puremvc.define({
 				params:{
 					avatarId:avatarInfo.avatarId
 				},
-				gameId:this.gameId,
+				moduleId:this.GUESS,
 				uuid:this.gbId
 			}
 			this.socket.send(JSON.stringify(msg));
@@ -382,7 +443,7 @@ puremvc.define({
 				params:{
 
 				},
-				gameId:this.gameId,
+				moduleId:this.GUESS,
 				uuid:this.gbId
 			}
 			this.socket.send(window.JSON.stringify(msg));
@@ -394,7 +455,7 @@ puremvc.define({
 	            params:{
 	                roomId:this.roomId
 	            },
-	            gameId:this.gameId,
+	            moduleId:this.GUESS,
 	            uuid:this.gbId
 	        };
 	        this.socket.send(window.JSON.stringify(msg));
@@ -406,7 +467,7 @@ puremvc.define({
 	                roomId:this.roomId,
 	                content:info
 	            },
-	            gameId:this.gameId,
+	            moduleId:this.GUESS,
 	            uuid:this.gbId
 	        };
 	        this.socket.send(window.JSON.stringify(msg));
@@ -420,7 +481,7 @@ puremvc.define({
 	                hint1:info.hint1,
 	                hint2:info.hint2
 	            },
-	            gameId:this.player.gameId,
+	            moduleId:this.GUESS,
 	            uuid:this.player.uuid
 	        };
 	        this.socket.send(window.JSON.stringify(msg));
@@ -432,7 +493,7 @@ puremvc.define({
 	                roomId:this.roomId,
 	                answer:message.text
 	            },
-	            gameId:this.gameId,
+	            moduleId:this.GUESS,
 	            uuid:this.gbId
 	        };
 	        this.socket.send(window.JSON.stringify(msg));
@@ -443,7 +504,7 @@ puremvc.define({
 	            params:{
 	                roomId:this.roomId
 	            },
-	            gameId:this.gameId,
+	            moduleId:this.GUESS,
 	            uuid:this.gbId
 	        };
 	        this.socket.send(window.JSON.stringify(msg));
@@ -454,7 +515,7 @@ puremvc.define({
 	            params:{
 	                roomId:this.roomId
 	            },
-	            gameId:this.gameId,
+	            moduleId:this.GUESS,
 	            uuid:this.gbId
 	        };
 	        this.socket.send(window.JSON.stringify(msg));

@@ -41,17 +41,18 @@ public class LoginHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-      if(auth(msg)){
-          ctx.pipeline().addAfter("loginHandler", "nodeServerHandler", beanFactory.getBean(NodeServerHandler.class));
-          ctx.pipeline().remove("loginHandler");
-          ctx.fireChannelRead(msg);
-      }
+        if (auth(msg)) {
+            ctx.pipeline().addAfter("loginHandler", "nodeServerHandler", beanFactory.getBean(SlaveServerHandler.class));
+            ctx.pipeline().remove("loginHandler");
+            ctx.fireChannelRead(msg);
+        }
     }
-    private boolean auth(Object msg){
+
+    private boolean auth(Object msg) {
         if (msg instanceof FullHttpRequest) {
-            FullHttpRequest req = (FullHttpRequest)msg;
+            FullHttpRequest req = (FullHttpRequest) msg;
             URI uri = URI.create(req.uri());
-            if(uri.getPath().equals(WEB_SOCKET_PATH)) {
+            if (uri.getPath().equals(WEB_SOCKET_PATH)) {
                 Map<String, String> uriParams = null;
                 try {
                     uriParams = NettyHttpUtil.parseRequest(req);
@@ -70,7 +71,7 @@ public class LoginHandler extends ChannelInboundHandlerAdapter {
                         return true;
                     }
                 }
-            }else{
+            } else {
                 return true;
             }
         }

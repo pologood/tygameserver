@@ -1,10 +1,9 @@
 package com.netease.pangu.game.distribution.impl;
 
-import com.netease.pangu.distribution.proto.AppNode;
 import com.netease.pangu.distribution.proto.MasterServiceGrpc;
 import com.netease.pangu.distribution.proto.RpcResponse;
-import com.netease.pangu.game.distribution.Node;
-import com.netease.pangu.game.distribution.NodeManager;
+import com.netease.pangu.game.distribution.Slave;
+import com.netease.pangu.game.distribution.SlaveManager;
 import com.netease.pangu.game.util.JsonUtil;
 import com.netease.pangu.game.util.ReturnUtils;
 import io.grpc.stub.StreamObserver;
@@ -16,13 +15,13 @@ import javax.annotation.Resource;
 @Component
 public class MasterServiceImpl extends MasterServiceGrpc.MasterServiceImplBase {
     private final static Logger logger = Logger.getLogger(MasterServiceImpl.class);
-    private
+
     @Resource
-    NodeManager nodeManager;
+    private SlaveManager slaveManager;
 
     @Override
-    public void addOrUpdateNode(AppNode request, StreamObserver<RpcResponse> responseObserver) {
-        Node node = new Node();
+    public void addOrUpdateSlave(com.netease.pangu.distribution.proto.Slave request, StreamObserver<RpcResponse> responseObserver) {
+        Slave node = new Slave();
         node.setIp(request.getIp());
         node.setName(request.getName());
         node.setPort(request.getPort());
@@ -30,18 +29,18 @@ public class MasterServiceImpl extends MasterServiceGrpc.MasterServiceImplBase {
         node.setCount(request.getCount());
         RpcResponse.Builder builder = RpcResponse.newBuilder();
 
-        if (!nodeManager.contains(node)) {
-            if (nodeManager.addNode(node)) {
+        if (!slaveManager.contains(node)) {
+            if (slaveManager.add(node)) {
                 builder.setCode(ReturnUtils.SUCC);
-                builder.setMessage(JsonUtil.toJson(nodeManager.getWorkersMap()));
+                builder.setMessage(JsonUtil.toJson(slaveManager.getWorkersMap()));
             } else {
                 builder.setCode(ReturnUtils.FAILED);
                 builder.setMessage("add failed");
             }
         } else {
-            if (nodeManager.updateNode(node)) {
+            if (slaveManager.update(node)) {
                 builder.setCode(ReturnUtils.SUCC);
-                builder.setMessage(JsonUtil.toJson(nodeManager.getWorkersMap()));
+                builder.setMessage(JsonUtil.toJson(slaveManager.getWorkersMap()));
             } else {
                 builder.setCode(ReturnUtils.FAILED);
                 builder.setMessage("add failed");

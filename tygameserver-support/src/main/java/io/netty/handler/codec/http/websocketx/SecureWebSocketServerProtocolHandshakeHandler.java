@@ -25,9 +25,6 @@ import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.HttpHeaderNames;
 import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.HttpResponse;
-import io.netty.handler.codec.http.websocketx.WebSocketServerHandshaker;
-import io.netty.handler.codec.http.websocketx.WebSocketServerHandshakerFactory;
-import io.netty.handler.codec.http.websocketx.WebSocketServerProtocolHandler;
 import io.netty.handler.ssl.SslHandler;
 
 import java.net.URI;
@@ -49,7 +46,7 @@ class SecureWebSocketServerProtocolHandshakeHandler extends ChannelInboundHandle
     private final boolean allowMaskMismatch;
 
     SecureWebSocketServerProtocolHandshakeHandler(String websocketPath, String subprotocols,
-                                            boolean allowExtensions, int maxFrameSize, boolean allowMaskMismatch) {
+                                                  boolean allowExtensions, int maxFrameSize, boolean allowMaskMismatch) {
         this.websocketPath = websocketPath;
         this.subprotocols = subprotocols;
         this.allowExtensions = allowExtensions;

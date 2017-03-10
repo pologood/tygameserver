@@ -14,7 +14,7 @@ import java.util.Map;
  */
 @Service
 public class DataCenterApiService {
-    private static final int EXPIRE_TIME = 5*60*1000; //5分钟
+    private static final int EXPIRE_TIME = 5 * 60 * 1000; //5分钟
     @Resource
     private DataCenterApiDao dataCenterApiDao;
     @Resource
@@ -22,16 +22,18 @@ public class DataCenterApiService {
 
     private static final String SIMPLE_AVATAR_BYURS_KEY_PREFIX = "DC_SABYURS_KP";
     private static final String GAME_SERVERS_KEY_PREFIX = "DC_GAMESERVER_KP";
+
     public static String getUpdateKey(String keyPrefix, String key) {
         return String.format("%s-%s", keyPrefix, key);
     }
 
     /**
      * 获取玩家角色基本信息
+     *
      * @param urs
      * @return
      */
-    public Map<String, List<DataCenterSimpleRoleInfo>> getSimpleAvatarsInfoByUrs(final String urs){
+    public Map<String, List<DataCenterSimpleRoleInfo>> getSimpleAvatarsInfoByUrs(final String urs) {
         final String avatarByUrsKey = getUpdateKey(SIMPLE_AVATAR_BYURS_KEY_PREFIX, urs);
         return globalValueCacheService.doPersistentCachedWithTTLForUpdate(new GlobalValueCacheService.CacheableValueWithTTLForUpdate<Map<String, List<DataCenterSimpleRoleInfo>>>() {
             @Override
@@ -51,7 +53,7 @@ public class DataCenterApiService {
         });
     }
 
-    public Map<String, Object> getGameServers(){
+    public Map<String, Object> getGameServers() {
         return globalValueCacheService.doPersistentCachedWithTTLForUpdate(new GlobalValueCacheService.CacheableValueWithTTLForUpdate<Map<String, Object>>() {
             @Override
             public Map<String, Object> getMissValue() {

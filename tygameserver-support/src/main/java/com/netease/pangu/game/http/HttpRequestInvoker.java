@@ -93,7 +93,6 @@ public class HttpRequestInvoker {
         try {
             logger.info(String.format("%d %s %s", gameId, requestUri, JsonUtil.toJson(args)));
             Map<Integer, String> paramsIndex = getParamsIndex(gameId, requestUri);
-            logger.info(String.format("%d %s %s", gameId, requestUri, JsonUtil.toJson(paramsIndex)));
             List<Object> convertedArgs = new ArrayList<Object>();
             for (Integer i = 0; i < parameterTypes.length; i++) {
                 if (Long.class.isAssignableFrom(parameterTypes[i])
@@ -176,13 +175,13 @@ public class HttpRequestInvoker {
         Map<String, Object> controllers = beanFactory.getBeansWithAnnotation(HttpController.class);
         for (Entry<String, Object> entry : controllers.entrySet()) {
             HttpController anno = entry.getValue().getClass().getAnnotation(HttpController.class);
-            Map<String, Object> map = controllerMap.get(anno.gameId());
-            if(map == null){
+            Map<String, Object> map = controllerMap.get(anno.moduleId());
+            if (map == null) {
                 map = new HashMap<String, Object>();
-                controllerMap.put(anno.gameId(), map);
+                controllerMap.put(anno.moduleId(), map);
             }
             map.put(entry.getKey(), entry.getValue());
-            initAndCheckMethodsByHttpRequest(anno.gameId(), entry.getValue(), entry.getKey());
+            initAndCheckMethodsByHttpRequest(anno.moduleId(), entry.getValue(), entry.getKey());
         }
     }
 

@@ -8,13 +8,13 @@
     <meta name="description" content="">
     <meta charset="UTF-8">
     <meta name="renderer" content="webkit">
-    <link rel="dns-prefetch" href="https://nie.res.netease.com">    
-    <!--<link href="http://res.tianyu.netease.com/qt/16/drawsomething/css/bootstrap.min.css" rel="stylesheet">-->    
+    <link rel="dns-prefetch" href="https://nie.res.netease.com">
+    <!--<link href="http://res.tianyu.netease.com/qt/16/drawsomething/css/bootstrap.min.css" rel="stylesheet">-->
     <link rel="stylesheet" type="text/css" href="css/jquery.jscrollpane.css">
     <link rel="stylesheet" type="text/css" href="css/semantic.min.css">
     <link rel="stylesheet" type="text/css" href="css/index.less">
     <script type="text/javascript" src="https://nie.res.netease.com/comm/js/jquery(mixNIE).last.js"></script>
-    <script src="http://res.tianyu.netease.com/qt/16/drawsomething/js/createjs-2015.11.26.min.js"></script> 
+    <script src="http://res.tianyu.netease.com/qt/16/drawsomething/js/createjs-2015.11.26.min.js"></script>
     <script type="text/javascript" src="https://webzj.reg.163.com/webapp/javascript/page/json3.js"></script>
     <script type="text/javascript" src="https://webzj.reg.163.com/webapp/javascript/message.js"></script>
     <!--[if lt IE 9]>
@@ -23,220 +23,220 @@
 </head>
 
 <body>
-    <div class="g-wrap" id="drawsomething">
-        <div id="loginPanel" class="loginPanel">
-            <p class="h1">天谕你画我猜</p>
-            <div class="loginCard">
-                <div class="loginCnt ui card" id="login">
+<div class="g-wrap" id="drawsomething">
+    <div id="loginPanel" class="loginPanel">
+        <p class="h1">天谕你画我猜</p>
+        <div class="loginCard">
+            <div class="loginCnt ui card" id="login">
 
-                </div>
             </div>
-            <div class="selectRoleCard">
-                <div class="selectRole">
-                    <div class="content">
-                        <div class="header title"> 请选择游戏角色 </div>
-                        <div class="radioCnt">
-                            <label><input name="role" type="radio" value="gbid" /></label>
-                        </div>
-                        <a href="javascript:;" class="confirmBtn ui brown button">确认</a>
-                    </div>                    
-                </div>
-            </div>           
-            
-            <div class="entrance">
-                <div class="joinRoom">
-                    <p class="t">加入房间</p>
-                    <div class="iptCnt">
-                        <input type="number" min="1" class="roomIdIpt">
+        </div>
+        <div class="selectRoleCard">
+            <div class="selectRole">
+                <div class="content">
+                    <div class="header title"> 请选择游戏角色</div>
+                    <div class="radioCnt">
+                        <label><input name="role" type="radio" value="gbid"/></label>
                     </div>
-                    <div class="btnCnt">
-                        <a href="javascript:;" class="joinBtn ui brown button">加入房间</a>
-                    </div>
-                    <p class="err"></p>
-                </div>
-                <div class="createRoom">
-                    <p class="t">创建房间</p>
-                    <p>点击“创建房间”建立全新的游戏房间</p>
-                    <div class="btnCnt">
-                        <a href="javascript:;" class="createBtn ui brown button">创建房间</a>
-                    </div>
-                    <p class="err"></p>
+                    <a href="javascript:;" class="confirmBtn ui brown button">确认</a>
                 </div>
             </div>
         </div>
 
-        <div id="readyPanel" class="readyPannel">
-            <h2 class="roomId"></h2>
-            <div class="playerList f-cb">
-                <div class="item f-fl"></div>
-                <div class="item f-fl"></div>
-                <div class="item f-fl"></div>
-                <div class="item f-fl"></div>
-                <div class="item f-fl"></div>
-                <div class="item f-fl"></div>
-                <div class="item f-fl"></div>
-                <div class="item f-fl"></div>
-            </div>
-            <a href="javascript:;" class="startBtn"></a>
-            <div class="confirmPop">
-                <div class="pop">
-                    <p class="title">提示</p>
-                    <p class="content">
-                        确定要把<span class="nickName"></span>请出房间？
-                    </p>
-                    <p class="btns">                        
-                        <a href="javascript:;" class="confirmBtn">确定</a>
-                        <a href="javascript:;" class="cancelBtn">取消</a>
-                    </p>
-                </div>
-            </div>
-        </div>
-        <!-- drawPanel -->
-        <div id="drawPanel" class="drawPanel">
-            <div class="colorDisc">
-                
-                <div class="colorcard colorcard-1">
-                    <span class="circle"></span>
-                </div>
-                <div class="colorcard colorcard-2">
-                    <span class="circle"></span>
-                </div>
-                <div class="colorcard colorcard-3">
-                    <span class="circle"></span>
-                </div>
-                <div class="colorcard colorcard-4">
-                    <span class="circle"></span>
-                </div>
-                <div class="colorcard colorcard-5">
-                    <span class="circle"></span>
-                </div>
-                <div class="colorcard colorcard-6">
-                    <span class="circle"></span>
-                </div>
-                <div class="colorcard colorcard-7">
-                    <span class="circle"></span>
-                </div>
-                <div class="colorcard colorcard-8">
-                    <span class="circle"></span>
-                </div>
-                <div class="colorcard colorcard-9">
-                    <span class="circle"></span>
-                </div>
-                <div class="colorcard colorcard-10">
-                    <span class="circle"></span>
-                </div>
-                <div class="pen">
-                    <div class="selected"></div>
-                    <div class="normalPen"></div>                    
-                </div>
-                <div class="cursor cursor-10"></div>
-            </div>
-            <div class="circleOverlayer"></div>
-            <div class="book">
-                <div class="hintCnt">
-                    <span class="title">回合开始</span>
-                    <div class="info">
-                        <p>现在由<span class="u-name drawerName"></span>画图</p>
-                        <p class="hint1"></p>
-                        <p class="hint2"></p>
-                    </div>
-                    <div class="raccoon"></div>
-                </div>
-                <div class="chatBox">
-                    <div class="wrap">
-                        <div class="content">
-
-                        </div>
-                    </div>
-                </div>
+        <div class="entrance">
+            <div class="joinRoom">
+                <p class="t">加入房间</p>
                 <div class="iptCnt">
-                    <input type="text" class="msgIpt">
-                    <a href="javascript:;" class="sendBtn"></a>
+                    <input type="number" min="1" class="roomIdIpt">
                 </div>
-            </div>
-            <canvas id="drawingBoard" width="550" height="418" class="drawingBoard"></canvas>
-            <div class="tools">
-                <p class="answer answerTxt">作品：</p>
-                <a href="javascript:;" class="eraser"></a>
-                <a href="javascript::" class="delete"></a>
-                <div class="lineSet">
-                    <a class="subtractBtn" href="javascript:;"></a>
-                    <div class="slidebar">
-                        <span class="circle"></span>
-                    </div>
-                    <a class="plusBtn" href="javascript:;"></a>
+                <div class="btnCnt">
+                    <a href="javascript:;" class="joinBtn ui brown button">加入房间</a>
                 </div>
+                <p class="err"></p>
             </div>
-            <div class="members">
-                
+            <div class="createRoom">
+                <p class="t">创建房间</p>
+                <p>点击“创建房间”建立全新的游戏房间</p>
+                <div class="btnCnt">
+                    <a href="javascript:;" class="createBtn ui brown button">创建房间</a>
+                </div>
+                <p class="err"></p>
             </div>
-            <div class="roundCountDown">
-                <span>倒计时</span>
-                <span class="num"></span>
-            </div>
-            <div class="petal-1"></div>
-            <div class="petal-2"></div>
-            <!-- 我是谁 -->
-            <div class="myName">
+        </div>
+    </div>
 
-            </div>
-            <!-- 我是谁 -->
-            <div class="mask"></div>
-            <div class="endPop">
-                <p class="title"></p>
-                <span class="timeTips"></span>
-                <div class="imgCnt">
-                    <img src="" width="440" height="240">
-                </div>
-                <div class="btns">
-                    <a href="javascript:;" class="caiBtn f-fl">(0)</a>
-                    <a href="javascript:;" class="zanBtn f-fr">(0)</a>
-                </div>
-            </div>
-            <div class="deleteConfirmPop">
+    <div id="readyPanel" class="readyPannel">
+        <h2 class="roomId"></h2>
+        <div class="playerList f-cb">
+            <div class="item f-fl"></div>
+            <div class="item f-fl"></div>
+            <div class="item f-fl"></div>
+            <div class="item f-fl"></div>
+            <div class="item f-fl"></div>
+            <div class="item f-fl"></div>
+            <div class="item f-fl"></div>
+            <div class="item f-fl"></div>
+        </div>
+        <a href="javascript:;" class="startBtn"></a>
+        <div class="confirmPop">
+            <div class="pop">
                 <p class="title">提示</p>
                 <p class="content">
-                    确认后将清空整个画板
+                    确定要把<span class="nickName"></span>请出房间？
                 </p>
-                <div class="btns f-cb">
-                    <a href="javascript:;" class="confirmBtn f-fl">清空</a>
-                    <a href="javascript:;" class="cancelBtn f-fr">取消</a>
-                </div>
+                <p class="btns">
+                    <a href="javascript:;" class="confirmBtn">确定</a>
+                    <a href="javascript:;" class="cancelBtn">取消</a>
+                </p>
             </div>
         </div>
-        <!-- drawPanel -->
+    </div>
+    <!-- drawPanel -->
+    <div id="drawPanel" class="drawPanel">
+        <div class="colorDisc">
 
-        <!-- commonAlert -->
-        <div class="commonAlert" id="commonAlert">
-            <div class="cnt">
-                <p class="title">提示</p>
-                <div class="content">
-                    你被房主请出了房间，去其他房间看看吧
+            <div class="colorcard colorcard-1">
+                <span class="circle"></span>
+            </div>
+            <div class="colorcard colorcard-2">
+                <span class="circle"></span>
+            </div>
+            <div class="colorcard colorcard-3">
+                <span class="circle"></span>
+            </div>
+            <div class="colorcard colorcard-4">
+                <span class="circle"></span>
+            </div>
+            <div class="colorcard colorcard-5">
+                <span class="circle"></span>
+            </div>
+            <div class="colorcard colorcard-6">
+                <span class="circle"></span>
+            </div>
+            <div class="colorcard colorcard-7">
+                <span class="circle"></span>
+            </div>
+            <div class="colorcard colorcard-8">
+                <span class="circle"></span>
+            </div>
+            <div class="colorcard colorcard-9">
+                <span class="circle"></span>
+            </div>
+            <div class="colorcard colorcard-10">
+                <span class="circle"></span>
+            </div>
+            <div class="pen">
+                <div class="selected"></div>
+                <div class="normalPen"></div>
+            </div>
+            <div class="cursor cursor-10"></div>
+        </div>
+        <div class="circleOverlayer"></div>
+        <div class="book">
+            <div class="hintCnt">
+                <span class="title">回合开始</span>
+                <div class="info">
+                    <p>现在由<span class="u-name drawerName"></span>画图</p>
+                    <p class="hint1"></p>
+                    <p class="hint2"></p>
                 </div>
-                <a href="javascript:;" class="confirmBtn">我知道了</a>
-            </div>            
-        </div>
-        <!-- commonAlert -->
-        
-        <div class="audioPanel" id="audioPanel">
-            <!-- <audio src="http://v.tianyu.netease.com/2017/0222/u8c15u4e16.ogg" autoplay loop></audio> -->
-            <!-- <a href="javascript:;" class="audioCloseBtn">关闭</a> -->
-        </div>
+                <div class="raccoon"></div>
+            </div>
+            <div class="chatBox">
+                <div class="wrap">
+                    <div class="content">
 
-    </div>    
-    <script id="roleItems-template" type="text/x-handlebars-template">
-        {{#each rolesList}}
-        <label>
-            <input name="role" type="radio" value="{{this.gbId}}" data-roleName="{{this.playerName}}">
-            <span>{{this.playerName}}</span>
-            <span>{{this.serverName}}</span>
-            <span>{{this.school}}</span>
-            <span>lv{{this.level}}</span>
-        </label>
-        {{/each}}
-    </script>
-    <script id="playerItems-template" type="text/x-handlebars-template">  
-    <div>     
+                    </div>
+                </div>
+            </div>
+            <div class="iptCnt">
+                <input type="text" class="msgIpt">
+                <a href="javascript:;" class="sendBtn"></a>
+            </div>
+        </div>
+        <canvas id="drawingBoard" width="550" height="418" class="drawingBoard"></canvas>
+        <div class="tools">
+            <p class="answer answerTxt">作品：</p>
+            <a href="javascript:;" class="eraser"></a>
+            <a href="javascript::" class="delete"></a>
+            <div class="lineSet">
+                <a class="subtractBtn" href="javascript:;"></a>
+                <div class="slidebar">
+                    <span class="circle"></span>
+                </div>
+                <a class="plusBtn" href="javascript:;"></a>
+            </div>
+        </div>
+        <div class="members">
+
+        </div>
+        <div class="roundCountDown">
+            <span>倒计时</span>
+            <span class="num"></span>
+        </div>
+        <div class="petal-1"></div>
+        <div class="petal-2"></div>
+        <!-- 我是谁 -->
+        <div class="myName">
+
+        </div>
+        <!-- 我是谁 -->
+        <div class="mask"></div>
+        <div class="endPop">
+            <p class="title"></p>
+            <span class="timeTips"></span>
+            <div class="imgCnt">
+                <img src="" width="440" height="240">
+            </div>
+            <div class="btns">
+                <a href="javascript:;" class="caiBtn f-fl">(0)</a>
+                <a href="javascript:;" class="zanBtn f-fr">(0)</a>
+            </div>
+        </div>
+        <div class="deleteConfirmPop">
+            <p class="title">提示</p>
+            <p class="content">
+                确认后将清空整个画板
+            </p>
+            <div class="btns f-cb">
+                <a href="javascript:;" class="confirmBtn f-fl">清空</a>
+                <a href="javascript:;" class="cancelBtn f-fr">取消</a>
+            </div>
+        </div>
+    </div>
+    <!-- drawPanel -->
+
+    <!-- commonAlert -->
+    <div class="commonAlert" id="commonAlert">
+        <div class="cnt">
+            <p class="title">提示</p>
+            <div class="content">
+                你被房主请出了房间，去其他房间看看吧
+            </div>
+            <a href="javascript:;" class="confirmBtn">我知道了</a>
+        </div>
+    </div>
+    <!-- commonAlert -->
+
+    <div class="audioPanel" id="audioPanel">
+        <!-- <audio src="http://v.tianyu.netease.com/2017/0222/u8c15u4e16.ogg" autoplay loop></audio> -->
+        <!-- <a href="javascript:;" class="audioCloseBtn">关闭</a> -->
+    </div>
+
+</div>
+<script id="roleItems-template" type="text/x-handlebars-template">
+    {{#each rolesList}}
+    <label>
+        <input name="role" type="radio" value="{{this.gbId}}" data-roleName="{{this.playerName}}">
+        <span>{{this.playerName}}</span>
+        <span>{{this.serverName}}</span>
+        <span>{{this.school}}</span>
+        <span>lv{{this.level}}</span>
+    </label>
+    {{/each}}
+</script>
+<script id="playerItems-template" type="text/x-handlebars-template">
+    <div>
         <span class="name">{{name}}<span class="score f-fr">{{totalScore}}分</span></span>
         <div class="head">
             <img src="img/ready/head.png" width="72" height="72">
@@ -250,20 +250,20 @@
             <span class="second">59</span><span class="txt">/秒</span>                        
         </span>
         <a href="javascript:;" class="closeBtn" data-avatarId="{{avatarId}}"></a>
-        <span class="ownerIcon"></span>        
+        <span class="ownerIcon"></span>
     </div>
-    </script>
-    <script id="drawingPlayerItem-template" type="text/x-handlebars-template">
+</script>
+<script id="drawingPlayerItem-template" type="text/x-handlebars-template">
     {{#each rolesList}}
-        <div class="item f-fl" data-avatarId="{{avatarId}}" data-localScore="{{localScore}}">
-            {{#if avatarId}}
-            <span class="head">
+    <div class="item f-fl" data-avatarId="{{avatarId}}" data-localScore="{{localScore}}">
+        {{#if avatarId}}
+        <span class="head">
                 <img src="img/ready/head.png" width="43" heigth="43">
                 <span class="imgBorder"></span>
-            </span>           
+            </span>
 
-            <span class="name">{{name}}</span>
-            <span class="score">
+        <span class="name">{{name}}</span>
+        <span class="score">
                 {{#if localScore}}
                 <span class="num">{{localScore}}分</span>
                 {{else}}
@@ -271,34 +271,34 @@
                 {{/if}}
                 <span class="icon"></span>
             </span>
-            <div class="current"></div>
-            {{/if}}
-        </div>
+        <div class="current"></div>
+        {{/if}}
+    </div>
     {{/each}}
-    </script>
-    <script type="text/javascript" src="js/lib/jquery.mousewheel.js"></script>
-    <script type="text/javascript" src="js/lib/jquery.jscrollpane.min.js"></script>
-    <script type="text/javascript" src="js/lib/handlebars-v4.0.5.js"></script>
-    <script type="text/javascript" src="js/lib/puremvc-1.0.1.min.js"></script>
-    <script type="text/javascript" src="js/view/event/AppEvents.js"></script>
-    <script type="text/javascript" src="js/view/component/DrawPanel.js"></script>
-    <script type="text/javascript" src="js/view/component/Scroll.js"></script>
-    <script type="text/javascript" src="js/view/component/ReadyPanel.js"></script>
-    <script type="text/javascript" src="js/view/component/LoginPanel.js"></script>  
-    <script type="text/javascript" src="js/view/component/PlayerItem.js"></script>
-    <script type="text/javascript" src="js/view/component/CommonAlert.js"></script>
-    <script type="text/javascript" src="js/view/mediator/DrawPanelMediator.js"></script>
-    <script type="text/javascript" src="js/view/mediator/ReadyPanelMediator.js"></script>
-    <script type="text/javascript" src="js/view/mediator/LoginPanelMediator.js"></script>
-    <script type="text/javascript" src="js/view/mediator/CommonAlertMediator.js"></script>
-    <script type="text/javascript" src="js/app/AppConstants.js"></script>
-    <script type="text/javascript" src="js/model/proxy/DrawSomethingProxy.js"></script>
-    <script type="text/javascript" src="js/controller/command/PrepControllerCommand.js"></script>
-    <script type="text/javascript" src="js/controller/command/PrepViewCommand.js"></script>
-    <script type="text/javascript" src="js/controller/command/PrepModelCommand.js"></script>
-    <script type="text/javascript" src="js/controller/command/StartupCommand.js"></script>
-    <script type="text/javascript" src="js/controller/command/SocketCommand.js"></script>
-    <script type="text/javascript" src="js/app/app.js"></script>
-    <script type="text/javascript" src="js/app/index.js"></script>
+</script>
+<script type="text/javascript" src="js/lib/jquery.mousewheel.js"></script>
+<script type="text/javascript" src="js/lib/jquery.jscrollpane.min.js"></script>
+<script type="text/javascript" src="js/lib/handlebars-v4.0.5.js"></script>
+<script type="text/javascript" src="js/lib/puremvc-1.0.1.min.js"></script>
+<script type="text/javascript" src="js/view/event/AppEvents.js"></script>
+<script type="text/javascript" src="js/view/component/DrawPanel.js"></script>
+<script type="text/javascript" src="js/view/component/Scroll.js"></script>
+<script type="text/javascript" src="js/view/component/ReadyPanel.js"></script>
+<script type="text/javascript" src="js/view/component/LoginPanel.js"></script>
+<script type="text/javascript" src="js/view/component/PlayerItem.js"></script>
+<script type="text/javascript" src="js/view/component/CommonAlert.js"></script>
+<script type="text/javascript" src="js/view/mediator/DrawPanelMediator.js"></script>
+<script type="text/javascript" src="js/view/mediator/ReadyPanelMediator.js"></script>
+<script type="text/javascript" src="js/view/mediator/LoginPanelMediator.js"></script>
+<script type="text/javascript" src="js/view/mediator/CommonAlertMediator.js"></script>
+<script type="text/javascript" src="js/app/AppConstants.js"></script>
+<script type="text/javascript" src="js/model/proxy/DrawSomethingProxy.js"></script>
+<script type="text/javascript" src="js/controller/command/PrepControllerCommand.js"></script>
+<script type="text/javascript" src="js/controller/command/PrepViewCommand.js"></script>
+<script type="text/javascript" src="js/controller/command/PrepModelCommand.js"></script>
+<script type="text/javascript" src="js/controller/command/StartupCommand.js"></script>
+<script type="text/javascript" src="js/controller/command/SocketCommand.js"></script>
+<script type="text/javascript" src="js/app/app.js"></script>
+<script type="text/javascript" src="js/app/index.js"></script>
 </body>
 </html>

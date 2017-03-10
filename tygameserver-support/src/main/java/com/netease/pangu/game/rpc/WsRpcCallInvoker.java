@@ -75,7 +75,6 @@ public class WsRpcCallInvoker {
         List<Object> convertedArgs = new ArrayList<Object>();
         logger.info(String.format("%d %s %s", gameId, rpcMethodName, JsonUtil.toJson(args)));
         Map<Integer, String> paramsIndex = getParamsIndex(gameId, rpcMethodName);
-        logger.info(String.format("%d %s %s", gameId, rpcMethodName, JsonUtil.toJson(paramsIndex)));
         try {
             for (Integer i = 0; i < parameterTypes.length; i++) {
                 if (Long.class.isAssignableFrom(parameterTypes[i]) || long.class.isAssignableFrom(parameterTypes[i])) {
@@ -173,25 +172,25 @@ public class WsRpcCallInvoker {
         Map<String, Object> controllers = beanFactory.getBeansWithAnnotation(WsRpcController.class);
         for (Entry<String, Object> entry : controllers.entrySet()) {
             WsRpcController anno = entry.getValue().getClass().getAnnotation(WsRpcController.class);
-            Map<String, Object> map = controllerMap.get(anno.gameId());
-            if(map == null){
+            Map<String, Object> map = controllerMap.get(anno.moduleId());
+            if (map == null) {
                 map = new HashMap<String, Object>();
-                controllerMap.put(anno.gameId(), map);
+                controllerMap.put(anno.moduleId(), map);
             }
             map.put(entry.getKey(), entry.getValue());
-            initAndCheckMethodsByNettyRpcCall(anno.gameId(), entry.getValue(), entry.getKey());
+            initAndCheckMethodsByNettyRpcCall(anno.moduleId(), entry.getValue(), entry.getKey());
         }
 
         for (Entry<Long, Map<String, Method>> entry : methodMap.entrySet()) {
             Map<Integer, String> map = methodIndexMap.get(entry.getKey());
-            if(map == null){
+            if (map == null) {
                 map = new HashMap<Integer, String>();
                 methodIndexMap.put(entry.getKey(), map);
             }
             Map<String, Method> methods = methodMap.get(entry.getKey());
             List<String> methodNames = Arrays.asList(methodMap.get(entry.getKey()).keySet().toArray(new String[0]));
             Collections.sort(methodNames);
-            for(int i = 0; i < methodNames.size(); i++){
+            for (int i = 0; i < methodNames.size(); i++) {
                 map.put(i, methodNames.get(i));
             }
         }

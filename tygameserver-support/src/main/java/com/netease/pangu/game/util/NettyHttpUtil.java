@@ -50,8 +50,8 @@ public class NettyHttpUtil {
                     f.addListener(ChannelFutureListener.CLOSE);
                 }
             }
-        }finally {
-            if(res.content().refCnt() > 0) {
+        } finally {
+            if (res.content().refCnt() > 0) {
                 res.content().release();
             }
         }
@@ -129,35 +129,35 @@ public class NettyHttpUtil {
         return new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, status, Unpooled.copiedBuffer(msg, Charset.forName("UTF-8")));
     }
 
-    public static void setHttpResponse(FullHttpResponse response, HttpResponseStatus status){
+    public static void setHttpResponse(FullHttpResponse response, HttpResponseStatus status) {
         response.setStatus(status);
     }
 
 
-    public static void setHttpResponse(FullHttpResponse response, HttpResponseStatus status, String msg){
+    public static void setHttpResponse(FullHttpResponse response, HttpResponseStatus status, String msg) {
         response.setStatus(status);
         response.content().writeBytes(Unpooled.copiedBuffer(msg, Charset.forName("UTF-8")));
     }
 
-    public static Set<Cookie> getCookies(FullHttpRequest request){
+    public static Set<Cookie> getCookies(FullHttpRequest request) {
         return getCookies(request.headers());
     }
 
-    public static String getCookieValue(FullHttpRequest request, String cookieName, String defaultValue){
+    public static String getCookieValue(FullHttpRequest request, String cookieName, String defaultValue) {
         Set<Cookie> cookies = getCookies(request);
-        for(Cookie cookie : cookies){
-            if(cookie.name().equals(cookieName)){
+        for (Cookie cookie : cookies) {
+            if (cookie.name().equals(cookieName)) {
                 return cookie.value();
             }
         }
         return defaultValue;
     }
 
-    public static Set<Cookie> getCookies(FullHttpResponse response){
+    public static Set<Cookie> getCookies(FullHttpResponse response) {
         return getCookies(response.headers());
     }
 
-    private static Set<Cookie> getCookies(HttpHeaders headers){
+    private static Set<Cookie> getCookies(HttpHeaders headers) {
         Set<Cookie> cookies;
         String value = headers.get(HttpHeaderNames.COOKIE);
         if (value == null) {
@@ -171,7 +171,7 @@ public class NettyHttpUtil {
         return cookies;
     }
 
-    public static void setCookie(FullHttpResponse response, Cookie cookie){
+    public static void setCookie(FullHttpResponse response, Cookie cookie) {
         Set<Cookie> cookies = new HashSet<Cookie>(getCookies(response));
         cookies.add(cookie);
         response.headers().set(HttpHeaderNames.SET_COOKIE, ServerCookieEncoder.STRICT.encode(cookies));

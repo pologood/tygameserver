@@ -59,17 +59,16 @@ public abstract class AbstractAvatarSessionService<A extends IAvatar> {
     }
 
     public void put(long avatarId, AvatarSession<A> session) {
-        if (sessions.put(avatarId, session) == null) {
-            synchronized (avatarsCache) {
-                if (!avatarsCache.containsKey(session.getGameId())) {
-                    avatarsCache.put(session.getGameId(), new HashMap<String, A>());
-                }
-                avatarsCache.get(session.getGameId()).put(session.getUuid(), session.getAvatar());
+        sessions.put(avatarId, session);
+        synchronized (avatarsCache) {
+            Map<String, A> map = avatarsCache.get(session.getGameId());
+            if (map == null) {
+                map = new HashMap<String, A>();
+                avatarsCache.put(session.getGameId(), map);
             }
-            synchronized (channelIdAvatarIdMap) {
-                channelIdAvatarIdMap.put(session.getChannelId(), session.getAvatarId());
-            }
+            map.put(session.getUuid(), session.getAvatar());
         }
+        channelIdAvatarIdMap.put(session.getChannelId(), session.getAvatarId());
     }
 
     public A getAvatarFromCache(long gameId, String uuid) {
@@ -88,10 +87,7 @@ public abstract class AbstractAvatarSessionService<A extends IAvatar> {
                     avatarsCache.get(session.getGameId()).remove(session.getUuid());
                 }
             }
-
-            synchronized (channelIdAvatarIdMap) {
-                channelIdAvatarIdMap.remove(session.getChannelId());
-            }
+            channelIdAvatarIdMap.remove(session.getChannelId());
         }
     }
 
@@ -129,11 +125,11 @@ public abstract class AbstractAvatarSessionService<A extends IAvatar> {
     }
 
     public <T> T updateAvatarSessionByChannelId(ChannelId channelId, SessionCallable<T, A> callable) {
-       if(channelIdAvatarIdMap.containsKey(channelId)) {
-           long avatarId = channelIdAvatarIdMap.get(channelId);
-           return updateAvatarSession(avatarId, callable);
-       }else{
-           return null;
-       }
+        if (channelIdAvatarIdMap.containsKey(channelId)) {
+            long avatarId = channelIdAvatarIdMap.get(channelId);
+            return updateAvatarSession(avatarId, callable);
+        } else {
+            return null;
+        }
     }
 }

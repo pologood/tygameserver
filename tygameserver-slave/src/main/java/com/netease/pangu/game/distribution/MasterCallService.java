@@ -1,6 +1,5 @@
 package com.netease.pangu.game.distribution;
 
-import com.netease.pangu.distribution.proto.AppNode;
 import com.netease.pangu.distribution.proto.MasterServiceGrpc;
 import com.netease.pangu.distribution.proto.MasterServiceGrpc.MasterServiceBlockingStub;
 import com.netease.pangu.distribution.proto.RpcResponse;
@@ -30,15 +29,15 @@ public class MasterCallService {
         return isInit.get();
     }
 
-    public RpcResponse addOrUpdateNode(Node worker) {
-        AppNode.Builder request = AppNode.newBuilder();
+    public RpcResponse addOrUpdateSlave(Slave worker) {
+        com.netease.pangu.distribution.proto.Slave.Builder request = com.netease.pangu.distribution.proto.Slave.newBuilder();
         request.setName(worker.getName());
         request.setIp(worker.getIp());
         request.setPort(worker.getPort());
         request.setCount(worker.getCount());
         RpcResponse response = null;
         try {
-            response = stub.addOrUpdateNode(request.build());
+            response = stub.addOrUpdateSlave(request.build());
         } catch (StatusRuntimeException e) {
             e.printStackTrace();
         }

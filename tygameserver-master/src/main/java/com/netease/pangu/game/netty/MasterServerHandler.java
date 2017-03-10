@@ -5,9 +5,9 @@ import com.netease.pangu.game.common.meta.GameContext;
 import com.netease.pangu.game.constant.GameServerConst;
 import com.netease.pangu.game.http.HttpRequestInvoker;
 import com.netease.pangu.game.rpc.WsRpcCallInvoker;
+import com.netease.pangu.game.util.BusinessCode;
 import com.netease.pangu.game.util.JsonUtil;
 import com.netease.pangu.game.util.NettyHttpUtil;
-import com.netease.pangu.game.util.ReturnUtils;
 import com.netease.pangu.game.util.UrsAuthUtils;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandler.Sharable;
@@ -63,12 +63,14 @@ public class MasterServerHandler extends ChannelInboundHandlerAdapter {
             String rpcMethod = (String) data.get("rpcMethod");
             @SuppressWarnings("unchecked")
             Map<String, Object> args = (Map<String, Object>) data.get("params");
-            Double tmp = NumberUtils.toDouble(data.get("gameId").toString());
-            long gameId = tmp.longValue();
-            GameContext<Void> context = new GameContext<Void>(gameId, ctx, null, rpcMethod, frame);
-            if(wsRpcCallInvoker.containsURIPath(gameId, rpcMethod)) {
-                wsRpcCallInvoker.invoke(gameId, rpcMethod, args, context);
-            }else{
+            Double tmp = NumberUtils.toDouble(data.get("moduleId").toString());
+            long moduleId = tmp.longValue();
+            GameContext<Void> context = new GameContext<Void>(moduleId, ctx, null, rpcMethod, frame);
+            if (wsRpcCallInvoker.containsURIPath(moduleId, rpcMethod)) {
+                wsRpcCallInvoker.invoke(moduleId, rpcMethod, args, context);
+            } else if (wsRpcCallInvoker.containsURIPath(GameConst.SYSTEM, rpcMethod)) {
+                wsRpcCallInvoker.invoke(GameConst.SYSTEM, rpcMethod, args, context);
+            } else {
                 NettyHttpUtil.sendWsResponse(context, "rpcMethod not exist!");
             }
         }
@@ -94,24 +96,34 @@ public class MasterServerHandler extends ChannelInboundHandlerAdapter {
                 }
             } else {
                 Map<String, String> params = NettyHttpUtil.parseRequest(request);
-                if (!params.containsKey("gameId")) {
+                if (!params.containsKey("moduleId")) {
                     NettyHttpUtil.sendHttpResponse(ctx, request,
                             new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.NOT_FOUND,
-                                    Unpooled.copiedBuffer("parameter gameId not exist!", Charset.forName("UTF-8"))));
-                }else {
-                    Double tmp = NumberUtils.toDouble(params.get("gameId").toString());
-                    long gameId = tmp.longValue();
+                                    Unpooled.copiedBuffer("parameter moduleId not exist!", Charset.forName("UTF-8"))));
+                } else {
+                    Double tmp = NumberUtils.toDouble(params.get("moduleId").toString());
+                    long moduleId = tmp.longValue();
                     FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.CONTINUE);
                     String userName = UrsAuthUtils.getLoginedUserName(request, response);
-                    if (httpRequestInvoker.containsURIPath(gameId, uri.getPath())) {
-                        if (httpRequestInvoker.isNeedAuth(gameId, uri.getPath())) {
+                    if (httpRequestInvoker.containsURIPath(moduleId, uri.getPath())) {
+                        if (httpRequestInvoker.isNeedAuth(moduleId, uri.getPath())) {
                             if (StringUtils.isEmpty(userName)) {
-                                NettyHttpUtil.setHttpResponse(response, HttpResponseStatus.OK, JsonUtil.toJson(ReturnUtils.failed("need auth")));
+                                NettyHttpUtil.setHttpResponse(response, HttpResponseStatus.OK, JsonUtil.toJson(BusinessCode.failed(BusinessCode.NOT_LOGINED)));
                                 NettyHttpUtil.sendHttpResponse(ctx, request, response);
                                 return;
                             }
                         }
-                        httpRequestInvoker.invoke(gameId, uri.getPath(), params, request, response);
+                        httpRequestInvoker.invoke(moduleId, uri.getPath(), params, request, response);
+                    } else if (httpRequestInvoker.containsURIPath(GameConst.SYSTEM, uri.getPath())) {
+                        if (httpRequestInvoker.isNeedAuth(GameConst.SYSTEM, uri.getPath())) {
+                            if (StringUtils.isEmpty(userName)) {
+                                NettyHttpUtil.setHttpResponse(response, HttpResponseStatus.OK, JsonUtil.toJson(BusinessCode.failed(BusinessCode.NOT_LOGINED)));
+                                NettyHttpUtil.sendHttpResponse(ctx, request, response);
+                                return;
+                            }
+                        }
+                        httpRequestInvoker.invoke(GameConst.SYSTEM, uri.getPath(), params, request, response);
+
                     } else {
                         NettyHttpUtil.setHttpResponse(response, HttpResponseStatus.NOT_FOUND, "uri not exist!");
                     }

@@ -13,15 +13,18 @@ import java.util.Map;
  * Created by huangc on 2017/3/8.
  */
 public class BusinessCode {
-    @Message("成功")
-    public static final int SUCC = 1;
     @Message("失败")
     public static final int FAILED = 0;
+
+    @Message("成功")
+    public static final int SUCC = 1;
 
     @Message("开启游戏失败")
     public static final int STAT_GAME_FAILED = 2;
     @Message("非法操作")
     public static final int ILLEGAL_OPERATION = 3;
+    @Message("没有登陆")
+    public static final int NOT_LOGINED = 4;
 
     @Message("已经加入房间")
     public static final int ROOM_HAS_JOINED = 10001;
@@ -31,6 +34,7 @@ public class BusinessCode {
     public static final int ROOM_MAX_SIZE_EXCEED = 10003;
     @Message("创建房间失败")
     public static final int ROOM_CREATE_FAILED = 10004;
+
     @Message("游戏已经开始，无法删除")
     public static final int ROOM_REMOVE_GAME_RUNNING = 10005;
     @Message("房主才能删除")
@@ -46,6 +50,7 @@ public class BusinessCode {
 
     @Message("不在答题时间")
     public static final int GUESS_NOTIN_ANSWER_TIME = 20001;
+
     @Message("你是画家")
     public static final int GUESS_YOU_ARE_DRAWER = 20002;
 
@@ -54,7 +59,7 @@ public class BusinessCode {
 
     static {
         Map<Integer, String> m = new HashMap<Integer, String>();
-        for (Field field : BusinessCode.class.getDeclaringClass().getDeclaredFields()) {
+        for (Field field : BusinessCode.class.getDeclaredFields()) {
             Message annotation = field.getAnnotation(Message.class);
             if (annotation != null) {
                 try {

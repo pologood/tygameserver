@@ -21,7 +21,7 @@ public class DataCenterApiServiceTest {
     private DataCenterApiService dataCenterApiService;
 
     @Test
-    public void getSimpleAvatarsInfoByUrs(){
+    public void getSimpleAvatarsInfoByUrs() {
         Map<String, List<DataCenterSimpleRoleInfo>> map = dataCenterApiService.getSimpleAvatarsInfoByUrs("ywwstcl@163.com");
         System.out.println(map);
     }

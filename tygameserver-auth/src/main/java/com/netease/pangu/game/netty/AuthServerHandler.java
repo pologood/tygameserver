@@ -66,7 +66,7 @@ public class AuthServerHandler extends ChannelInboundHandlerAdapter {
             if (httpRequestInvoker.containsURIPath(gameId, uri.getPath())) {
                 httpRequestInvoker.invoke(gameId, uri.getPath(), params, request, response);
             } else {
-                NettyHttpUtil.setHttpResponse(response, HttpResponseStatus.BAD_REQUEST,"uri not exist!");
+                NettyHttpUtil.setHttpResponse(response, HttpResponseStatus.BAD_REQUEST, "uri not exist!");
             }
             NettyHttpUtil.sendHttpResponse(ctx, request, response);
             return;

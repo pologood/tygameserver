@@ -19,6 +19,7 @@ public class AvatarSession<A extends IAvatar> implements IAvatar {
     private long createTime;
     private long lastestActiveTime;
     private AvatarStatus avatarStatus;
+
     public Map<String, Object> getAttrs() {
         return attrs;
     }

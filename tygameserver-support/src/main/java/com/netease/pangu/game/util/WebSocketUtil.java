@@ -14,15 +14,17 @@ import java.util.concurrent.Future;
  * Created by huangc on 2017/1/23.
  */
 public class WebSocketUtil {
-     public static interface Handler {
+    public static interface Handler {
         void call(String msg);
     }
 
     public static class WebSocketHandler extends WebSocketAdapter {
         private Handler handler;
-        public WebSocketHandler(Handler handler){
+
+        public WebSocketHandler(Handler handler) {
             this.handler = handler;
         }
+
         @Override
         public void onWebSocketConnect(Session session) {
             super.onWebSocketConnect(session);

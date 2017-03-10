@@ -13,5 +13,5 @@ import java.lang.annotation.Target;
 public @interface HttpController {
     String value() default "";
 
-    long gameId();
+    long moduleId();
 }

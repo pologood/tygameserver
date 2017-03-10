@@ -10,6 +10,7 @@
 		   http://www.springframework.org/schema/task
 		   http://www.springframework.org/schema/task/spring-task-3.1.xsd">
     <import resource="classpath*:tygameserver-business-service.xml"/>
+    <import resource="classpath*:tygameserver-guess-service.xml"/>
     <context:annotation-config/>
     <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
         <property name="ignoreUnresolvablePlaceholders" value="true"/>
@@ -24,8 +25,7 @@
     </bean>
     <context:component-scan base-package="com.netease.pangu.game.bootstrap"/>
     <context:component-scan base-package="com.netease.pangu.game.distribution"/>
-    <context:component-scan base-package="com.netease.pangu.game.controller.slave"/>
-    <context:component-scan base-package="com.netease.pangu.game.business.controller"/>
+    <context:component-scan base-package="com.netease.pangu.game.controller"/>
     <context:component-scan base-package="com.netease.pangu.game.netty"/>
     <!-- 定时任务  -->
     <task:executor id="executor" pool-size="5"/>

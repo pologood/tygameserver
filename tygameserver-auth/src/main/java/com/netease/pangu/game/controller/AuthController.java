@@ -12,22 +12,22 @@ import javax.annotation.Resource;
  * Created by huangc on 2017/2/6.
  */
 
-@HttpController(value = "/auth", gameId = GameConst.SYSTEM)
+@HttpController(value = "/auth", moduleId = GameConst.SYSTEM)
 public class AuthController {
     @Resource
     private AuthService authService;
 
-    private final static long AUTH_TIME = 10*60*1000;
+    private final static long AUTH_TIME = 10 * 60 * 1000;
 
     @HttpRequestMapping("/generate")
-    public String generateToken(String uuid){
+    public String generateToken(String uuid) {
         long expireTime = System.currentTimeMillis() + AUTH_TIME;
         return authService.generateToken(uuid, expireTime);
     }
 
 
     @HttpRequestMapping("/validate")
-    public ReturnUtils.GameResult validateToken(String token){
+    public ReturnUtils.GameResult validateToken(String token) {
         return authService.checkToken(token);
     }
 

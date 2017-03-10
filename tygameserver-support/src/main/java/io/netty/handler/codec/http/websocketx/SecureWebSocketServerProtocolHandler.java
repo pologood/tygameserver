@@ -54,12 +54,12 @@ public class SecureWebSocketServerProtocolHandler extends WebSocketProtocolHandl
     }
 
     public SecureWebSocketServerProtocolHandler(String websocketPath, String subprotocols,
-                                          boolean allowExtensions, int maxFrameSize) {
+                                                boolean allowExtensions, int maxFrameSize) {
         this(websocketPath, subprotocols, allowExtensions, maxFrameSize, false);
     }
 
     public SecureWebSocketServerProtocolHandler(String websocketPath, String subprotocols,
-                                          boolean allowExtensions, int maxFrameSize, boolean allowMaskMismatch) {
+                                                boolean allowExtensions, int maxFrameSize, boolean allowMaskMismatch) {
         this.websocketPath = websocketPath;
         this.subprotocols = subprotocols;
         this.allowExtensions = allowExtensions;

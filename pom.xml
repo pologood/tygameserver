@@ -211,6 +211,7 @@
         <module>tygameserver-config</module>
         <module>tygameserver-web</module>
         <module>tygameserver-common</module>
+        <module>tygameserver-guess</module>
     </modules>
     <dependencies>
         <dependency>
